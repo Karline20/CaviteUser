@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/shape_rec_01"
+    android:elevation="20dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/home"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/outline_home_red"
+            android:background="@color/white"
+            android:layout_weight="1"/>
+
+        <ImageButton
+            android:id="@+id/tutorial"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/outline_record_voice_over_24"
+            android:background="@color/white"
+            android:layout_weight="1"/>
+
+        <ImageButton
+            android:id="@+id/play"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/outline_quiz_24"
+            android:background="@color/white"
+            android:layout_weight="1"/>
+
+        <ImageButton
+            android:id="@+id/info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/outline_info_red"
+            android:background="@color/white"
+            android:layout_weight="1"/>
+
+    </LinearLayout>
+
+</RelativeLayout>

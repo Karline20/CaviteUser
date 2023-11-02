@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".presentation.home.rating.RatingActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="true"
+        android:focusable="true"
+        android:elevation="100dp"
+        android:background="#80000000"
+        android:id="@+id/progressBar"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_centerInParent="true"
+            android:elevation="100dp"
+            android:indeterminate="true"
+            />
+
+    </RelativeLayout>
+
+    <include
+        android:id="@+id/logged_in_top_nav"
+        layout="@layout/home_top_nav"
+        android:layout_alignParentTop="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="20dp"
+        android:orientation="vertical"
+        android:layout_below="@+id/logged_in_top_nav"
+        android:layout_marginTop="10dp">
+
+        <com.kaelli.niceratingbar.NiceRatingBar
+            android:id="@+id/rating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            app:nrb_starTotal="5"
+            app:nrb_starImageWidth="50dp"
+            app:nrb_starImageHeight="40dp"
+            app:nrb_starFullResource="@drawable/baseline_star_24"
+            app:nrb_starEmptyResource="@drawable/baseline_star_border_24"
+            app:nrb_starHalfResource="@drawable/baseline_star_half_24"
+            app:nrb_rating="1.5"
+            app:nrb_starImagePadding="2dp"
+            app:nrb_ratingStatus="Enable"/>
+
+        <EditText
+            android:id="@+id/etReview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/shape_rec_02"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="10dp"
+            android:elevation="5dp"
+            android:hint="Reviews"
+            android:inputType="textMultiLine"
+            android:gravity="start"
+            android:maxHeight="400dp"
+            android:padding="10dp"
+            android:textSize="16sp"
+            android:layout_marginBottom="10dp"/>
+
+        <Button
+            android:id="@+id/btn_save_review"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="20dp"
+            android:layout_marginLeft="20dp"
+            android:elevation="20dp"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
+            android:layout_centerHorizontal="true"
+            android:text="Review"
+            android:textColor="@color/Red"
+            android:textStyle="bold"
+            android:backgroundTint="@color/white"
+            app:iconSize="24dp"
+            android:layout_marginBottom="20dp"
+            />
+    </LinearLayout>
+
+</RelativeLayout>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="100dp"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@drawable/shape_rec_02"
+    android:elevation="20dp"
+    android:layout_marginLeft="5dp"
+    android:layout_marginRight="5dp"
+    android:layout_marginTop="10dp">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/epoxy_image"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:orientation="horizontal"
+        tools:listitem="@layout/epoxy_image"
+        android:layout_centerVertical="true"
+        />
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@+id/epoxy_image"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="10dp"
+        android:text="CAFE"
+        android:textColor="@color/owtoRed"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:id="@+id/tv_desc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@+id/epoxy_image"
+        android:layout_below="@+id/tv_title"
+        android:layout_toStartOf="@+id/img_unfave"
+        android:layout_marginTop="5dp"
+        android:layout_marginStart="10dp"
+        android:textColor="@color/coolGrayColor"
+        android:maxHeight="50dp"
+        android:text="DESCRIPTION"/>
+
+    <ImageView
+        android:id="@+id/img_unfave"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/baseline_delete_outline_24"
+        android:layout_centerVertical="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="10dp"/>
+
+</RelativeLayout>

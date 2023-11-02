@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".presentation.home.event.ViewEventActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="true"
+        android:focusable="true"
+        android:elevation="100dp"
+        android:background="#80000000"
+        android:id="@+id/progressBar"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_centerInParent="true"
+            android:elevation="100dp"
+            android:indeterminate="true"
+            />
+
+    </RelativeLayout>
+
+    <include
+        android:id="@+id/logged_in_top_nav"
+        layout="@layout/home_top_nav"
+        android:layout_alignParentTop="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/logged_in_top_nav"
+        android:layout_marginTop="5dp"
+        android:elevation="20dp"
+        android:fillViewport="true">
+
+        <RelativeLayout
+            android:id="@+id/rrl_cafe"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:layout_marginBottom="5dp">
+
+            <RelativeLayout
+                android:id="@+id/rrl_event_category"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/label_event_category"
+                    android:layout_width="250dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="15sp"
+                    android:text="Event Category"
+                    android:layout_centerVertical="true"
+                    android:textColor="@color/Red"
+                    android:textStyle="bold"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    />
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginRight="20dp"
+                    android:layout_centerVertical="true">
+
+                    <ImageView
+                        android:id="@+id/favorites"
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:src="@drawable/baseline_favorite_border_24"
+                        android:layout_marginRight="10dp"/>
+
+                    <ImageView
+                        android:id="@+id/viewMap"
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:src="@drawable/outline_map_24"
+                        android:layout_marginRight="10dp"
+                        android:layout_toEndOf="@+id/favorites"/>
+
+                    <ImageView
+                        android:id="@+id/rate"
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:src="@drawable/outline_star_rate_24"
+                        android:layout_toEndOf="@+id/viewMap"/>
+
+                </RelativeLayout>
+
+<!--                <com.google.android.material.button.MaterialButton-->
+<!--                    android:id="@+id/rate"-->
+<!--                    style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="Rate"-->
+<!--                    android:textColor="@color/Red"-->
+<!--                    android:textStyle="bold"-->
+<!--                    android:backgroundTint="@color/white"-->
+<!--                    android:layout_alignParentEnd="true"-->
+<!--                    android:layout_marginRight="10dp"-->
+<!--                    app:iconSize="24dp"/>-->
+
+<!--                <com.google.android.material.button.MaterialButton-->
+<!--                    android:id="@+id/viewMap"-->
+<!--                    style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="Map"-->
+<!--                    android:textColor="@color/Red"-->
+<!--                    android:textStyle="bold"-->
+<!--                    android:backgroundTint="@color/white"-->
+<!--                    android:layout_alignParentEnd="true"-->
+<!--                    android:layout_below="@+id/rate"-->
+<!--                    android:layout_marginRight="10dp"-->
+<!--                    app:iconSize="24dp"/>-->
+            </RelativeLayout>
+
+            <View
+                android:layout_below="@id/rrl_event_category"
+                android:id="@+id/view3"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/coolGrayColor"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"/>
+            <TextView
+                android:id="@+id/label_name"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:text="Name"
+                android:layout_below="@+id/view3"
+                android:textColor="@color/Red"
+                android:textStyle="bold"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                />
+
+            <TextView
+                android:id="@+id/label_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:text="description"
+                android:textColor="@color/coolGrayColor"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_below="@id/label_category"
+                />
+
+            <TextView
+                android:id="@+id/label_address"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:text="Address"
+                android:textColor="@color/Red"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="5dp"
+                android:layout_below="@id/label_description"
+                />
+
+            <TextView
+                android:id="@+id/txt_address"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:text="barangay 123"
+                android:textColor="@color/coolGrayColor"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="5dp"
+                android:layout_below="@id/label_address"
+                />
+
+            <TextView
+                android:id="@+id/label_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:text="06/06/10"
+                android:textColor="@color/coolGrayColor"
+                android:layout_below="@id/view3"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_alignParentEnd="true"
+                android:layout_marginRight="20dp"
+                />
+
+            <TextView
+                android:id="@+id/label_category"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:text="category"
+                android:textColor="@color/coolGrayColor"
+                android:layout_below="@+id/label_name"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="20dp"
+                />
+
+            <View
+                android:id="@+id/view1"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:background="@color/coolGrayColor"
+                android:layout_below="@+id/txt_address"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/epoxy_image"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_below="@+id/view1"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                android:orientation="horizontal"
+                tools:listitem="@layout/epoxy_image"
+                />
+
+            <View
+                android:id="@+id/view2"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:background="@color/coolGrayColor"
+                android:layout_below="@+id/epoxy_image"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"/>
+
+
+            <TextView
+                android:id="@+id/label_rating"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:text="Rating and reviews"
+                android:layout_below="@+id/view2"
+                android:textColor="@color/Red"
+                android:textStyle="bold"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                />
+
+            <TextView
+                android:id="@+id/no_data"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:text="No reviews!"
+                android:textColor="@color/Red"
+                android:textStyle="bold"
+                android:layout_marginTop="10dp"
+                android:textAlignment="center"
+                android:layout_below="@id/label_rating"
+                android:visibility="gone" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_rating"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_below="@id/label_rating"
+                tools:listitem="@layout/rv_rating"
+                />
+
+        </RelativeLayout>
+    </ScrollView>
+</RelativeLayout>

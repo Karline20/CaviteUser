@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <application
+        android:name=".presentation.App"
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@drawable/background"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.ExploreCaviteAdmin"
+        android:usesCleartextTraffic="true"
+        tools:targetApi="31">
+        <activity
+            android:name=".presentation.home.rvevent.RvEventActivity"
+            android:exported="false" />
+        <activity
+            android:name=".presentation.terms.TermsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".presentation.favorites.FavoritesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".presentation.play.ranking.LeaderBoardsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".presentation.tutorial.tutor.TutorActivity"
+            android:exported="false" />
+        <activity
+            android:name=".presentation.home.rating.RatingActivity"
+            android:exported="false" />
+        <activity
+            android:name=".presentation.home.map.MapActivity"
+            android:exported="false" />
+        <activity
+            android:name=".presentation.menu.MenuActivity"
+            android:exported="false" />
+        <activity
+            android:name=".presentation.about.AboutActivity"
+            android:exported="false" />
+        <activity
+            android:name=".presentation.play.PlayActivity"
+            android:exported="false" />
+        <activity
+            android:name=".presentation.tutorial.TutorialActivity"
+            android:exported="false" />
+        <activity
+            android:name=".presentation.home.event.ViewEventActivity"
+            android:exported="false" />
+        <activity
+            android:name=".presentation.auth.RegistrationActivity"
+            android:exported="false" />
+        <activity
+            android:name=".presentation.auth.profilecreation.ProfileCreation"
+            android:exported="false" />
+        <activity
+            android:name=".presentation.home.HomeActivity"
+            android:exported="false"
+            android:launchMode="singleTask" />
+        <activity
+            android:name=".presentation.auth.LoginActivity"
+            android:exported="false" />
+        <activity
+            android:name=".presentation.SplashActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/my_map_api_key" />
+    </application>
+
+</manifest>

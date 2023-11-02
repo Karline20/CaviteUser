@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".presentation.play.ranking.LeaderBoardsActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="true"
+        android:focusable="true"
+        android:elevation="100dp"
+        android:background="#80000000"
+        android:id="@+id/progressBar"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_centerInParent="true"
+            android:elevation="100dp"
+            android:indeterminate="true"
+            />
+
+    </RelativeLayout>
+
+    <include
+        android:id="@+id/logged_in_top_nav"
+        layout="@layout/home_top_nav"
+        android:layout_alignParentTop="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <RelativeLayout
+        android:id="@+id/rrl_Label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/logged_in_top_nav"
+        android:elevation="50dp"
+        android:padding="20dp">
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/celeb2"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_centerVertical="true"
+            app:lottie_autoPlay="true"
+            app:lottie_loop="true"
+            app:lottie_rawRes="@raw/trophy" />
+
+        <TextView
+            android:id="@+id/label_leaderBoards"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:text="LeaderBoards"
+            android:textColor="@color/Red"
+            android:textStyle="bold"
+            android:layout_marginTop="10dp"
+            android:elevation="50dp"
+            android:layout_centerHorizontal="true"
+            />
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/celeb1"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true"
+            app:lottie_autoPlay="true"
+            app:lottie_loop="true"
+            app:lottie_rawRes="@raw/trophy" />
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/no_data"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:text="No data to fetch!"
+        android:textColor="@color/Red"
+        android:textStyle="bold"
+        android:layout_marginTop="10dp"
+        android:textAlignment="center"
+        android:elevation="50dp"
+        android:layout_below="@+id/rrl_Label"
+        />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_rank"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:listitem="@layout/rv_rank"
+        android:layout_below="@+id/rrl_Label"
+        android:layout_marginBottom="10dp"/>
+
+</RelativeLayout>

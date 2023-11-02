@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="10dp"
+    android:elevation="20dp"
+    android:layout_marginTop="5dp"
+    android:background="@drawable/shape_rec_02">
+
+    <RelativeLayout
+        android:id="@+id/rrl_start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true">
+        <ImageView
+            android:id="@+id/img_rank"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/outline_circle_24"
+            android:layout_centerInParent="true"/>
+
+        <TextView
+            android:id="@+id/label_rank"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="1"
+            android:textColor="@color/Red"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rrl_sec"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="10dp"
+        android:layout_toEndOf="@+id/rrl_start" >
+
+        <TextView
+            android:id="@+id/label_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:text="Name and LastName"
+            android:textColor="@color/Red"
+            android:textStyle="bold"
+           />
+
+        <TextView
+            android:id="@+id/label_score"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:text="Score: "
+            android:textColor="@color/Red"
+            android:textStyle="bold"
+            android:layout_below="@id/label_name" />
+
+        <TextView
+            android:id="@+id/label_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:text="06-26-2023"
+            android:textColor="@color/coolGrayColor"
+            android:layout_alignParentEnd="true" />
+
+    </RelativeLayout>
+
+</RelativeLayout>

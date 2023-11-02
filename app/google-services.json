@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "211923839525",
+    "firebase_url": "https://cavite-dc490-default-rtdb.firebaseio.com",
+    "project_id": "cavite-dc490",
+    "storage_bucket": "cavite-dc490.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:211923839525:android:5d02850ceb7a8e9658edcc",
+        "android_client_info": {
+          "package_name": "coding.legaspi.caviteuser"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAkb2E_llCRC_LL_nbCtvBfSedglf_ohvw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:211923839525:android:851124c7cce9e24958edcc",
+        "android_client_info": {
+          "package_name": "coding.legaspi.tmdbclient"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAkb2E_llCRC_LL_nbCtvBfSedglf_ohvw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

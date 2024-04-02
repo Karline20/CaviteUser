@@ -27,7 +27,9 @@ import coding.legaspi.caviteuser.utils.FirebaseManager
 import coding.legaspi.caviteuser.utils.SharedPreferences
 import com.bumptech.glide.Glide
 import javax.inject.Inject
-
+import coding.legaspi.caviteuser.Result
+import coding.legaspi.caviteuser.data.model.error.Error
+import java.io.IOException
 
 class TutorialActivity : AppCompatActivity() {
 
@@ -78,22 +80,50 @@ class TutorialActivity : AppCompatActivity() {
     private fun setRv() {
         val responseLiveData = eventViewModel.getTutorial()
         responseLiveData.observe(this, Observer {
-            if (it!=null){
-                if (it.isNullOrEmpty()){
-                    binding.noData.visibility= VISIBLE
-                    binding.rvTutorial.visibility= GONE
-                    binding.progressBar.visibility = GONE
-                }else{
-                    tutorialList.clear()
-                    tutorialList.addAll(it)
-                    val llm = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
-                    binding.rvTutorial.layoutManager = llm
-                    binding.rvTutorial.adapter = tutorialAdapter
-                    binding.progressBar.visibility = GONE
-                    tutorialAdapter.notifyDataSetChanged()
-                }
-            }else{
+            when(it){
+                is Result.Success<*> -> {
+                    val result = it.data as List<Tutorial>
+                    if (result!=null){
+                        if (result.isNullOrEmpty()){
+                            binding.noData.visibility= VISIBLE
+                            binding.rvTutorial.visibility= GONE
+                            binding.progressBar.visibility = GONE
+                        }else{
+                            tutorialList.clear()
+                            tutorialList.addAll(result)
+                            val llm = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
+                            binding.rvTutorial.layoutManager = llm
+                            binding.rvTutorial.adapter = tutorialAdapter
+                            binding.progressBar.visibility = GONE
+                            tutorialAdapter.notifyDataSetChanged()
+                        }
+                    }else{
 
+                    }
+                }
+                is Result.Error -> {
+                    val exception = it.exception
+
+                    if (exception is IOException) {
+                        binding.progressBar.visibility = GONE
+                        if (exception.localizedMessage!! == "timeout"){
+                            dialogHelper.showUnauthorized(
+                                Error(
+                                    "Server error",
+                                    "Server is down or not reachable ${exception.message}"
+                                )
+                            )
+                        } else{
+                            dialogHelper.showUnauthorized(Error("Error",exception.localizedMessage!!))
+                        }
+                    } else {
+                        binding.progressBar.visibility = GONE
+                        dialogHelper.showUnauthorized(Error("Error","Something went wrong!"))
+                    }
+                }
+                Result.Loading -> {
+                    binding.progressBar.visibility = VISIBLE
+                }
             }
         })
     }

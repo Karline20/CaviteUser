@@ -58,7 +58,7 @@ class HomeAdapter internal constructor(
             "History"-> holder.postImageView.setImageResource(R.drawable.historyhis)
             "Home made food"-> holder.postImageView.setImageResource(R.drawable.homej)
             "Restaurants"-> holder.postImageView.setImageResource(R.drawable.restaurant)
-            "Hotel & Resorts" -> holder.postImageView.setImageResource(R.drawable.resort)
+            "Hotel & Resorts" -> holder.postImageView.setImageResource(R.drawable.hotelresort)
             "Schools"-> holder.postImageView.setImageResource(R.drawable.schoolp)
             "Stores"-> holder.postImageView.setImageResource(R.drawable.storep)
             "Places To visit"-> holder.postImageView.setImageResource(R.drawable.places)

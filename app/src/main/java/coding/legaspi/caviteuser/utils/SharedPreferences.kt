@@ -8,6 +8,17 @@ class SharedPreferences {
 
     private lateinit var sharedPreferences: SharedPreferences
 
+    fun saveCreation(context: Context, isFinished: String){
+        sharedPreferences = context.getSharedPreferences(BuildConfig.APPLICATION_ID, Context.MODE_PRIVATE)
+        sharedPreferences.edit().putString("isFinished", isFinished).apply()
+    }
+
+    fun checkCreation(context: Context): String{
+        sharedPreferences = context.getSharedPreferences(BuildConfig.APPLICATION_ID, Context.MODE_PRIVATE)
+        val isFinished = sharedPreferences.getString("isFinished", null)
+        return isFinished.toString()
+    }
+
     fun saveTerms(context: Context, firstTime: String){
         sharedPreferences = context.getSharedPreferences(BuildConfig.APPLICATION_ID, Context.MODE_PRIVATE)
         sharedPreferences.edit().putString("firstTime", firstTime).apply()

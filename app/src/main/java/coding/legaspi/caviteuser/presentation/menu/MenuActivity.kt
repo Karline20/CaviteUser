@@ -10,6 +10,9 @@ import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import coding.legaspi.caviteuser.R
+import coding.legaspi.caviteuser.Result
+import coding.legaspi.caviteuser.data.model.error.Error
+import coding.legaspi.caviteuser.data.model.profile.ProfileOutput
 import coding.legaspi.caviteuser.databinding.ActivityMenuBinding
 import coding.legaspi.caviteuser.presentation.about.AboutActivity
 import coding.legaspi.caviteuser.presentation.auth.LoginActivity
@@ -26,6 +29,7 @@ import coding.legaspi.caviteuser.utils.FirebaseManager
 import coding.legaspi.caviteuser.utils.SharedPreferences
 import com.bumptech.glide.Glide
 import com.google.firebase.ktx.Firebase
+import java.io.IOException
 import javax.inject.Inject
 
 class MenuActivity : AppCompatActivity() {
@@ -64,12 +68,62 @@ class MenuActivity : AppCompatActivity() {
 
             val responseLiveData = loginViewModel.getByUserId(userId)
             responseLiveData.observe(this, Observer {
-                if (it.isSuccessful){
-                    if (it!=null){
-                        val firstname = it.body()?.firstname
-                        val lastname = it.body()?.lastname
-                        binding.txtName.text = "$firstname $lastname"
+                when(it){
+                    is Result.Success<*> -> {
+                        val profile = it.data as ProfileOutput
+
+                        if (profile!=null){
+                            val firstname = profile.firstname
+                            val lastname = profile.lastname
+                            binding.txtName.text = "$firstname $lastname"
+                        }
+
                     }
+                    is Result.Error -> {
+                        // Handle error
+                        val exception = it.exception
+                        // Show error message or handle error state
+                        if (exception is IOException) {
+                            // Handle network failure
+                            Log.e("Check Result", "showNetworkError")
+                            binding.progressBar.visibility = GONE
+                            if (exception.equals("java.net.SocketTimeoutException")){
+                                dialogHelper.showUnauthorized(
+                                    Error(
+                                        "Server error",
+                                        "Server is down or not reachable ${exception.localizedMessage}"
+                                    )
+                                )
+                            } else{
+                                // Handle other exceptions
+                                binding.progressBar.visibility = GONE
+                                dialogHelper.showUnauthorized(
+                                    Error(
+                                        "Error",
+                                        exception.localizedMessage!!
+                                    )
+                                )
+                                Log.d("Check Result", "Unauthorized")
+                            }
+
+                        } else {
+                            // Handle other exceptions
+                            binding.progressBar.visibility = GONE
+                            dialogHelper.showUnauthorized(
+                                Error(
+                                    "Error",
+                                    "$exception"
+                                )
+                            )
+                            Log.d("Check Result", "showGenericError")
+                        }
+                    }
+                    Result.Loading -> {
+                        // Handle loading state
+                        Log.d("Check Result", "Loading")
+                        binding.progressBar.visibility = VISIBLE
+                    }
+
                 }
             })
 

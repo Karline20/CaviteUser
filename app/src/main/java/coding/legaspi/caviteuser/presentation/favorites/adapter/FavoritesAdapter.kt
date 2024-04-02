@@ -14,8 +14,10 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import coding.legaspi.caviteuser.R
+import coding.legaspi.caviteuser.Result
 import coding.legaspi.caviteuser.data.model.adaptermodel.Image
 import coding.legaspi.caviteuser.data.model.error.Error
+import coding.legaspi.caviteuser.data.model.eventsoutput.AllModelOutput
 import coding.legaspi.caviteuser.data.model.favorites.FavoritesOutput
 import coding.legaspi.caviteuser.presentation.home.event.ViewEventActivity
 import coding.legaspi.caviteuser.presentation.viewmodel.EventViewModel
@@ -29,6 +31,7 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import okhttp3.internal.notify
+import java.io.IOException
 
 class FavoritesAdapter(
     private val favoritesList: ArrayList<FavoritesOutput>,
@@ -80,18 +83,77 @@ class FavoritesAdapter(
     private fun removeFave(id: String) {
         val responseLiveData = eventViewModel.delFavorites(id)
         responseLiveData.observe(lifecycle, Observer {
-            if (it!=null){
-                dialogHelper.showError(Error("Remove", "Removed successfully"))
+            when(it) {
+                is Result.Success<*> -> {
+                    dialogHelper.showError(Error("Remove", "Removed successfully"))
+                }
+                is Result.Error -> {
+                    val exception = it.exception
+                    if (exception is IOException) {
+                        if (exception.localizedMessage!! == "timeout"){
+                            dialogHelper.showUnauthorized(
+                                Error(
+                                    "Server error",
+                                    "Server is down or not reachable ${exception.message}"
+                                )
+                            )
+                        } else{
+                            dialogHelper.showUnauthorized(
+                                Error(
+                                    "Error",
+                                    exception.localizedMessage!!
+                                )
+                            )
+                        }
+                    } else {
+                        dialogHelper.showUnauthorized(
+                            Error(
+                                "Error",
+                                "Something went wrong!"
+                            )
+                        )
+                        Log.d("Check Result", "showGenericError")
+                    }
+                }
+                Result.Loading -> {
+                    // Handle loading state
+                    Log.d("Check Result", "Loading")
+                }
             }
+
         })
     }
 
     private fun setEvent(eventid: String, holder: ViewHolder) {
         val responseLiveData = eventViewModel.getEventsById(eventid)
         responseLiveData.observe(lifecycle, Observer {
-            if (it!=null){
-                holder.tv_title.text = it.body()?.name
-                holder.tv_desc.text = it.body()?.description
+            when(it){
+                is Result.Success<*> -> {
+                    val result = it.data as AllModelOutput
+                    holder.tv_title.text = result.name
+                    holder.tv_desc.text = result.description
+                }
+                is Result.Error -> {
+                    val exception = it.exception
+
+                    if (exception is IOException) {
+                        if (exception.localizedMessage!! == "timeout"){
+                            dialogHelper.showUnauthorized(
+                                Error(
+                                    "Server error",
+                                    "Server is down or not reachable ${exception.message}"
+                                )
+                            )
+                        } else{
+                            dialogHelper.showUnauthorized(Error("Error",exception.localizedMessage!!))
+                        }
+                    } else {
+                        dialogHelper.showUnauthorized(Error("Error","Something went wrong!"))
+                    }
+                }
+                Result.Loading -> {
+
+                }
             }
         })
         imageList = arrayListOf()

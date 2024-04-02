@@ -17,7 +17,10 @@ import coding.legaspi.caviteuser.presentation.viewmodel.EventViewModel
 import coding.legaspi.caviteuser.utils.DialogHelper
 import coding.legaspi.caviteuser.utils.DialogHelperFactory
 import coding.legaspi.caviteuser.utils.SharedPreferences
-
+import coding.legaspi.caviteuser.Result
+import coding.legaspi.caviteuser.data.model.tutorial.TutorialStatusOutput
+import java.io.IOException
+import coding.legaspi.caviteuser.data.model.error.Error
 class TutorialAdapter(
     private var tutorialList: ArrayList<Tutorial>,
     private val context: Context,
@@ -42,16 +45,41 @@ class TutorialAdapter(
         val (token, userid) = SharedPreferences().checkToken(context)
         val responseLiveData = eventViewModel.getTutorialByUserId(id, userid.toString())
         responseLiveData.observe(lifecycleOwner, Observer {
-            if (it!=null) {
-                val isFinish = it.body()?.isFinish
-                if (isFinish == true){
-                    isFinished = true
-                holder.imageIsFinish.setImageResource(R.drawable.baseline_check_circle_24)
-                }else{
-                    holder.imageIsFinish.setImageResource(R.drawable.baseline_do_not_disturb_on_24)
+            when(it){
+                is Result.Success<*> -> {
+                    val result = it.data as TutorialStatusOutput
+                    if (result!=null) {
+                        val isFinish = result.isFinish
+                        if (isFinish){
+                            isFinished = true
+                            holder.imageIsFinish.setImageResource(R.drawable.baseline_check_circle_24)
+                        }else{
+                            holder.imageIsFinish.setImageResource(R.drawable.baseline_do_not_disturb_on_24)
+                        }
+                    }else{
+                        holder.imageIsFinish.setImageResource(R.drawable.baseline_do_not_disturb_on_24)
+                    }
                 }
-            }else{
-                holder.imageIsFinish.setImageResource(R.drawable.baseline_do_not_disturb_on_24)
+                is Result.Error -> {
+                    val exception = it.exception
+
+                    if (exception is IOException) {
+                        if (exception.localizedMessage!! == "timeout"){
+                            dialogHelper.showUnauthorized(
+                                Error(
+                                    "Server error",
+                                    "Server is down or not reachable ${exception.message}"
+                                )
+                            )
+                        } else{
+                            dialogHelper.showUnauthorized(Error("Error",exception.localizedMessage!!))
+                        }
+                    } else {
+                        dialogHelper.showUnauthorized(Error("Error","Something went wrong!"))
+                    }
+                }
+                Result.Loading -> {
+                }
             }
         })
 

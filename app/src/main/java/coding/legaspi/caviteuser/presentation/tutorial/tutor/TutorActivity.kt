@@ -31,6 +31,9 @@ import com.bumptech.glide.Glide
 import java.text.SimpleDateFormat
 import java.util.Date
 import javax.inject.Inject
+import coding.legaspi.caviteuser.Result
+import coding.legaspi.caviteuser.data.model.tutorial.TutorialStatusOutput
+import java.io.IOException
 
 class TutorActivity : AppCompatActivity() {
 
@@ -149,12 +152,38 @@ class TutorActivity : AppCompatActivity() {
 
         val responseLiveData = eventViewModel.postTutorialStatus(TutorialStatus(formattedDate, true, currentTimeMillis.toString(), tutorial, tutorialid, userid))
         responseLiveData.observe(this, Observer {
-            if (it.isSuccessful){
-                tutorBinding.progressBar.visibility= GONE
-                val intent = Intent(this, TutorialActivity::class.java)
-                startActivity(intent)
-                finishActivity(TutorialActivity.TutorialActivity)
-                finish()
+            when(it){
+                is Result.Success<*> -> {
+                    val result = it.data as TutorialStatusOutput
+                    tutorBinding.progressBar.visibility= GONE
+                    val intent = Intent(this, TutorialActivity::class.java)
+                    startActivity(intent)
+                    finishActivity(TutorialActivity.TutorialActivity)
+                    finish()
+                }
+                is Result.Error -> {
+                    val exception = it.exception
+
+                    if (exception is IOException) {
+                        tutorBinding.progressBar.visibility = GONE
+                        if (exception.localizedMessage!! == "timeout"){
+                            dialogHelper.showUnauthorized(
+                                Error(
+                                    "Server error",
+                                    "Server is down or not reachable ${exception.message}"
+                                )
+                            )
+                        } else{
+                            dialogHelper.showUnauthorized(Error("Error",exception.localizedMessage!!))
+                        }
+                    } else {
+                        tutorBinding.progressBar.visibility = GONE
+                        dialogHelper.showUnauthorized(Error("Error","Something went wrong!"))
+                    }
+                }
+                Result.Loading -> {
+                    tutorBinding.progressBar.visibility = VISIBLE
+                }
             }
         })
     }

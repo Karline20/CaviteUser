@@ -1,6 +1,9 @@
 package coding.legaspi.caviteuser.presentation.di.core
 
+import android.content.Context
+import android.util.Log
 import coding.legaspi.caviteuser.data.api.TMDBService
+import coding.legaspi.caviteuser.utils.SharedPreferences
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
@@ -14,7 +17,9 @@ class NetModule(private val baseUrl: String) {
 
     @Singleton
     @Provides
-    fun provideRetrofit():Retrofit{
+    fun provideRetrofit(context: Context):Retrofit{
+        //val (token, userid) = SharedPreferences().checkToken(context)
+        //Log.d("NetModule", "$token")
         val loggingInterceptor = HttpLoggingInterceptor()
         loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
 
@@ -24,7 +29,14 @@ class NetModule(private val baseUrl: String) {
             .client(
                 OkHttpClient.Builder()
                     .addInterceptor(loggingInterceptor)
-                    .build())
+//                    .addInterceptor { chain ->
+//                        val request = chain.request().newBuilder()
+//                            .addHeader("Authorization", "Bearer $token")
+//                            .build()
+//                        chain.proceed(request)
+//                    }
+                    .build()
+            )
             .build()
     }
 

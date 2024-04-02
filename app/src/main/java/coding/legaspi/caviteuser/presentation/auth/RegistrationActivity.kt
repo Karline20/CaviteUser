@@ -17,17 +17,24 @@ import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import coding.legaspi.caviteuser.R
+import coding.legaspi.caviteuser.Result
 import coding.legaspi.caviteuser.data.model.auth.SignBody
+import coding.legaspi.caviteuser.data.model.auth.SignBodyOutput
 import coding.legaspi.caviteuser.data.model.error.Error
+import coding.legaspi.caviteuser.data.model.profile.ProfileOutput
 import coding.legaspi.caviteuser.databinding.ActivityRegistrationBinding
 import coding.legaspi.caviteuser.presentation.di.Injector
+import coding.legaspi.caviteuser.presentation.home.HomeActivity
+import coding.legaspi.caviteuser.presentation.terms.TermsActivity
 import coding.legaspi.caviteuser.presentation.viewmodel.EventViewModel
 import coding.legaspi.caviteuser.presentation.viewmodel.EventViewModelFactory
 import coding.legaspi.caviteuser.utils.DialogHelper
 import coding.legaspi.caviteuser.utils.DialogHelperFactory
 import coding.legaspi.caviteuser.utils.FirebaseManager
+import coding.legaspi.caviteuser.utils.SharedPreferences
 import coding.legaspi.caviteuser.utils.VibrateView
 import retrofit2.HttpException
+import java.io.IOException
 import java.net.SocketTimeoutException
 import javax.inject.Inject
 
@@ -74,32 +81,52 @@ class RegistrationActivity : AppCompatActivity(), View.OnClickListener, View.OnF
                 Log.d("RegistrationActivity", "onResume")
                 val responseLiveData = loginViewModel.getLoginEventUseCase(SignBody(email, password, "user", true ))
                 responseLiveData.observe(this, Observer {
-                    try {
-                        if(it.isSuccessful){
-                            if (it!=null){
-                                FirebaseManager().logout{
-                                    if (it){
-                                        registrationBinding.progressBar.visibility = GONE
-                                        val intent = Intent(this, LoginActivity::class.java)
-                                        startActivity(intent)
-                                        finish()
-                                        Toast.makeText(this, "Please login", Toast.LENGTH_SHORT).show()
-                                    }
+                    when(it){
+                        is Result.Success<*> -> {
+                            val signup = it.data as SignBodyOutput
+                            FirebaseManager().logout{
+                                if (it){
+                                    registrationBinding.progressBar.visibility = GONE
+                                    val intent = Intent(this, LoginActivity::class.java)
+                                    startActivity(intent)
+                                    finish()
+                                    Toast.makeText(this, "Please login", Toast.LENGTH_SHORT).show()
                                 }
-                            }else{
-                                registrationBinding.progressBar.visibility = View.GONE
-                                Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
-                                dialogHelper.showUnauthorized(Error(it?.code().toString(), it?.message().toString()))
                             }
                         }
-                    }catch (httpException: HttpException) {
-                        Log.e("LoginActivity", "HTTP Exception: ${httpException.code()}, ${httpException.message()}")
-                        dialogHelper.showUnauthorized(Error("Connection error", "$httpException"))
-                        registrationBinding.progressBar.visibility = GONE
-                    } catch (socketTimeoutException: SocketTimeoutException) {
-                        Log.e("LoginActivity", "SocketTimeoutException: $socketTimeoutException")
-                        registrationBinding.progressBar.visibility = GONE
-                        dialogHelper.showUnauthorized(Error("Connection error", "Can't connect to the server"))
+                        is Result.Error -> {
+                            val exception = it.exception
+                            if (exception is IOException) {
+                                Log.e("Check Result", "${exception.localizedMessage}")
+                                registrationBinding.progressBar.visibility = GONE
+                                if (exception.localizedMessage!! == "timeout"){
+                                    dialogHelper.showUnauthorized(
+                                        Error(
+                                            "Server error",
+                                            "Server is down or not reachable ${exception.message}"
+                                        )
+                                    )
+                                } else{
+                                    dialogHelper.showUnauthorized(
+                                        Error(
+                                            "Error",
+                                            exception.localizedMessage!!
+                                        )
+                                    )
+                                }
+                            } else {
+                                registrationBinding.progressBar.visibility = GONE
+                                dialogHelper.showUnauthorized(
+                                    Error(
+                                        "Error",
+                                        "Something went wrong!"
+                                    )
+                                )
+                            }
+                        }
+                        Result.Loading -> {
+                            registrationBinding.progressBar.visibility = VISIBLE
+                        }
                     }
                 })
             }else{
@@ -128,12 +155,13 @@ class RegistrationActivity : AppCompatActivity(), View.OnClickListener, View.OnF
     }
 
     private fun submitForm() {
-        registrationBinding.progressBar.visibility = View.VISIBLE
         if (validateUserCredentials()){
+            registrationBinding.progressBar.visibility = VISIBLE
             FirebaseManager().registerUser(email, password){
                 if (it){
                     registrationBinding.progressBar.visibility = GONE
                     //dialogHelper.showSuccess("Email verification!", "Email sent...")
+                    SharedPreferences().saveCreation(this, "false")
                     dialogHelper.showEmailVerification("Email Verification", "Please check your email.")
                 }else{
                     registrationBinding.progressBar.visibility = GONE

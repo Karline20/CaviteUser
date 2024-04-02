@@ -29,6 +29,9 @@ import coding.legaspi.caviteuser.utils.FirebaseManager
 import coding.legaspi.caviteuser.utils.SharedPreferences
 import com.bumptech.glide.Glide
 import javax.inject.Inject
+import coding.legaspi.caviteuser.Result
+import coding.legaspi.caviteuser.data.model.error.Error
+import java.io.IOException
 
 class HomeActivity : AppCompatActivity() {
 
@@ -115,23 +118,46 @@ class HomeActivity : AppCompatActivity() {
 
         val responseLiveData = eventViewModel.getAddEvents()
         responseLiveData.observe(this, Observer {
-            if (it!=null){
-                if (it.isEmpty()){
-                    Toast.makeText(this, "No data", Toast.LENGTH_SHORT).show()
-                    binding.noData.visibility= VISIBLE
-                    binding.rvEvents.visibility= GONE
-                    binding.progressBar.visibility = GONE
-                }else{
-                    eventList.clear()
-                    eventList.addAll(it)
-                    binding.rvEvents.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
-                    binding.rvEvents.adapter = adapter
-                    adapter.notifyDataSetChanged()
-                    binding.progressBar.visibility = GONE
-                    binding.noData.visibility= GONE
+            when(it){
+                is Result.Success<*> -> {
+                    val result = it.data as List<AddEvent>
+                    if (result!=null){
+                        if (result.isEmpty()){
+                            Toast.makeText(this, "No data", Toast.LENGTH_SHORT).show()
+                            binding.noData.visibility= VISIBLE
+                            binding.rvEvents.visibility= GONE
+                            binding.progressBar.visibility = GONE
+                        }else{
+                            eventList.clear()
+                            eventList.addAll(result)
+                            binding.rvEvents.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+                            binding.rvEvents.adapter = adapter
+                            adapter.notifyDataSetChanged()
+                            binding.progressBar.visibility = GONE
+                            binding.noData.visibility= GONE
+                        }
+                    }else{
+                        Log.d("Home", "Null")
+                    }
                 }
-            }else{
-                Log.d("Home", "Null")
+                is Result.Error -> {
+                    val exception = it.exception
+
+                    if (exception is IOException) {
+                        binding.progressBar.visibility = GONE
+                        if (exception.localizedMessage!! == "timeout"){
+                            dialogHelper.showUnauthorized(Error("Server error", "Server is down or not reachable ${exception.message}"))
+                        } else{
+                            dialogHelper.showUnauthorized(Error("Error",exception.localizedMessage!!))
+                        }
+                    } else {
+                        binding.progressBar.visibility = GONE
+                        dialogHelper.showUnauthorized(Error("Error","Something went wrong!"))
+                    }
+                }
+                Result.Loading -> {
+                    binding.progressBar.visibility = VISIBLE
+                }
             }
         })
 //        val responseLiveData = eventViewModel.getAllEvents()

@@ -36,6 +36,10 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import javax.inject.Inject
 import kotlin.random.Random
+import coding.legaspi.caviteuser.Result
+import coding.legaspi.caviteuser.data.model.error.Error
+import coding.legaspi.caviteuser.data.model.ranking.RankingOutput
+import java.io.IOException
 
 class PlayActivity : AppCompatActivity() {
 
@@ -81,12 +85,12 @@ class PlayActivity : AppCompatActivity() {
         val (token, userId) = SharedPreferences().checkToken(this)
         val responseLiveData = eventViewModel.getUserId(userId!!)
         responseLiveData.observe(this, Observer {
-            if (it.isSuccessful){
-                if (it!=null){
-                    firstname = it.body()?.firstname.toString()
-                    lastname = it.body()?.lastname.toString()
-                }
-            }
+//            if (it.isSuccessful){
+//                if (it!=null){
+//                    firstname = it.body()?.firstname.toString()
+//                    lastname = it.body()?.lastname.toString()
+//                }
+//            }
         })
     }
 
@@ -103,6 +107,7 @@ class PlayActivity : AppCompatActivity() {
     private fun setPlay() {
         dialogHelper.tutorial("Pronunciation quiz", "Do you want to play with us?", "Play", "Quit"){
             if(it){
+                countSpeechNumber = 0
                 timerToStart()
             }else{
                 dialogHelper.showLogout("Quit", "Are you sure you want to quit?", "Yes", "No" ){
@@ -213,9 +218,33 @@ class PlayActivity : AppCompatActivity() {
                             }else{
                                 val responseLiveData = eventViewModel.postRank(Ranking(formattedDate, "$firstname, $lastname", correctCount, currentTimeMillis.toString(), userId!!))
                                 responseLiveData.observe(this, Observer {
-                                    if (it!=null){
-                                        activityPlayBinding.progressBar.visibility = GONE
-                                        setPlay()
+                                    when(it){
+                                        is Result.Success<*> -> {
+                                            val result = it.data as RankingOutput
+                                            if (result!=null){
+                                                activityPlayBinding.progressBar.visibility = GONE
+                                                setPlay()
+                                            }
+                                        }
+                                        is Result.Error -> {
+                                            val exception = it.exception
+
+                                            if (exception is IOException) {
+                                                activityPlayBinding.progressBar.visibility = GONE
+                                                if (exception.localizedMessage!! == "timeout"){
+                                                    dialogHelper.showUnauthorized(
+                                                        Error("Server error", "Server is down or not reachable ${exception.message}"))
+                                                } else{
+                                                    dialogHelper.showUnauthorized(Error("Error",exception.localizedMessage!!))
+                                                }
+                                            } else {
+                                                activityPlayBinding.progressBar.visibility = GONE
+                                                dialogHelper.showUnauthorized(Error("Error","Something went wrong!"))
+                                            }
+                                        }
+                                        Result.Loading -> {
+                                            activityPlayBinding.progressBar.visibility = VISIBLE
+                                        }
                                     }
                                 })
                             }

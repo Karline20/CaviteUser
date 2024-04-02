@@ -14,7 +14,9 @@ import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import coding.legaspi.caviteuser.R
+import coding.legaspi.caviteuser.Result
 import coding.legaspi.caviteuser.data.model.auth.LoginBody
+import coding.legaspi.caviteuser.data.model.auth.LoginBodyOutput
 import coding.legaspi.caviteuser.databinding.ActivityLoginBinding
 import coding.legaspi.caviteuser.presentation.di.Injector
 import coding.legaspi.caviteuser.utils.DialogHelper
@@ -22,12 +24,14 @@ import coding.legaspi.caviteuser.utils.DialogHelperFactory
 import coding.legaspi.caviteuser.utils.VibrateView
 import javax.inject.Inject
 import coding.legaspi.caviteuser.data.model.error.Error
+import coding.legaspi.caviteuser.data.model.profile.ProfileOutput
 import coding.legaspi.caviteuser.presentation.auth.profilecreation.ProfileCreation
 import coding.legaspi.caviteuser.presentation.home.HomeActivity
 import coding.legaspi.caviteuser.presentation.viewmodel.EventViewModel
 import coding.legaspi.caviteuser.presentation.viewmodel.EventViewModelFactory
 import coding.legaspi.caviteuser.utils.SharedPreferences
 import retrofit2.HttpException
+import java.io.IOException
 import java.net.SocketTimeoutException
 
 class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusChangeListener, View.OnKeyListener {
@@ -74,38 +78,73 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
 
     private fun submitForm() {
         loginBinding.progressBar.visibility = VISIBLE
-        if (validateUserCredentials()){
+        if (validateUserCredentials()) {
             val responseLiveData = loginViewModel.getLoginEventUseCase(LoginBody(email, password))
             responseLiveData.observe(this, Observer {
-                try {
-                    Log.d("aws", "Login 1 ${it.body()?.id.toString()}")
-                    if (it!=null){
-                        val response = it.body()
-                        if (response?.emailVerified == true){
-                            if (response.username == "user"){
-                                checkProfile(response.id, response.token)
-                                Log.d("Login", "Login 1 ${it.body()?.id.toString()}")
+                when(it){
+                    is Result.Success<*> -> {
+                        val login = it.data as LoginBodyOutput
+                        Log.d("aws", "Login 1 ${login.id}")
+                        if (login.emailVerified) {
+                            if (login.username == "user") {
+                                checkProfile(login.id, login.token)
+                                Log.d("Login", "Login 1 ${login.id}")
                             }
-                        }else if(response?.emailVerified == false){
+                        } else if (!login.emailVerified) {
                             loginBinding.progressBar.visibility = GONE
-                            dialogHelper.showUnauthorized(Error("Email verification", "Please verify your email first"))
-                        }else{
-                            loginBinding.progressBar.visibility = GONE
-                            dialogHelper.showUnauthorized(Error(it.code().toString(), it.message().toString()))
+                            dialogHelper.showUnauthorized(
+                                Error(
+                                    "Email verification",
+                                    "Please verify your email first"
+                                )
+                            )
                         }
-                    }else{
-                        loginBinding.progressBar.visibility = GONE
-                        Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
-                        dialogHelper.showUnauthorized(Error(it?.code().toString(), it?.message().toString()))
                     }
-                }catch (httpException: HttpException) {
-                    Log.e("LoginActivity", "HTTP Exception: ${httpException.code()}, ${httpException.message()}")
-                    dialogHelper.showUnauthorized(Error("Connection error", "$httpException"))
-                    loginBinding.progressBar.visibility = GONE
-                } catch (socketTimeoutException: SocketTimeoutException) {
-                    Log.e("LoginActivity", "SocketTimeoutException: $socketTimeoutException")
-                    loginBinding.progressBar.visibility = GONE
-                    dialogHelper.showUnauthorized(Error("Connection error", "Can't connect to the server"))
+                    is Result.Error -> {
+                        // Handle error
+                        val exception = it.exception
+                        // Show error message or handle error state
+                        if (exception is IOException) {
+                            // Handle network failure
+                            Log.e("Check Result", "showNetworkError")
+                            loginBinding.progressBar.visibility = GONE
+                            if (exception.equals("java.net.SocketTimeoutException")){
+                                dialogHelper.showUnauthorized(
+                                    Error(
+                                        "Server error",
+                                        "Server is down or not reachable ${exception.localizedMessage}"
+                                    )
+                                )
+                            } else{
+                                // Handle other exceptions
+                                loginBinding.progressBar.visibility = GONE
+                                dialogHelper.showUnauthorized(
+                                    Error(
+                                        "Error",
+                                        exception.localizedMessage!!
+                                    )
+                                )
+                                Log.d("Check Result", "Unauthorized")
+                            }
+
+                        } else {
+                            // Handle other exceptions
+                            loginBinding.progressBar.visibility = GONE
+                            dialogHelper.showUnauthorized(
+                                Error(
+                                    "Error",
+                                    "$exception"
+                                )
+                            )
+                            Log.d("Check Result", "showGenericError")
+                        }
+                    }
+                    Result.Loading -> {
+                        // Handle loading state
+                        Log.d("Check Result", "Loading")
+                        loginBinding.progressBar.visibility = VISIBLE
+                    }
+
                 }
             })
         }
@@ -115,21 +154,71 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
         try {
             val responseLiveData = loginViewModel.getByUserId(userid)
             responseLiveData.observe(this, Observer {
-                if (it != null && it.body()?.id != null){
-                    SharedPreferences().saveToken(this, token, userid)
-                    val intent = Intent(this, HomeActivity::class.java)
-                    intent.putExtra("userid", userid)
-                    startActivity(intent)
-                    loginBinding.progressBar.visibility = GONE
-                    finish()
-                }else{
-                    Log.d("ProfileCreation", "$it")
-                    SharedPreferences().saveToken(this, token, userid)
-                    val intent = Intent(this, ProfileCreation::class.java)
-                    intent.putExtra("userid", userid)
-                    startActivity(intent)
-                    loginBinding.progressBar.visibility = GONE
-                    finish()
+                when(it){
+                    is Result.Success<*> -> {
+                        val profile = it.data as ProfileOutput
+                        if (profile != null && profile.id != null){
+                            SharedPreferences().saveToken(this, token, userid)
+                            val intent = Intent(this, HomeActivity::class.java)
+                            intent.putExtra("userid", userid)
+                            startActivity(intent)
+                            loginBinding.progressBar.visibility = GONE
+                            finish()
+                        }else{
+                            Log.d("ProfileCreation", "$it")
+                            SharedPreferences().saveToken(this, token, userid)
+                            val intent = Intent(this, ProfileCreation::class.java)
+                            intent.putExtra("userid", userid)
+                            startActivity(intent)
+                            loginBinding.progressBar.visibility = GONE
+                            finish()
+                        }
+                    }
+                    is Result.Error -> {
+                        // Handle error
+                        val exception = it.exception
+                        // Show error message or handle error state
+                        if (exception is IOException) {
+                            // Handle network failure
+                            Log.e("Check Result", "showNetworkError")
+                            loginBinding.progressBar.visibility = GONE
+                            if (exception.equals("java.net.SocketTimeoutException")){
+                                dialogHelper.showUnauthorized(
+                                    Error(
+                                        "Server error",
+                                        "Server is down or not reachable ${exception.localizedMessage}"
+                                    )
+                                )
+                            } else{
+                                // Handle other exceptions
+                                loginBinding.progressBar.visibility = GONE
+                                dialogHelper.showUnauthorized(
+                                    Error(
+                                        "Error",
+                                        exception.localizedMessage!!
+                                    )
+                                )
+                                Log.d("Check Result", "Unauthorized")
+                            }
+
+                        } else {
+                            // Handle other exceptions
+                            loginBinding.progressBar.visibility = GONE
+                            dialogHelper.showUnauthorized(
+                                Error(
+                                    "Error",
+                                    "$exception"
+                                )
+                            )
+                            Log.d("Check Result", "showGenericError")
+                        }
+                    }
+                    Result.Loading -> {
+                        // Handle loading state
+                        Log.d("Check Result", "Loading")
+                        loginBinding.progressBar.visibility = VISIBLE
+                    }
+
                 }
             })
         }catch (httpException: HttpException){

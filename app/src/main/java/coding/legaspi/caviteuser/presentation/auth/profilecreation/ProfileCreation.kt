@@ -2,6 +2,7 @@ package coding.legaspi.caviteuser.presentation.auth.profilecreation
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.ContentResolver
 import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -24,18 +25,21 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import coding.legaspi.caviteuser.R
+import coding.legaspi.caviteuser.Result
+import coding.legaspi.caviteuser.data.model.error.Error
 import coding.legaspi.caviteuser.data.model.profile.Profile
 import coding.legaspi.caviteuser.databinding.ActivityProfileCreationBinding
 import coding.legaspi.caviteuser.presentation.di.Injector
-import coding.legaspi.caviteuser.presentation.home.HomeActivity
 import coding.legaspi.caviteuser.presentation.terms.TermsActivity
 import coding.legaspi.caviteuser.presentation.viewmodel.EventViewModel
 import coding.legaspi.caviteuser.presentation.viewmodel.EventViewModelFactory
 import coding.legaspi.caviteuser.utils.DialogHelper
 import coding.legaspi.caviteuser.utils.DialogHelperFactory
 import coding.legaspi.caviteuser.utils.FirebaseManager
+import coding.legaspi.caviteuser.utils.SharedPreferences
 import coding.legaspi.caviteuser.utils.VibrateView
 import java.io.File
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Date
 import javax.inject.Inject
@@ -57,7 +61,8 @@ class ProfileCreation : AppCompatActivity(), View.OnClickListener, View.OnFocusC
 
     val TAG = "Permission"
 
-    lateinit var selectedImageUri: Uri
+    //lateinit var selectedImageUri: Uri
+    private var selectedImageUri: Uri? = null
     lateinit var uriForCamera: Uri
 
     val data = listOf("Female", "Male")
@@ -120,11 +125,12 @@ class ProfileCreation : AppCompatActivity(), View.OnClickListener, View.OnFocusC
         if (validate()){
             val responseLiveData = loginViewModel.postProfile(Profile(address, age, formattedDate, firstname,selectedOption, lastname,  timestamp.toString(), userid))
             responseLiveData.observe(this, Observer {
-                if (it!=null){
-                    Log.d("ProfileCreation", "$it")
-                    if (it.body()?.userid!=null){
-                        FirebaseManager().saveImageToFirebase(this, it.body()?.userid.toString(), selectedImageUri){
+                when(it){
+                    is Result.Success<*> ->{
+                        val result = it.data as ProfileCreation
+                        FirebaseManager().saveImageToFirebase(this, result.userid, selectedImageUri!!){
                             if (it){
+                                SharedPreferences().saveCreation(this, "true")
                                 val intent = Intent(this, TermsActivity::class.java)
                                 intent.putExtra("userid", userid)
                                 startActivity(intent)
@@ -136,8 +142,46 @@ class ProfileCreation : AppCompatActivity(), View.OnClickListener, View.OnFocusC
                             }
                         }
                     }
-                }else{
-                    binding.progressBar.visibility = View.GONE
+                    is Result.Error ->{
+                        // Handle error
+                        val exception = it.exception
+                        // Show error message or handle error state
+                        if (exception is IOException) {
+                            // Handle network failure
+                            Log.e("Check Result", "${exception.localizedMessage}")
+                            binding.progressBar.visibility = View.GONE
+                            if (exception.localizedMessage!! == "timeout"){
+                                dialogHelper.showUnauthorized(
+                                    Error(
+                                        "Server error",
+                                        "Server is down or not reachable ${exception.message}"
+                                    )
+                                )
+                            } else{
+                                // Handle other exceptions
+                                dialogHelper.showUnauthorized(
+                                    Error(
+                                        "Error",
+                                        exception.localizedMessage!!
+                                    )
+                                )
+                                Log.d("Check Result", "Unauthorized")
+                            }
+                        } else {
+                            // Handle other exceptions
+                            binding.progressBar.visibility = View.GONE
+                            dialogHelper.showUnauthorized(
+                                Error(
+                                    "Error",
+                                    "Something went wrong!"
+                                )
+                            )
+                            Log.d("Check Result", "showGenericError")
+                        }
+                    }
+                    Result.Loading ->{
+                        binding.progressBar.visibility = View.VISIBLE
+                    }
                 }
             })
         }
@@ -352,6 +396,8 @@ class ProfileCreation : AppCompatActivity(), View.OnClickListener, View.OnFocusC
             if (result.resultCode == Activity.RESULT_OK) {
                 selectedImageUri = uriForCamera
                 binding.imgProfile.setImageURI(uriForCamera)
+                Log.d("SelectedImage", "Image: $uriForCamera")
+                Log.d("SelectedImage", "Image: $selectedImageUri")
             }
         }
 
@@ -387,35 +433,58 @@ class ProfileCreation : AppCompatActivity(), View.OnClickListener, View.OnFocusC
         pickImageActivityResultLauncher.launch(intent)
     }
 
+//    fun getPathFromURI(contentUri: Uri?): String? {
+//        var res: String? = null
+//
+//        val proj = arrayOf(MediaStore.Images.Media.DATA)
+//        val cursor: Cursor? = contentUri?.let { contentResolver.query(it, proj, null, null, null) }
+//        cursor?.use {
+//            if (it.moveToFirst()) {
+//                val column_index = it.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+//                res = it.getString(column_index)
+//            }
+//        }
+//
+//        return res
+//    }
+
     fun getPathFromURI(contentUri: Uri?): String? {
-        var res: String? = null
-
-        val proj = arrayOf(MediaStore.Images.Media.DATA)
-        val cursor: Cursor? = contentUri?.let { contentResolver.query(it, proj, null, null, null) }
-        cursor?.use {
-            if (it.moveToFirst()) {
-                val column_index = it.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
-                res = it.getString(column_index)
+        if (contentUri == null) return null
+        // Check if the URI is a content URI
+        if (contentUri.scheme == ContentResolver.SCHEME_CONTENT) {
+            // Try to query the MediaStore for the file path
+            val projection = arrayOf(MediaStore.Images.Media.DATA)
+            val cursor: Cursor? = this.contentResolver.query(contentUri, projection, null, null, null)
+            cursor?.use {
+                if (it.moveToFirst()) {
+                    val columnIndex = it.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+                    return it.getString(columnIndex)
+                }
             }
+        } else if (contentUri.scheme == ContentResolver.SCHEME_FILE) {
+            return contentUri.path
         }
-
-        return res
+        return null
     }
 
-    val pickImageActivityResultLauncher = registerForActivityResult(
+    private val pickImageActivityResultLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result: ActivityResult ->
         if (result.resultCode == Activity.RESULT_OK) {
             val data: Intent? = result.data
             val selected: Uri? = data?.data
-
-            val path = getPathFromURI(selected)
-            if (path != null) {
-                val file = File(path)
-                val newSelectedImageUri = Uri.fromFile(file)
-                selectedImageUri = newSelectedImageUri
-                binding.imgProfile.setImageURI(newSelectedImageUri)
-            }
+            Log.d("SelectedImage", "Image: $selected")
+            //val path = getPathFromURI(selected)
+            selectedImageUri = selected
+            binding.imgProfile.setImageURI(selected)
+           // Log.d("SelectedImage", "Image: $path")
+//            if (path != null) {
+//                val file = File(path)
+//                val newSelectedImageUri = Uri.fromFile(file)
+//                selectedImageUri = newSelectedImageUri
+//                binding.imgProfile.setImageURI(selectedImageUri)
+//                Log.d("SelectedImage", "Image: $selectedImageUri")
+//            }
         }
     }
 }

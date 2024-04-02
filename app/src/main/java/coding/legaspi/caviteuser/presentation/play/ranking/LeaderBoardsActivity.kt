@@ -22,6 +22,9 @@ import coding.legaspi.caviteuser.utils.FirebaseManager
 import coding.legaspi.caviteuser.utils.SharedPreferences
 import com.bumptech.glide.Glide
 import javax.inject.Inject
+import coding.legaspi.caviteuser.Result
+import coding.legaspi.caviteuser.data.model.error.Error
+import java.io.IOException
 
 class LeaderBoardsActivity : AppCompatActivity() {
 
@@ -54,18 +57,46 @@ class LeaderBoardsActivity : AppCompatActivity() {
     private fun setRv() {
         val responseLiveData = eventViewModel.getTopLeaderBoards()
         responseLiveData.observe(this, Observer {
-            if (it!=null){
-                rankingList.clear()
-                rankingList.addAll(it)
-                val llm = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
-                binding.rvRank.layoutManager = llm
-                binding.rvRank.adapter = leaderBoardsAdapter
-                binding.progressBar.visibility = GONE
-                binding.noData.visibility= GONE
-                leaderBoardsAdapter.notifyDataSetChanged()
-            }else{
-                binding.noData.visibility= VISIBLE
-                binding.rvRank.visibility= GONE
+            when(it){
+                is Result.Success<*> -> {
+                    val result = it.data as List<RankingOutput>
+                    if (result!=null){
+                        rankingList.clear()
+                        rankingList.addAll(result)
+                        val llm = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
+                        binding.rvRank.layoutManager = llm
+                        binding.rvRank.adapter = leaderBoardsAdapter
+                        binding.progressBar.visibility = GONE
+                        binding.noData.visibility= GONE
+                        leaderBoardsAdapter.notifyDataSetChanged()
+                    }else{
+                        binding.noData.visibility= VISIBLE
+                        binding.rvRank.visibility= GONE
+                    }
+                }
+                is Result.Error -> {
+                    val exception = it.exception
+
+                    if (exception is IOException) {
+                        binding.progressBar.visibility = GONE
+                        if (exception.localizedMessage!! == "timeout"){
+                            dialogHelper.showUnauthorized(
+                                Error(
+                                    "Server error",
+                                    "Server is down or not reachable ${exception.message}"
+                                )
+                            )
+                        } else{
+                            dialogHelper.showUnauthorized(Error("Error",exception.localizedMessage!!))
+                        }
+                    } else {
+                        binding.progressBar.visibility = GONE
+                        dialogHelper.showUnauthorized(Error("Error","Something went wrong!"))
+                    }
+                }
+                Result.Loading -> {
+                    binding.progressBar.visibility = VISIBLE
+                }
             }
         })
     }

@@ -12,6 +12,8 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import coding.legaspi.caviteuser.Result
+import coding.legaspi.caviteuser.data.model.error.Error
 import coding.legaspi.caviteuser.data.model.eventsoutput.AllModelOutput
 import coding.legaspi.caviteuser.databinding.ActivityRvEventBinding
 import coding.legaspi.caviteuser.presentation.di.Injector
@@ -19,6 +21,8 @@ import coding.legaspi.caviteuser.presentation.home.adapter.EventAdapter
 import coding.legaspi.caviteuser.presentation.menu.MenuActivity
 import coding.legaspi.caviteuser.presentation.viewmodel.EventViewModel
 import coding.legaspi.caviteuser.presentation.viewmodel.EventViewModelFactory
+import coding.legaspi.caviteuser.utils.DialogHelper
+import coding.legaspi.caviteuser.utils.DialogHelperFactory
 import java.io.IOException
 import javax.inject.Inject
 
@@ -33,6 +37,8 @@ class RvEventActivity : AppCompatActivity() {
     private lateinit var eventAdapter: EventAdapter
     private lateinit var allModelOutput: ArrayList<AllModelOutput>
 
+    private lateinit var dialogHelper: DialogHelper
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityRvEventBinding.inflate(layoutInflater)
@@ -44,7 +50,7 @@ class RvEventActivity : AppCompatActivity() {
         eventViewModel= ViewModelProvider(this, factory).get(EventViewModel::class.java)
         allModelOutput = arrayListOf()
         eventAdapter = EventAdapter(allModelOutput, this)
-
+        dialogHelper = DialogHelperFactory.create(this)
         setMenu()
         initRv()
         listenToSearch()
@@ -53,7 +59,7 @@ class RvEventActivity : AppCompatActivity() {
     private fun setCategory(name: String) {
         binding.llHistory.visibility = GONE
         binding.llContacts.visibility = GONE
-        binding.llPlaces.visibility = GONE
+        binding.llHotres.visibility = GONE
         binding.llFoods.visibility = GONE
         when(name){
             "History" -> {
@@ -64,9 +70,9 @@ class RvEventActivity : AppCompatActivity() {
                 binding.llFoods.visibility = VISIBLE
                 setBindingFoods()
             }
-            "Places To visit" -> {
-                binding.llPlaces.visibility = VISIBLE
-                setBindingVisit()
+            "Hotel & Resorts" -> {
+                binding.llHotres.visibility = VISIBLE
+                setBindingHotel()
             }
             "Emergency Care & Contacts" -> {
                 binding.llContacts.visibility = VISIBLE
@@ -90,14 +96,14 @@ class RvEventActivity : AppCompatActivity() {
         }
     }
 
-    private fun setBindingVisit() {
-        binding.park.setOnClickListener {
-            setRvCate("Park")
-            listenToByCatSearch("Park")
+    private fun setBindingHotel() {
+        binding.resort.setOnClickListener {
+            setRvCate("Resort")
+            listenToByCatSearch("Resort")
         }
-        binding.moralla.setOnClickListener {
-            setRvCate("Moralla")
-            listenToByCatSearch("Moralla")
+        binding.hotel.setOnClickListener {
+            setRvCate("Hotel")
+            listenToByCatSearch("Hotel")
         }
     }
 
@@ -155,18 +161,46 @@ class RvEventActivity : AppCompatActivity() {
                     try {
                         val responseLiveData = eventViewModel.searchCategory(query, name,category)
                         responseLiveData.observe(this@RvEventActivity, Observer {
-                            if (it!=null){
-                                allModelOutput.clear()
-                                allModelOutput.addAll(it)
-                                val llm = LinearLayoutManager(this@RvEventActivity, RecyclerView.VERTICAL, false)
-                                binding.epoxyRvAdd.layoutManager = llm
-                                binding.epoxyRvAdd.adapter = eventAdapter
-                                binding.progressBar.visibility = GONE
-                                eventAdapter.setSuggestions(it)
-                            }else{
-                                binding.noData.visibility= VISIBLE
-                                binding.epoxyRvAdd.visibility= GONE
-                                binding.progressBar.visibility = GONE
+                            when(it){
+                                is Result.Success<*> -> {
+                                    val result = it.data as List<AllModelOutput>
+                                    if (result!=null){
+                                        allModelOutput.clear()
+                                        allModelOutput.addAll(result)
+                                        val llm = LinearLayoutManager(this@RvEventActivity, RecyclerView.VERTICAL, false)
+                                        binding.epoxyRvAdd.layoutManager = llm
+                                        binding.epoxyRvAdd.adapter = eventAdapter
+                                        binding.progressBar.visibility = GONE
+                                        eventAdapter.setSuggestions(result)
+                                    }else{
+                                        binding.noData.visibility= VISIBLE
+                                        binding.epoxyRvAdd.visibility= GONE
+                                        binding.progressBar.visibility = GONE
+                                    }
+                                }
+                                is Result.Error -> {
+                                    val exception = it.exception
+
+                                    if (exception is IOException) {
+                                        binding.progressBar.visibility = GONE
+                                        if (exception.localizedMessage!! == "timeout"){
+                                            dialogHelper.showUnauthorized(
+                                                Error(
+                                                    "Server error",
+                                                    "Server is down or not reachable ${exception.message}"
+                                                )
+                                            )
+                                        } else{
+                                            dialogHelper.showUnauthorized(Error("Error",exception.localizedMessage!!))
+                                        }
+                                    } else {
+                                        binding.progressBar.visibility = GONE
+                                        dialogHelper.showUnauthorized(Error("Error","Something went wrong!"))
+                                    }
+                                }
+                                Result.Loading -> {
+                                    binding.progressBar.visibility = VISIBLE
+                                }
                             }
                         })
                     } catch (e: IOException) {
@@ -198,26 +232,54 @@ class RvEventActivity : AppCompatActivity() {
         try {
             val responseLiveData = eventViewModel.searchCategory(newText, name,category)
             responseLiveData.observe(this, Observer {
-                if (it!=null){
-                    if (it.isEmpty()){
-                        binding.progressBar.visibility = GONE
-                        binding.noData.visibility= VISIBLE
-                        binding.epoxyRvAdd.visibility= GONE
-                        binding.noData.text = "Sorry no data about $newText!"
-                    }else{
-                        allModelOutput.clear()
-                        allModelOutput.addAll(it)
-                        val llm = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
-                        binding.epoxyRvAdd.layoutManager = llm
-                        binding.epoxyRvAdd.adapter = eventAdapter
-                        binding.progressBar.visibility = GONE
-                        binding.noData.visibility = GONE
-                        eventAdapter.setSuggestions(it)
+                when(it){
+                    is Result.Success<*> -> {
+                        val result = it.data as List<AllModelOutput>
+                        if (result!=null){
+                            if (result.isEmpty()){
+                                binding.progressBar.visibility = GONE
+                                binding.noData.visibility= VISIBLE
+                                binding.epoxyRvAdd.visibility= GONE
+                                binding.noData.text = "Sorry no data about $newText!"
+                            }else{
+                                allModelOutput.clear()
+                                allModelOutput.addAll(result)
+                                val llm = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
+                                binding.epoxyRvAdd.layoutManager = llm
+                                binding.epoxyRvAdd.adapter = eventAdapter
+                                binding.progressBar.visibility = GONE
+                                binding.noData.visibility = GONE
+                                eventAdapter.setSuggestions(result)
+                            }
+                        }else{
+                            binding.progressBar.visibility = GONE
+                            binding.noData.visibility= VISIBLE
+                            binding.epoxyRvAdd.visibility= GONE
+                        }
                     }
-                }else{
-                    binding.progressBar.visibility = GONE
-                    binding.noData.visibility= VISIBLE
-                    binding.epoxyRvAdd.visibility= GONE
+                    is Result.Error -> {
+                        val exception = it.exception
+
+                        if (exception is IOException) {
+                            binding.progressBar.visibility = GONE
+                            if (exception.localizedMessage!! == "timeout"){
+                                dialogHelper.showUnauthorized(
+                                    Error(
+                                        "Server error",
+                                        "Server is down or not reachable ${exception.message}"
+                                    )
+                                )
+                            } else{
+                                dialogHelper.showUnauthorized(Error("Error",exception.localizedMessage!!))
+                            }
+                        } else {
+                            binding.progressBar.visibility = GONE
+                            dialogHelper.showUnauthorized(Error("Error","Something went wrong!"))
+                        }
+                    }
+                    Result.Loading -> {
+                        binding.progressBar.visibility = VISIBLE
+                    }
                 }
             })
         } catch (e: IOException) {
@@ -233,29 +295,68 @@ class RvEventActivity : AppCompatActivity() {
             val responseLiveData = eventViewModel.getCategory(category)
             try {
                 responseLiveData.observe(this, Observer {
-                    if (it!=null){
-                        if (it.isEmpty()){
-                            binding.noData.visibility=VISIBLE
-                            binding.epoxyRvAdd.visibility= GONE
-                            binding.labelWelcome.text = "No list for $category"
-                            Log.e("EPOXY", "EMPTY 1")
-                        }else{
-                            allModelOutput.clear()
-                            allModelOutput.addAll(it)
-                            val llm = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
-                            binding.epoxyRvAdd.layoutManager = llm
-                            binding.epoxyRvAdd.adapter = eventAdapter
-                            binding.labelWelcome.text = "Category $category"
-                            binding.noData.visibility=GONE
-                            binding.epoxyRvAdd.visibility= VISIBLE
-                            eventAdapter.notifyDataSetChanged()
-                            Log.d("EPOXY", "NOT EMPTY 1")
+                    when(it){
+                        is Result.Success<*> -> {
+                            val result = it.data as List<AllModelOutput>
+                            if (result!=null){
+                                if (result.isEmpty()){
+                                    binding.noData.visibility=VISIBLE
+                                    binding.epoxyRvAdd.visibility= GONE
+                                    binding.labelWelcome.text = "No list for $category"
+                                    Log.e("EPOXY", "EMPTY 1")
+                                }else{
+                                    allModelOutput.clear()
+                                    allModelOutput.addAll(result)
+                                    val llm = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
+                                    binding.epoxyRvAdd.layoutManager = llm
+                                    binding.epoxyRvAdd.adapter = eventAdapter
+                                    binding.labelWelcome.text = "Category $category"
+                                    binding.noData.visibility=GONE
+                                    binding.epoxyRvAdd.visibility= VISIBLE
+                                    eventAdapter.notifyDataSetChanged()
+                                    Log.d("EPOXY", "NOT EMPTY 1")
+                                }
+                            }else{
+                                Log.e("EPOXY", "EMPTY 2")
+                                binding.noData.visibility=VISIBLE
+                                binding.epoxyRvAdd.visibility= GONE
+                                Log.d("RvEvent", "Null")
+                            }
                         }
-                    }else{
-                        Log.e("EPOXY", "EMPTY 2")
-                        binding.noData.visibility=VISIBLE
-                        binding.epoxyRvAdd.visibility= GONE
-                        Log.d("RvEvent", "Null")
+                        is Result.Error -> {
+                            val exception = it.exception
+                            if (exception is IOException) {
+                                Log.e("Check Result", "${exception.localizedMessage}")
+                                binding.progressBar.visibility = GONE
+                                if (exception.localizedMessage!! == "timeout"){
+                                    dialogHelper.showUnauthorized(
+                                        Error(
+                                            "Server error",
+                                            "Server is down or not reachable ${exception.message}"
+                                        )
+                                    )
+                                } else{
+                                    dialogHelper.showUnauthorized(
+                                        Error(
+                                            "Error",
+                                            exception.localizedMessage!!
+                                        )
+                                    )
+                                }
+                            } else {
+                                // Handle other exceptions
+                                binding.progressBar.visibility = GONE
+                                dialogHelper.showUnauthorized(
+                                    Error(
+                                        "Error",
+                                        "Something went wrong!"
+                                    )
+                                )
+                            }
+                        }
+                        Result.Loading -> {
+
+                        }
                     }
                 })
             }catch (e: Exception){
@@ -272,7 +373,7 @@ class RvEventActivity : AppCompatActivity() {
         initRv()
         binding.rrMid.visibility = GONE
         when(name){
-            "History", "Foods","Places To visit","Emergency Care & Contacts"  -> {
+            "History", "Foods","Hotel & Resorts","Emergency Care & Contacts"  -> {
                 binding.rrMid.visibility = VISIBLE
                 setCategory(name)
             }
@@ -298,24 +399,52 @@ class RvEventActivity : AppCompatActivity() {
         val responseLiveData = eventViewModel.getEventsByCategory(name)
         try {
             responseLiveData.observe(this, Observer {
-                if (it!=null){
-                    if (it.isEmpty()){
-                        binding.noData.visibility=VISIBLE
-                        binding.epoxyRvAdd.visibility= GONE
-                        binding.labelWelcome.text = "No list for $name"
-                    }else{
-                        allModelOutput.clear()
-                        allModelOutput.addAll(it)
-                        val llm = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
-                        binding.epoxyRvAdd.layoutManager = llm
-                        binding.epoxyRvAdd.adapter = eventAdapter
-                        binding.labelWelcome.text = "Category all"
-                        eventAdapter.notifyDataSetChanged()
+                when(it){
+                    is Result.Success<*> -> {
+                        val result = it.data as List<AllModelOutput>
+                        if (result!=null){
+                            if (result.isEmpty()){
+                                binding.noData.visibility=VISIBLE
+                                binding.epoxyRvAdd.visibility= GONE
+                                binding.labelWelcome.text = "No list for $name"
+                            }else{
+                                allModelOutput.clear()
+                                allModelOutput.addAll(result)
+                                val llm = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
+                                binding.epoxyRvAdd.layoutManager = llm
+                                binding.epoxyRvAdd.adapter = eventAdapter
+                                binding.labelWelcome.text = "Category all"
+                                eventAdapter.notifyDataSetChanged()
+                            }
+                        }else{
+                            binding.noData.visibility=VISIBLE
+                            binding.epoxyRvAdd.visibility= GONE
+                            Log.d("RvEvent", "Null")
+                        }
                     }
-                }else{
-                    binding.noData.visibility=VISIBLE
-                    binding.epoxyRvAdd.visibility= GONE
-                    Log.d("RvEvent", "Null")
+                    is Result.Error -> {
+                        val exception = it.exception
+
+                        if (exception is IOException) {
+                            binding.progressBar.visibility = GONE
+                            if (exception.localizedMessage!! == "timeout"){
+                                dialogHelper.showUnauthorized(
+                                    Error(
+                                        "Server error",
+                                        "Server is down or not reachable ${exception.message}"
+                                    )
+                                )
+                            } else{
+                                dialogHelper.showUnauthorized(Error("Error",exception.localizedMessage!!))
+                            }
+                        } else {
+                            binding.progressBar.visibility = GONE
+                            dialogHelper.showUnauthorized(Error("Error","Something went wrong!"))
+                        }
+                    }
+                    Result.Loading -> {
+                        binding.progressBar.visibility = VISIBLE
+                    }
                 }
             })
         }catch (e: Exception){
@@ -331,18 +460,45 @@ class RvEventActivity : AppCompatActivity() {
                     try {
                         val responseLiveData = eventViewModel.searchEvents(query, name)
                         responseLiveData.observe(this@RvEventActivity, Observer {
-                            if (it!=null){
-                                allModelOutput.clear()
-                                allModelOutput.addAll(it)
-                                val llm = LinearLayoutManager(this@RvEventActivity, RecyclerView.VERTICAL, false)
-                                binding.epoxyRvAdd.layoutManager = llm
-                                binding.epoxyRvAdd.adapter = eventAdapter
-                                binding.progressBar.visibility = GONE
-                                eventAdapter.setSuggestions(it)
-                            }else{
-                                binding.noData.visibility= VISIBLE
-                                binding.epoxyRvAdd.visibility= GONE
-                                binding.progressBar.visibility = GONE
+                            when(it){
+                                is Result.Success<*> -> {
+                                    val result = it.data as List<AllModelOutput>
+                                    if (result!=null){
+                                        allModelOutput.clear()
+                                        allModelOutput.addAll(result)
+                                        val llm = LinearLayoutManager(this@RvEventActivity, RecyclerView.VERTICAL, false)
+                                        binding.epoxyRvAdd.layoutManager = llm
+                                        binding.epoxyRvAdd.adapter = eventAdapter
+                                        binding.progressBar.visibility = GONE
+                                        eventAdapter.setSuggestions(result)
+                                    }else{
+                                        binding.noData.visibility= VISIBLE
+                                        binding.epoxyRvAdd.visibility= GONE
+                                        binding.progressBar.visibility = GONE
+                                    }
+                                }
+                                is Result.Error -> {
+                                    val exception = it.exception
+                                    if (exception is IOException) {
+                                        binding.progressBar.visibility = GONE
+                                        if (exception.localizedMessage!! == "timeout"){
+                                            dialogHelper.showUnauthorized(
+                                                Error(
+                                                    "Server error",
+                                                    "Server is down or not reachable ${exception.message}"
+                                                )
+                                            )
+                                        } else{
+                                            dialogHelper.showUnauthorized(Error("Error",exception.localizedMessage!!))
+                                        }
+                                    } else {
+                                        binding.progressBar.visibility = GONE
+                                        dialogHelper.showUnauthorized(Error("Error","Something went wrong!"))
+                                    }
+                                }
+                                Result.Loading -> {
+                                    binding.progressBar.visibility = VISIBLE
+                                }
                             }
                         })
                     } catch (e: IOException) {
@@ -374,26 +530,54 @@ class RvEventActivity : AppCompatActivity() {
         try {
             val responseLiveData = eventViewModel.searchEvents(newText, name)
             responseLiveData.observe(this, Observer {
-                if (it!=null){
-                    if (it.isEmpty()){
-                        binding.progressBar.visibility = GONE
-                        binding.noData.visibility= VISIBLE
-                        binding.epoxyRvAdd.visibility= GONE
-                        binding.noData.text = "Sorry no data about $newText!"
-                    }else{
-                        allModelOutput.clear()
-                        allModelOutput.addAll(it)
-                        val llm = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
-                        binding.epoxyRvAdd.layoutManager = llm
-                        binding.epoxyRvAdd.adapter = eventAdapter
-                        binding.progressBar.visibility = GONE
-                        binding.noData.visibility = GONE
-                        eventAdapter.setSuggestions(it)
+                when(it){
+                    is Result.Success<*> -> {
+                        val result = it.data as List<AllModelOutput>
+                        if (result!=null){
+                            if (result.isEmpty()){
+                                binding.progressBar.visibility = GONE
+                                binding.noData.visibility= VISIBLE
+                                binding.epoxyRvAdd.visibility= GONE
+                                binding.noData.text = "Sorry no data about $newText!"
+                            }else{
+                                allModelOutput.clear()
+                                allModelOutput.addAll(result)
+                                val llm = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
+                                binding.epoxyRvAdd.layoutManager = llm
+                                binding.epoxyRvAdd.adapter = eventAdapter
+                                binding.progressBar.visibility = GONE
+                                binding.noData.visibility = GONE
+                                eventAdapter.setSuggestions(result)
+                            }
+                        }else{
+                            binding.progressBar.visibility = GONE
+                            binding.noData.visibility= VISIBLE
+                            binding.epoxyRvAdd.visibility= GONE
+                        }
                     }
-                }else{
-                    binding.progressBar.visibility = GONE
-                    binding.noData.visibility= VISIBLE
-                    binding.epoxyRvAdd.visibility= GONE
+                    is Result.Error -> {
+                        val exception = it.exception
+
+                        if (exception is IOException) {
+                            binding.progressBar.visibility = GONE
+                            if (exception.localizedMessage!! == "timeout"){
+                                dialogHelper.showUnauthorized(
+                                    Error(
+                                        "Server error",
+                                        "Server is down or not reachable ${exception.message}"
+                                    )
+                                )
+                            } else{
+                                dialogHelper.showUnauthorized(Error("Error",exception.localizedMessage!!))
+                            }
+                        } else {
+                            binding.progressBar.visibility = GONE
+                            dialogHelper.showUnauthorized(Error("Error","Something went wrong!"))
+                        }
+                    }
+                    Result.Loading -> {
+                        binding.progressBar.visibility = VISIBLE
+                    }
                 }
             })
         } catch (e: IOException) {

@@ -65,6 +65,7 @@ dependencies {
     implementation ("com.google.android.gms:play-services-location:21.0.1")
     implementation ("com.github.prabhat1707:EasyWayLocation:2.4")
     implementation("com.android.volley:volley:1.2.1")
+
     val lifecycle_version = "2.6.1"
     val arch_version = "2.2.0"
     val room_version = "2.5.2"

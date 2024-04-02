@@ -11,7 +11,6 @@ import javax.inject.Singleton
 @Module
 class RemoteDataModule {
 
-
     @Singleton
     @Provides
     fun provideAllEventRemoteDataSource(tmdbService: TMDBService): AllEventsRemoteDataSource {

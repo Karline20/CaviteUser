@@ -8,6 +8,9 @@
     <color name="colorPrimaryDark">#469CB3</color>
     <color name="colorAccent">#2b616f</color>
     <color name="colorMainText">#2b616f</color>
+    <color name="colorMiddle">#007D9E</color>
+    <color name="colorFirst">#00A3CD</color>
+    <color name="colorEnd">#2b616f</color>
     <color name="colorSecondaryText">#44354E</color>
     <color name="colorDefaultBackground">#EEEEEE</color>
     <color name="colorDialogSurroundingBg">#88000000</color>

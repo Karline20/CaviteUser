@@ -92,7 +92,10 @@ class MenuActivity : AppCompatActivity() {
                                     Error(
                                         "Server error",
                                         "Server is down or not reachable ${exception.localizedMessage}"
-                                    )
+                                    ),
+                                    positiveButtonFunction = {
+                                        recreate()
+                                    }
                                 )
                             } else{
                                 // Handle other exceptions
@@ -101,7 +104,9 @@ class MenuActivity : AppCompatActivity() {
                                     Error(
                                         "Error",
                                         exception.localizedMessage!!
-                                    )
+                                    ),
+                                    positiveButtonFunction = {
+                                    }
                                 )
                                 Log.d("Check Result", "Unauthorized")
                             }
@@ -113,7 +118,10 @@ class MenuActivity : AppCompatActivity() {
                                 Error(
                                     "Error",
                                     "$exception"
-                                )
+                                ),
+                                positiveButtonFunction = {
+
+                                }
                             )
                             Log.d("Check Result", "showGenericError")
                         }

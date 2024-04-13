@@ -20,6 +20,7 @@ import coding.legaspi.caviteuser.data.model.tutorial.TutorialStatus
 import coding.legaspi.caviteuser.domain.getusecase.GetEventsUseCase
 import kotlinx.coroutines.Dispatchers
 import coding.legaspi.caviteuser.Result
+import coding.legaspi.caviteuser.data.model.profile.ProfileOutput
 import java.io.IOException
 
 class EventViewModel(
@@ -65,33 +66,6 @@ class EventViewModel(
             Log.e("Check Result", "exception $exception")
         }
     }
-
-    fun postEvents(events: AllModel) = liveData {
-        val events = getEventsUseCase.postEvents(events)
-        emit(events)
-    }
-
-    fun getAllEvents() = liveData {
-        val getAllEvents = getEventsUseCase.getAllEvents()
-        emit(getAllEvents)
-    }
-
-    fun delEventsById(id: String) = liveData {
-        val delEventsById = getEventsUseCase.delEventsById(id)
-        emit(delEventsById)
-    }
-
-    //patch
-    fun patchEventsById(id: String, allModel: AllModel) = liveData {
-        val patchEventsById = getEventsUseCase.patchEventsById(id, allModel)
-        emit(patchEventsById)
-    }
-
-    fun countAllEvents() = liveData {
-        val countAllEvents = getEventsUseCase.countAllEvents()
-        emit(countAllEvents)
-    }
-
     fun getEventsById(id: String) = liveData(Dispatchers.IO) {
         try {
             val getEventsById = getEventsUseCase.getEventsById(id)
@@ -161,21 +135,6 @@ class EventViewModel(
         }
     }
 
-    fun averageRating(eventid: String) = liveData {
-        val averageRating = getEventsUseCase.averageRating(eventid)
-        emit(averageRating)
-    }
-
-    fun checkExistenceRating(existence: Existence) = liveData {
-        val checkExistenceRating = getEventsUseCase.checkExistenceRating(existence)
-        emit(checkExistenceRating)
-    }
-
-    fun getRating() = liveData {
-        val getRating = getEventsUseCase.getRating()
-        emit(getRating)
-    }
-
     fun searchEvents(searchQuery: String, eventCategory: String) = liveData {
         try {
             val searchEvents = getEventsUseCase.searchEvents(searchQuery, eventCategory)
@@ -206,6 +165,8 @@ class EventViewModel(
                 // Emit the response body if the request was successful
                 getByUserid.body()?.let {
                     emit(Result.Success(it))
+                } ?: run {
+                    emit(Result.Success(ProfileOutput("", "", "", "", "", "", "", "", "")))
                 }
             } else {
                 // Emit an error if the request was not successful
@@ -303,11 +264,6 @@ class EventViewModel(
         emit(checkRanking)
     }
 
-    fun getIdByuserid(userid: String) = liveData {
-        val getIdByuserid = getEventsUseCase.getIdByuserid(userid)
-        emit(getIdByuserid)
-    }
-
     fun patchRank(id: String, patchRank: PatchRank) = liveData {
         val patchRank = getEventsUseCase.patchRank(id, patchRank)
         emit(patchRank)
@@ -320,6 +276,8 @@ class EventViewModel(
                 // Emit the response body if the request was successful
                 user.body()?.let {
                     emit(Result.Success(it))
+                } ?: run {
+                    emit(Result.Success(ProfileOutput("", "", "", "", "", "", "", "", "")))
                 }
             } else {
                 // Emit an error if the request was not successful
@@ -334,11 +292,6 @@ class EventViewModel(
             emit(Result.Error(exception))
             Log.e("Check Result", "exception $exception")
         }
-    }
-
-    fun patchProfile(userid: String, profile: Profile) = liveData {
-        val profile = getEventsUseCase.patchProfile(userid, profile)
-        emit(profile)
     }
 
     fun getLoginEventUseCase(loginBody: LoginBody) = liveData(Dispatchers.IO) {
@@ -379,16 +332,6 @@ class EventViewModel(
             // Handle other exceptions
             emit(Result.Error(exception))
         }
-    }
-
-    fun updateEmailVerified(id: String, emailVerified: EmailVerified) = liveData {
-        val update = getEventsUseCase.updateEmailVerified(id, emailVerified)
-        emit(update)
-    }
-
-    fun isEmailVerified(id: String) = liveData {
-        val isVerified = getEventsUseCase.isEmailVerified(id)
-        emit(isVerified)
     }
 
     fun postProfile(profile: Profile) = liveData(Dispatchers.IO) {
@@ -444,8 +387,15 @@ class EventViewModel(
     }
 
     fun getFavorites(userid: String) = liveData {
-        val getFavorites = getEventsUseCase.getFavorites(userid)
-        emit(getFavorites)
+        try {
+            val getFavorites = getEventsUseCase.getFavorites(userid)
+            emit(Result.Success(getFavorites))
+        } catch (ioException: IOException) {
+            emit(Result.Error(ioException))
+        } catch (exception: Exception) {
+            emit(Result.Error(exception))
+        }
+
     }
 
     fun checkExistenceFavorites(existence: Existence) = liveData {
@@ -453,24 +403,9 @@ class EventViewModel(
         emit(checkExistenceFavorites)
     }
 
-    fun postAbout(aboutUs: AboutUs) = liveData {
-        val postAbout = getEventsUseCase.postAbout(aboutUs)
-        emit(postAbout)
-    }
-
     fun getAboutUs(id: String) = liveData {
         val getAboutUs = getEventsUseCase.getAboutUs(id)
         emit(getAboutUs)
-    }
-
-    fun patchAboutUs(id: String, aboutUs: AboutUs) = liveData {
-        val patchAboutUs = getEventsUseCase.patchAboutUs(id, aboutUs)
-        emit(patchAboutUs)
-    }
-
-    fun postTerms(terms: Terms) = liveData {
-        val postTerms = getEventsUseCase.postTerms(terms)
-        emit(postTerms)
     }
 
     fun getTerms(id: String) = liveData {
@@ -478,31 +413,15 @@ class EventViewModel(
         emit(getTerms)
     }
 
-    fun patchTerms(id: String, terms: Terms) = liveData {
-        val patchTerms = getEventsUseCase.patchTerms(id, terms)
-        emit(patchTerms)
-    }
-
-    fun postResearch(researchers: Researchers) = liveData {
-        val postResearch = getEventsUseCase.postResearch(researchers)
-        emit(postResearch)
-    }
-
     fun getReserachers() = liveData {
-        val getReserachers = getEventsUseCase.getReserachers()
-        emit(getReserachers)
-    }
+        try {
+            val getReserachers = getEventsUseCase.getReserachers()
+            emit(Result.Success(getReserachers))
+        } catch (ioException: IOException) {
+            emit(Result.Error(ioException))
+        } catch (exception: Exception) {
+            emit(Result.Error(exception))
+        }
 
-    fun patchResearchers(
-        id: String,
-        researchers: Researchers
-    ) = liveData {
-        val patchResearchers = getEventsUseCase.patchResearchers(id, researchers)
-        emit(patchResearchers)
-    }
-
-    fun deleteResearchers(id: String) = liveData {
-        val deleteResearchers = getEventsUseCase.deleteResearchers(id)
-        emit(deleteResearchers)
     }
 }

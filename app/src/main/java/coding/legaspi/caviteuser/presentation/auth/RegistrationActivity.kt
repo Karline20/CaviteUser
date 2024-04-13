@@ -104,14 +104,20 @@ class RegistrationActivity : AppCompatActivity(), View.OnClickListener, View.OnF
                                         Error(
                                             "Server error",
                                             "Server is down or not reachable ${exception.message}"
-                                        )
+                                        ),
+                                        positiveButtonFunction = {
+                                            recreate()
+                                        }
                                     )
                                 } else{
                                     dialogHelper.showUnauthorized(
                                         Error(
                                             "Error",
                                             exception.localizedMessage!!
-                                        )
+                                        ),
+                                        positiveButtonFunction = {
+
+                                        }
                                     )
                                 }
                             } else {
@@ -120,7 +126,10 @@ class RegistrationActivity : AppCompatActivity(), View.OnClickListener, View.OnF
                                     Error(
                                         "Error",
                                         "Something went wrong!"
-                                    )
+                                    ),
+                                    positiveButtonFunction = {
+
+                                    }
                                 )
                             }
                         }
@@ -165,7 +174,10 @@ class RegistrationActivity : AppCompatActivity(), View.OnClickListener, View.OnF
                     dialogHelper.showEmailVerification("Email Verification", "Please check your email.")
                 }else{
                     registrationBinding.progressBar.visibility = GONE
-                    dialogHelper.showUnauthorized(Error("Invalid!", "Email is already taken..."))
+                    dialogHelper.showUnauthorized(Error("Invalid!", "Email is already taken..."),
+                        positiveButtonFunction = {
+
+                        })
                 }
             }
         }

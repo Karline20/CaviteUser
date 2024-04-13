@@ -91,7 +91,10 @@ class RatingActivity : AppCompatActivity() {
                                 Error(
                                     "Server error",
                                     "Server is down or not reachable ${exception.localizedMessage}"
-                                )
+                                ),
+                                positiveButtonFunction = {
+                                    recreate()
+                                }
                             )
                         } else{
                             // Handle other exceptions
@@ -100,7 +103,10 @@ class RatingActivity : AppCompatActivity() {
                                 Error(
                                     "Error",
                                     exception.localizedMessage!!
-                                )
+                                ),
+                                positiveButtonFunction = {
+
+                                }
                             )
                             Log.d("Check Result", "Unauthorized")
                         }
@@ -112,7 +118,10 @@ class RatingActivity : AppCompatActivity() {
                             Error(
                                 "Error",
                                 "$exception"
-                            )
+                            ),
+                            positiveButtonFunction = {
+                                recreate()
+                            }
                         )
                         Log.d("Check Result", "showGenericError")
                     }
@@ -194,14 +203,20 @@ class RatingActivity : AppCompatActivity() {
                                     Error(
                                         "Server error",
                                         "Server is down or not reachable ${exception.message}"
-                                    )
+                                    ),
+                                    positiveButtonFunction = {
+                                        recreate()
+                                    }
                                 )
                             } else{
                                 dialogHelper.showUnauthorized(
                                     Error(
                                         "Error",
                                         exception.localizedMessage!!
-                                    )
+                                    ),
+                                    positiveButtonFunction = {
+
+                                    }
                                 )
                             }
                         } else {
@@ -210,7 +225,10 @@ class RatingActivity : AppCompatActivity() {
                                 Error(
                                     "Error",
                                     "Something went wrong!"
-                                )
+                                ),
+                                positiveButtonFunction = {
+
+                                }
                             )
                             Log.d("Check Result", "showGenericError")
                         }

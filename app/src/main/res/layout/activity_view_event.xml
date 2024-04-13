@@ -82,19 +82,11 @@
                         android:layout_marginRight="10dp"/>
 
                     <ImageView
-                        android:id="@+id/viewMap"
-                        android:layout_width="25dp"
-                        android:layout_height="25dp"
-                        android:src="@drawable/outline_map_24"
-                        android:layout_marginRight="10dp"
-                        android:layout_toEndOf="@+id/favorites"/>
-
-                    <ImageView
                         android:id="@+id/rate"
                         android:layout_width="25dp"
                         android:layout_height="25dp"
                         android:src="@drawable/outline_star_rate_24"
-                        android:layout_toEndOf="@+id/viewMap"/>
+                        android:layout_toEndOf="@+id/favorites"/>
 
                 </RelativeLayout>
 
@@ -164,7 +156,7 @@
                 android:id="@+id/label_address"
                 android:layout_width="250dp"
                 android:layout_height="wrap_content"
-                android:textSize="12sp"
+                android:textSize="15sp"
                 android:text="Address"
                 android:textColor="@color/Red"
                 android:layout_marginLeft="10dp"
@@ -184,6 +176,36 @@
                 android:layout_below="@id/label_address"
                 />
 
+            <RelativeLayout
+                android:id="@+id/rrl_map"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/shape_rec_07"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_below="@+id/txt_address">
+                <fragment
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:background="@drawable/shape_rec_07"
+                    android:id="@+id/map"
+                    android:name="com.google.android.gms.maps.SupportMapFragment"/>
+
+                <TextView
+                    android:id="@+id/show_route"
+                    android:layout_width="250dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="15sp"
+                    android:text="Show route"
+                    android:textColor="@color/Red"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_below="@id/map"
+                    android:fontFamily="@font/barlow_bold"
+                    />
+
+            </RelativeLayout>
             <TextView
                 android:id="@+id/label_date"
                 android:layout_width="wrap_content"
@@ -218,7 +240,7 @@
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"
                 android:background="@color/coolGrayColor"
-                android:layout_below="@+id/txt_address"
+                android:layout_below="@+id/rrl_map"
                 android:layout_marginRight="10dp"
                 android:layout_marginLeft="10dp"/>
 

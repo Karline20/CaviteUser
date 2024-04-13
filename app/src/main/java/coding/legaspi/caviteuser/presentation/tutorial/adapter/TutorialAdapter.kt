@@ -69,13 +69,22 @@ class TutorialAdapter(
                                 Error(
                                     "Server error",
                                     "Server is down or not reachable ${exception.message}"
-                                )
+                                ),
+                                positiveButtonFunction = {
+
+                                }
                             )
                         } else{
-                            dialogHelper.showUnauthorized(Error("Error",exception.localizedMessage!!))
+                            dialogHelper.showUnauthorized(Error("Error",exception.localizedMessage!!),
+                                positiveButtonFunction = {
+
+                                })
                         }
                     } else {
-                        dialogHelper.showUnauthorized(Error("Error","Something went wrong!"))
+                        dialogHelper.showUnauthorized(Error("Error","Something went wrong!"),
+                            positiveButtonFunction = {
+
+                            })
                     }
                 }
                 Result.Loading -> {

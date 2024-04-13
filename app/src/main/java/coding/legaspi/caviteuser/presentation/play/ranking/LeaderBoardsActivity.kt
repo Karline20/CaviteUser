@@ -49,6 +49,8 @@ class LeaderBoardsActivity : AppCompatActivity() {
         leaderBoardsAdapter = LeaderBoardsAdapter(rankingList, this)
         binding.progressBar.visibility = VISIBLE
 
+        binding.loggedInTopNav.labelTitle.text = "Leaderboards"
+
         setButton()
         setProfile()
         setRv()
@@ -84,14 +86,23 @@ class LeaderBoardsActivity : AppCompatActivity() {
                                 Error(
                                     "Server error",
                                     "Server is down or not reachable ${exception.message}"
-                                )
+                                ),
+                                positiveButtonFunction = {
+                                    recreate()
+                                }
                             )
                         } else{
-                            dialogHelper.showUnauthorized(Error("Error",exception.localizedMessage!!))
+                            dialogHelper.showUnauthorized(Error("Error",exception.localizedMessage!!),
+                                positiveButtonFunction = {
+
+                                })
                         }
                     } else {
                         binding.progressBar.visibility = GONE
-                        dialogHelper.showUnauthorized(Error("Error","Something went wrong!"))
+                        dialogHelper.showUnauthorized(Error("Error","Something went wrong!"),
+                            positiveButtonFunction = {
+
+                            })
                     }
                 }
                 Result.Loading -> {

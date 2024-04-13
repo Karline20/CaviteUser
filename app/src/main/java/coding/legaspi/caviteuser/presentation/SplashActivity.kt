@@ -68,7 +68,6 @@ class SplashActivity : AppCompatActivity() {
             Log.i("Check Result", "Checking $token")
             try{
                 Log.d("Check Result", "try")
-                if (checkCreation == "true"){
                     val responseLiveData = loginViewModel.getUserId(userid.toString())
                     responseLiveData.observe(this, Observer {
                         Log.i("Check Result", "Checking $it")
@@ -77,18 +76,26 @@ class SplashActivity : AppCompatActivity() {
                                 // Handle success
                                 val user = it.data as ProfileOutput
                                 // Update UI with user data
-                                Log.i("Check Result", "Success $user")
-                                if (checkTerms == "true"){
-                                    binding.progressBar.visibility = GONE
-                                    val intent = Intent(this, TermsActivity::class.java)
-                                    startActivity(intent)
-                                    finish()
+                                if (user.id.isNotEmpty()){
+                                    Log.i("Check Result", "Success $user")
+                                    if (checkTerms == "true"){
+                                        binding.progressBar.visibility = GONE
+                                        val intent = Intent(this, TermsActivity::class.java)
+                                        startActivity(intent)
+                                        finish()
+                                    }else{
+                                        binding.progressBar.visibility = GONE
+                                        val intent = Intent(this, HomeActivity::class.java)
+                                        startActivity(intent)
+                                        finish()
+                                    }
                                 }else{
-                                    binding.progressBar.visibility = GONE
-                                    val intent = Intent(this, HomeActivity::class.java)
+                                    val intent = Intent(this, ProfileCreation::class.java)
+                                    intent.putExtra("userid", userid)
                                     startActivity(intent)
                                     finish()
                                 }
+
                             }
                             is Result.Error -> {
                                 // Handle error
@@ -100,30 +107,29 @@ class SplashActivity : AppCompatActivity() {
                                     binding.progressBar.visibility = GONE
                                     if (exception.localizedMessage!! == "timeout"){
                                         dialogHelper.showUnauthorized(
-                                            Error(
-                                                "Server error",
-                                                "Server is down or not reachable ${exception.message}"
-                                            )
-                                        )
+                                            Error("Server error", "Server is down or not reachable ${exception.message}"),
+                                            positiveButtonFunction = {
+                                            recreate()
+                                        })
+
+                                        //restart()
                                     } else{
                                         // Handle other exceptions
-                                        dialogHelper.showUnauthorized(
-                                            Error(
-                                                "Error",
-                                                exception.localizedMessage!!
-                                            )
-                                        )
+                                        dialogHelper.showUnauthorized(Error("Error", exception.localizedMessage!!),
+                                            positiveButtonFunction = {
+
+                                            })
+                                        //restart()
                                         Log.d("Check Result", "Unauthorized")
                                     }
                                 } else {
                                     // Handle other exceptions
                                     binding.progressBar.visibility = GONE
-                                    dialogHelper.showUnauthorized(
-                                        Error(
-                                            "Error",
-                                            "Something went wrong!"
-                                        )
-                                    )
+                                    dialogHelper.showUnauthorized(Error("Error", "Something went wrong!"),
+                                        positiveButtonFunction = {
+
+                                        })
+                                    //restart()
                                     Log.d("Check Result", "showGenericError")
                                 }
                             }
@@ -134,12 +140,6 @@ class SplashActivity : AppCompatActivity() {
                             }
                         }
                     })
-                }else{
-                    val intent = Intent(this, ProfileCreation::class.java)
-                    intent.putExtra("userid", userid)
-                    startActivity(intent)
-                    finish()
-                }
             }catch (e: Exception){
                 Log.e("Check Result", "Exception $e")
             }
@@ -149,5 +149,9 @@ class SplashActivity : AppCompatActivity() {
             startActivity(intent)
             finish()
         }
+    }
+
+    private fun restart(){
+        recreate()
     }
 }

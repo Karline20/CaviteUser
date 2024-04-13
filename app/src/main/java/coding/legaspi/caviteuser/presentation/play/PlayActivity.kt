@@ -38,6 +38,7 @@ import javax.inject.Inject
 import kotlin.random.Random
 import coding.legaspi.caviteuser.Result
 import coding.legaspi.caviteuser.data.model.error.Error
+import coding.legaspi.caviteuser.data.model.profile.ProfileOutput
 import coding.legaspi.caviteuser.data.model.ranking.RankingOutput
 import java.io.IOException
 
@@ -74,6 +75,18 @@ class PlayActivity : AppCompatActivity() {
 
         dialogHelper = DialogHelperFactory.create(this)
 
+        activityPlayBinding.loggedInTopNav.rrlFirst.visibility = GONE
+        activityPlayBinding.loggedInTopNav.labelTitle.text = "Pronunciation quiz"
+
+        setBottomButton()
+        setProfile()
+        setPlay()
+        setButton()
+        getName()
+    }
+
+    override fun onResume() {
+        super.onResume()
         setBottomButton()
         setProfile()
         setPlay()
@@ -85,12 +98,43 @@ class PlayActivity : AppCompatActivity() {
         val (token, userId) = SharedPreferences().checkToken(this)
         val responseLiveData = eventViewModel.getUserId(userId!!)
         responseLiveData.observe(this, Observer {
-//            if (it.isSuccessful){
-//                if (it!=null){
-//                    firstname = it.body()?.firstname.toString()
-//                    lastname = it.body()?.lastname.toString()
-//                }
-//            }
+            when(it){
+                is Result.Success<*> -> {
+                    val result = it.data as ProfileOutput
+                    if (result!=null){
+                        firstname = result.firstname
+                        lastname = result.lastname
+                    }
+
+                }
+                is Result.Error -> {
+                    val exception = it.exception
+                    if (exception is IOException) {
+                        if (exception.localizedMessage!! == "timeout"){
+                            dialogHelper.showUnauthorized(
+                                Error(
+                                    "Server error",
+                                    "Server is down or not reachable ${exception.message}"
+                                ),
+                                positiveButtonFunction = {
+                                    recreate()
+                                }
+                            )
+                        } else{
+                            dialogHelper.showUnauthorized(Error("Error",exception.localizedMessage!!),
+                                positiveButtonFunction = {
+
+                                })
+                        }
+                    } else {
+                        dialogHelper.showUnauthorized(Error("Error","Something went wrong!"),
+                            positiveButtonFunction = {
+                            })
+                    }
+                }
+                Result.Loading -> {
+                }
+            }
         })
     }
 
@@ -105,22 +149,31 @@ class PlayActivity : AppCompatActivity() {
     }
 
     private fun setPlay() {
-        dialogHelper.tutorial("Pronunciation quiz", "Do you want to play with us?", "Play", "Quit"){
-            if(it){
+        dialogHelper.play(this,
+            "Pronunciation quiz",
+            "Use headphones for improved voice recognition and clearer voice. \n Do you want to play with us?",
+            "Play",
+            "Quit",
+            positiveButtonFunction = {
                 countSpeechNumber = 0
                 timerToStart()
-            }else{
-                dialogHelper.showLogout("Quit", "Are you sure you want to quit?", "Yes", "No" ){
-                    if (it){
+            },
+            negativeButtonFunction = {
+                dialogHelper.showLogout("Quit", "Are you sure you want to quit?", "Yes", "No" ) {
+                    if (it) {
                         val intent = Intent(this, HomeActivity::class.java)
                         startActivity(intent)
                         finish()
-                    }else{
+                    } else {
                         setPlay()
                     }
                 }
+            },
+            leaderBoardsButtonFunction = {
+                val intent = Intent(this, LeaderBoardsActivity::class.java)
+                startActivity(intent)
             }
-        }
+        )
     }
 
     private fun timerToStart() {
@@ -195,8 +248,12 @@ class PlayActivity : AppCompatActivity() {
             }
             if (generatedNumbers.size > 10) {
                 println("Reached 10 unique numbers. Stopping.")
-                dialogHelper.tutorial("Game set!", "Your total score is $correctCount/10", "Okay", "Quit"){
-                    if (it){
+                dialogHelper.play(this,
+                    "Game set!",
+                    "Your total score is $correctCount/10",
+                    "Okay",
+                    "Quit",
+                    positiveButtonFunction = {
                         activityPlayBinding.progressBar.visibility = VISIBLE
                         val currentTimeMillis = System.currentTimeMillis()
                         val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
@@ -218,43 +275,24 @@ class PlayActivity : AppCompatActivity() {
                             }else{
                                 val responseLiveData = eventViewModel.postRank(Ranking(formattedDate, "$firstname, $lastname", correctCount, currentTimeMillis.toString(), userId!!))
                                 responseLiveData.observe(this, Observer {
-                                    when(it){
-                                        is Result.Success<*> -> {
-                                            val result = it.data as RankingOutput
-                                            if (result!=null){
-                                                activityPlayBinding.progressBar.visibility = GONE
-                                                setPlay()
-                                            }
-                                        }
-                                        is Result.Error -> {
-                                            val exception = it.exception
-
-                                            if (exception is IOException) {
-                                                activityPlayBinding.progressBar.visibility = GONE
-                                                if (exception.localizedMessage!! == "timeout"){
-                                                    dialogHelper.showUnauthorized(
-                                                        Error("Server error", "Server is down or not reachable ${exception.message}"))
-                                                } else{
-                                                    dialogHelper.showUnauthorized(Error("Error",exception.localizedMessage!!))
-                                                }
-                                            } else {
-                                                activityPlayBinding.progressBar.visibility = GONE
-                                                dialogHelper.showUnauthorized(Error("Error","Something went wrong!"))
-                                            }
-                                        }
-                                        Result.Loading -> {
-                                            activityPlayBinding.progressBar.visibility = VISIBLE
-                                        }
+                                    if (it!=null){
+                                        activityPlayBinding.progressBar.visibility = GONE
+                                        setPlay()
                                     }
                                 })
                             }
                         })
-                    }else{
+                    },
+                    negativeButtonFunction = {
                         val intent = Intent(this, HomeActivity::class.java)
                         startActivity(intent)
                         finish()
+                    },
+                    leaderBoardsButtonFunction = {
+                        val intent = Intent(this, LeaderBoardsActivity::class.java)
+                        startActivity(intent)
                     }
-                }
+                )
             }
         }
     }

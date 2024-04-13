@@ -61,6 +61,9 @@ class EventAdapter(
         incrementPos(position, id, holder, posAndId)
 
         holder.itemView.setOnClickListener {
+
+        }
+        holder.label_read.setOnClickListener {
             val intent = Intent(context, ViewEventActivity::class.java)
             intent.putExtra("id", id)
             context.startActivity(intent)
@@ -126,6 +129,7 @@ class EventAdapter(
         val label_category: TextView = itemView.findViewById(R.id.label_category)
         val label_description: TextView = itemView.findViewById(R.id.label_description)
         val txt_address: TextView = itemView.findViewById(R.id.txt_address)
+        val label_read: TextView = itemView.findViewById(R.id.label_read)
         val label_date: TextView = itemView.findViewById(R.id.label_date)
         val epoxy_image: RecyclerView = itemView.findViewById(R.id.epoxy_image)
     }

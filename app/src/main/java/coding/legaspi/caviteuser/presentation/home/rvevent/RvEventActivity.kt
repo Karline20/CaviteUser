@@ -12,6 +12,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import coding.legaspi.caviteuser.R
 import coding.legaspi.caviteuser.Result
 import coding.legaspi.caviteuser.data.model.error.Error
 import coding.legaspi.caviteuser.data.model.eventsoutput.AllModelOutput
@@ -23,6 +24,9 @@ import coding.legaspi.caviteuser.presentation.viewmodel.EventViewModel
 import coding.legaspi.caviteuser.presentation.viewmodel.EventViewModelFactory
 import coding.legaspi.caviteuser.utils.DialogHelper
 import coding.legaspi.caviteuser.utils.DialogHelperFactory
+import coding.legaspi.caviteuser.utils.FirebaseManager
+import coding.legaspi.caviteuser.utils.SharedPreferences
+import com.bumptech.glide.Glide
 import java.io.IOException
 import javax.inject.Inject
 
@@ -51,9 +55,32 @@ class RvEventActivity : AppCompatActivity() {
         allModelOutput = arrayListOf()
         eventAdapter = EventAdapter(allModelOutput, this)
         dialogHelper = DialogHelperFactory.create(this)
+        binding.loggedInTopNav.rrlFirst.visibility = GONE
+        binding.loggedInTopNav.labelTitle.text = "$name"
+
+        setProfile()
         setMenu()
         initRv()
         listenToSearch()
+    }
+
+    private fun setProfile() {
+        val (token, userId) = SharedPreferences().checkToken(this)
+        if (userId != null){
+            Log.d("HomeActivity", "userId: $userId")
+            FirebaseManager().fetchProfileFromFirebase(userId){
+                if (it!=null){
+                    Glide.with(this)
+                        .load(it.imageUri)
+                        .placeholder(R.drawable.baseline_broken_image_24)
+                        .error(R.drawable.baseline_broken_image_24)
+                        .into(binding.loggedInTopNav.imgProfile)
+                    Log.d("HomeActivity", "if")
+                }else{
+                    Log.d("HomeActivity", "else")
+                }
+            }
+        }
     }
 
     private fun setCategory(name: String) {
@@ -61,6 +88,7 @@ class RvEventActivity : AppCompatActivity() {
         binding.llContacts.visibility = GONE
         binding.llHotres.visibility = GONE
         binding.llFoods.visibility = GONE
+        binding.llSchool.visibility = GONE
         when(name){
             "History" -> {
                 binding.llHistory.visibility = VISIBLE
@@ -78,8 +106,36 @@ class RvEventActivity : AppCompatActivity() {
                 binding.llContacts.visibility = VISIBLE
                 setBindingContacts()
             }
+            "Schools" -> {
+                binding.llSchool.visibility = VISIBLE
+                setBindingSchool()
+            }
         }
     }
+
+    private fun setBindingSchool() {
+        binding.elementary.setOnClickListener {
+            setRvCate("Elementary")
+            listenToByCatSearch("Elementary")
+        }
+        binding.highschool.setOnClickListener {
+            setRvCate("Highschool")
+            listenToByCatSearch("Highschool")
+        }
+        binding.college.setOnClickListener {
+            setRvCate("College")
+            listenToByCatSearch("College")
+        }
+        binding.vocational.setOnClickListener {
+            setRvCate("Vocational")
+            listenToByCatSearch("Vocational")
+        }
+        binding.other.setOnClickListener {
+            setRvCate("Other")
+            listenToByCatSearch("Other")
+        }
+    }
+
 
     private fun setBindingHistory() {
         binding.heroes.setOnClickListener {
@@ -188,14 +244,21 @@ class RvEventActivity : AppCompatActivity() {
                                                 Error(
                                                     "Server error",
                                                     "Server is down or not reachable ${exception.message}"
-                                                )
+                                                ),
+                                                positiveButtonFunction = {
+                                                    recreate()
+                                                }
                                             )
                                         } else{
-                                            dialogHelper.showUnauthorized(Error("Error",exception.localizedMessage!!))
+                                            dialogHelper.showUnauthorized(Error("Error",exception.localizedMessage!!),
+                                                positiveButtonFunction = {
+                                                })
                                         }
                                     } else {
                                         binding.progressBar.visibility = GONE
-                                        dialogHelper.showUnauthorized(Error("Error","Something went wrong!"))
+                                        dialogHelper.showUnauthorized(Error("Error","Something went wrong!"),
+                                            positiveButtonFunction = {
+                                            })
                                     }
                                 }
                                 Result.Loading -> {
@@ -267,14 +330,23 @@ class RvEventActivity : AppCompatActivity() {
                                     Error(
                                         "Server error",
                                         "Server is down or not reachable ${exception.message}"
-                                    )
+                                    ),
+                                    positiveButtonFunction = {
+                                        recreate()
+                                    }
                                 )
                             } else{
-                                dialogHelper.showUnauthorized(Error("Error",exception.localizedMessage!!))
+                                dialogHelper.showUnauthorized(Error("Error",exception.localizedMessage!!),
+                                    positiveButtonFunction = {
+
+                                    })
                             }
                         } else {
                             binding.progressBar.visibility = GONE
-                            dialogHelper.showUnauthorized(Error("Error","Something went wrong!"))
+                            dialogHelper.showUnauthorized(Error("Error","Something went wrong!"),
+                                positiveButtonFunction = {
+
+                                })
                         }
                     }
                     Result.Loading -> {
@@ -333,14 +405,20 @@ class RvEventActivity : AppCompatActivity() {
                                         Error(
                                             "Server error",
                                             "Server is down or not reachable ${exception.message}"
-                                        )
+                                        ),
+                                        positiveButtonFunction = {
+                                            recreate()
+                                        }
                                     )
                                 } else{
                                     dialogHelper.showUnauthorized(
                                         Error(
                                             "Error",
                                             exception.localizedMessage!!
-                                        )
+                                        ),
+                                        positiveButtonFunction = {
+
+                                        }
                                     )
                                 }
                             } else {
@@ -350,7 +428,9 @@ class RvEventActivity : AppCompatActivity() {
                                     Error(
                                         "Error",
                                         "Something went wrong!"
-                                    )
+                                    ),
+                                    positiveButtonFunction = {
+                                    }
                                 )
                             }
                         }
@@ -432,14 +512,23 @@ class RvEventActivity : AppCompatActivity() {
                                     Error(
                                         "Server error",
                                         "Server is down or not reachable ${exception.message}"
-                                    )
+                                    ),
+                                    positiveButtonFunction = {
+                                        recreate()
+                                    }
                                 )
                             } else{
-                                dialogHelper.showUnauthorized(Error("Error",exception.localizedMessage!!))
+                                dialogHelper.showUnauthorized(Error("Error",exception.localizedMessage!!),
+                                    positiveButtonFunction = {
+
+                                    })
                             }
                         } else {
                             binding.progressBar.visibility = GONE
-                            dialogHelper.showUnauthorized(Error("Error","Something went wrong!"))
+                            dialogHelper.showUnauthorized(Error("Error","Something went wrong!"),
+                                positiveButtonFunction = {
+
+                                })
                         }
                     }
                     Result.Loading -> {
@@ -486,14 +575,23 @@ class RvEventActivity : AppCompatActivity() {
                                                 Error(
                                                     "Server error",
                                                     "Server is down or not reachable ${exception.message}"
-                                                )
+                                                ),
+                                                positiveButtonFunction = {
+                                                    recreate()
+                                                }
                                             )
                                         } else{
-                                            dialogHelper.showUnauthorized(Error("Error",exception.localizedMessage!!))
+                                            dialogHelper.showUnauthorized(Error("Error",exception.localizedMessage!!),
+                                                positiveButtonFunction = {
+
+                                                })
                                         }
                                     } else {
                                         binding.progressBar.visibility = GONE
-                                        dialogHelper.showUnauthorized(Error("Error","Something went wrong!"))
+                                        dialogHelper.showUnauthorized(Error("Error","Something went wrong!"),
+                                            positiveButtonFunction = {
+
+                                            })
                                     }
                                 }
                                 Result.Loading -> {
@@ -565,14 +663,23 @@ class RvEventActivity : AppCompatActivity() {
                                     Error(
                                         "Server error",
                                         "Server is down or not reachable ${exception.message}"
-                                    )
+                                    ),
+                                    positiveButtonFunction = {
+                                        recreate()
+                                    }
                                 )
                             } else{
-                                dialogHelper.showUnauthorized(Error("Error",exception.localizedMessage!!))
+                                dialogHelper.showUnauthorized(Error("Error",exception.localizedMessage!!),
+                                    positiveButtonFunction = {
+
+                                    })
                             }
                         } else {
                             binding.progressBar.visibility = GONE
-                            dialogHelper.showUnauthorized(Error("Error","Something went wrong!"))
+                            dialogHelper.showUnauthorized(Error("Error","Something went wrong!"),
+                                positiveButtonFunction = {
+
+                                })
                         }
                     }
                     Result.Loading -> {

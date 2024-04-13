@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:background="?attr/stylish_alert_bg_drawable"
+    android:layoutDirection="ltr">
+
+    <LinearLayout
+        android:id="@+id/loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:minWidth="@dimen/alert_width"
+        android:orientation="vertical"
+        android:paddingLeft="30dp"
+        android:paddingTop="10dp"
+        android:paddingRight="30dp"
+        android:paddingBottom="15dp">
+
+        <FrameLayout
+            android:id="@+id/success_frame"
+            android:layout_width="53dp"
+            android:layout_height="53dp"
+            android:layout_marginTop="5dp"
+            android:visibility="visible">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/success_circle" />
+
+            <View
+                android:id="@+id/mask_right"
+                android:layout_width="35dp"
+                android:layout_height="80dp"
+                android:layout_gravity="right"
+                android:layout_marginTop="-13dp"
+                android:background="@android:color/transparent" />
+
+            <View
+                android:id="@+id/mask_left"
+                android:layout_width="21dp"
+                android:layout_height="60dp"
+                android:layout_gravity="left"
+                android:layout_marginLeft="-3dp"
+                android:background="@android:color/transparent" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/success_circle" />
+
+            <com.marsad.stylishdialogs.SuccessView
+                android:id="@+id/success_tick"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/title_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:gravity="center"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:textSize="19sp"
+            android:visibility="visible"
+            tools:text="Title"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/content_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:maxLines="1000"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:textAlignment="center"
+            android:textSize="16sp"
+            android:visibility="visible"
+            tools:text="Lorem Ipsum is simply dummy text of the printing and typesetting industry"
+            tools:visibility="visible" />
+
+        <FrameLayout
+            android:id="@+id/custom_view_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:visibility="visible"
+            tools:text="message \n message \n message"
+            tools:visibility="visible">
+
+            <!---->
+        </FrameLayout>
+
+        <LinearLayout
+            android:id="@+id/buttons_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingTop="10dp"
+            android:paddingBottom="4dp"
+            android:visibility="visible">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/cancel_button"
+                style="@style/dialog_blue_button"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/btn_bg_red"
+                android:visibility="visible"
+                tools:text="cancel"
+                tools:visibility="visible" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/neutral_button"
+                style="@style/dialog_blue_button"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/btn_bg_gray"
+                android:visibility="gone"
+                tools:text="neutral"
+                tools:visibility="gone" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/confirm_button"
+                style="@style/dialog_blue_button"
+                android:text="@string/dialog_ok"
+                android:contentDescription="@string/dialog_ok"
+                android:visibility="visible" />
+        </LinearLayout>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/leaderboards_button"
+            style="@style/dialog_blue_button"
+            android:layout_marginTop="10dp"
+            android:text="Leaderboards"
+            android:contentDescription="@string/dialog_ok"
+            android:visibility="visible" />
+
+    </LinearLayout>
+
+</FrameLayout>

@@ -85,10 +85,12 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
                     is Result.Success<*> -> {
                         val login = it.data as LoginBodyOutput
                         Log.d("aws", "Login 1 ${login.id}")
+                        Log.d("aws", "emailVerified 1 ${login.emailVerified}")
+                        Log.d("aws", "username 1 ${login.username}")
                         if (login.emailVerified) {
                             if (login.username == "user") {
                                 checkProfile(login.id, login.token)
-                                Log.d("Login", "Login 1 ${login.id}")
+                                Log.d("aws", "Login 2 ${login.id}")
                             }
                         } else if (!login.emailVerified) {
                             loginBinding.progressBar.visibility = GONE
@@ -96,7 +98,10 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
                                 Error(
                                     "Email verification",
                                     "Please verify your email first"
-                                )
+                                ),
+                                positiveButtonFunction = {
+
+                                }
                             )
                         }
                     }
@@ -113,7 +118,10 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
                                     Error(
                                         "Server error",
                                         "Server is down or not reachable ${exception.localizedMessage}"
-                                    )
+                                    ),
+                                    positiveButtonFunction = {
+                                        recreate()
+                                    }
                                 )
                             } else{
                                 // Handle other exceptions
@@ -121,8 +129,11 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
                                 dialogHelper.showUnauthorized(
                                     Error(
                                         "Error",
-                                        exception.localizedMessage!!
-                                    )
+                                        "Wrong credentials!"
+                                    ),
+                                    positiveButtonFunction = {
+
+                                    }
                                 )
                                 Log.d("Check Result", "Unauthorized")
                             }
@@ -134,7 +145,10 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
                                 Error(
                                     "Error",
                                     "$exception"
-                                )
+                                ),
+                                positiveButtonFunction = {
+
+                                }
                             )
                             Log.d("Check Result", "showGenericError")
                         }
@@ -157,7 +171,8 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
                 when(it){
                     is Result.Success<*> -> {
                         val profile = it.data as ProfileOutput
-                        if (profile != null && profile.id != null){
+                        Log.d("aws", "profile 1 $profile")
+                        if (profile.id.isNotEmpty()){
                             SharedPreferences().saveToken(this, token, userid)
                             val intent = Intent(this, HomeActivity::class.java)
                             intent.putExtra("userid", userid)
@@ -187,7 +202,10 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
                                     Error(
                                         "Server error",
                                         "Server is down or not reachable ${exception.localizedMessage}"
-                                    )
+                                    ),
+                                    positiveButtonFunction = {
+                                        recreate()
+                                    }
                                 )
                             } else{
                                 // Handle other exceptions
@@ -196,7 +214,10 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
                                     Error(
                                         "Error",
                                         exception.localizedMessage!!
-                                    )
+                                    ),
+                                    positiveButtonFunction = {
+
+                                    }
                                 )
                                 Log.d("Check Result", "Unauthorized")
                             }
@@ -208,7 +229,10 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
                                 Error(
                                     "Error",
                                     "$exception"
-                                )
+                                ),
+                                positiveButtonFunction = {
+
+                                }
                             )
                             Log.d("Check Result", "showGenericError")
                         }

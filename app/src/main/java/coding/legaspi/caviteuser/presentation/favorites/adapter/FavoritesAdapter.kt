@@ -95,14 +95,20 @@ class FavoritesAdapter(
                                 Error(
                                     "Server error",
                                     "Server is down or not reachable ${exception.message}"
-                                )
+                                ),
+                                positiveButtonFunction = {
+
+                                }
                             )
                         } else{
                             dialogHelper.showUnauthorized(
                                 Error(
                                     "Error",
                                     exception.localizedMessage!!
-                                )
+                                ),
+                                positiveButtonFunction = {
+
+                                }
                             )
                         }
                     } else {
@@ -110,7 +116,10 @@ class FavoritesAdapter(
                             Error(
                                 "Error",
                                 "Something went wrong!"
-                            )
+                            ),
+                            positiveButtonFunction = {
+
+                            }
                         )
                         Log.d("Check Result", "showGenericError")
                     }
@@ -142,13 +151,22 @@ class FavoritesAdapter(
                                 Error(
                                     "Server error",
                                     "Server is down or not reachable ${exception.message}"
-                                )
+                                ),
+                                positiveButtonFunction = {
+
+                                }
                             )
                         } else{
-                            dialogHelper.showUnauthorized(Error("Error",exception.localizedMessage!!))
+                            dialogHelper.showUnauthorized(Error("Error",exception.localizedMessage!!),
+                                positiveButtonFunction = {
+
+                                })
                         }
                     } else {
-                        dialogHelper.showUnauthorized(Error("Error","Something went wrong!"))
+                        dialogHelper.showUnauthorized(Error("Error","Something went wrong!"),
+                            positiveButtonFunction = {
+
+                            })
                     }
                 }
                 Result.Loading -> {

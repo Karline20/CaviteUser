@@ -54,7 +54,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="20sp"
-            android:text="LeaderBoards"
+            android:text="Top 10"
             android:textColor="@color/Red"
             android:textStyle="bold"
             android:layout_marginTop="10dp"

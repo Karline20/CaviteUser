@@ -65,6 +65,8 @@ dependencies {
     implementation ("com.google.android.gms:play-services-location:21.0.1")
     implementation ("com.github.prabhat1707:EasyWayLocation:2.4")
     implementation("com.android.volley:volley:1.2.1")
+    implementation ("com.akexorcist:google-direction-library:1.2.1")
+
 
     val lifecycle_version = "2.6.1"
     val arch_version = "2.2.0"
@@ -82,6 +84,7 @@ dependencies {
     val stylishDialogsVersion = "1.0.0"
     val ratingVersion = "1.0.0"
     val lottieVersion = "3.4.0"
+    val imageSlideVersion = "0.1.2"
 
 
     // ViewModel
@@ -124,6 +127,7 @@ dependencies {
     implementation ("com.github.mmmelik:RoundedImageView:$rounderImageVersion")
     implementation ("com.squareup.picasso:picasso:$picassoVersion")
     implementation ("com.github.MarsadMaqsood:StylishDialogs:$stylishDialogsVersion")
+    implementation ("com.github.denzcoskun:ImageSlideshow:$imageSlideVersion")
 
     implementation ("com.github.KaelLi1989:NiceRatingBar:$ratingVersion")
 

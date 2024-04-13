@@ -189,6 +189,20 @@
                 app:iconSize="24dp" />
 
 
+            <TextView
+                android:id="@+id/logout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="30dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="10dp"
+                android:text="Logout"
+                android:textColor="@color/coolGrayColor"
+                android:textSize="20sp"
+                android:fontFamily="@font/barlow_regular"/>
+
         </LinearLayout>
 
     </RelativeLayout>

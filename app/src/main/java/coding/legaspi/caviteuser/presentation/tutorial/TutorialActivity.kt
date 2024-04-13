@@ -57,10 +57,14 @@ class TutorialActivity : AppCompatActivity() {
         tutorialList = arrayListOf()
         tutorialAdapter = TutorialAdapter(tutorialList, this@TutorialActivity, this, eventViewModel)
         binding.progressBar.visibility = VISIBLE
+
+        binding.loggedInTopNav.rrlFirst.visibility = GONE
+        binding.loggedInTopNav.labelTitle.text = "Chabacano Tutorial"
         setBottomButton()
         setProfile()
         setRv()
         setMenu()
+
     }
 
     override fun onResume() {
@@ -111,14 +115,24 @@ class TutorialActivity : AppCompatActivity() {
                                 Error(
                                     "Server error",
                                     "Server is down or not reachable ${exception.message}"
-                                )
+                                ),
+                                positiveButtonFunction = {
+                                    recreate()
+                                }
                             )
                         } else{
-                            dialogHelper.showUnauthorized(Error("Error",exception.localizedMessage!!))
+                            dialogHelper.showUnauthorized(Error("Error",exception.localizedMessage!!)
+                                ,
+                                positiveButtonFunction = {
+
+                                })
                         }
                     } else {
                         binding.progressBar.visibility = GONE
-                        dialogHelper.showUnauthorized(Error("Error","Something went wrong!"))
+                        dialogHelper.showUnauthorized(Error("Error","Something went wrong!"),
+                            positiveButtonFunction = {
+
+                            })
                     }
                 }
                 Result.Loading -> {

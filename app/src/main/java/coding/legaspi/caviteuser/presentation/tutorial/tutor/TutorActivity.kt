@@ -70,6 +70,7 @@ class TutorActivity : AppCompatActivity() {
         tutorialExactPos = intent.getStringExtra("tutorialExactPos").toString()
         tutorBinding.progressMusic.visibility = GONE
         tutorBinding.llCongrats.visibility = GONE
+        tutorBinding.loggedInTopNav.labelTitle.text = tutorial
         tutorBinding.loggedInTopNav.back.setOnClickListener {
             onBackPressed()
             finish()
@@ -171,14 +172,23 @@ class TutorActivity : AppCompatActivity() {
                                 Error(
                                     "Server error",
                                     "Server is down or not reachable ${exception.message}"
-                                )
+                                ),
+                                positiveButtonFunction = {
+                                    recreate()
+                                }
                             )
                         } else{
-                            dialogHelper.showUnauthorized(Error("Error",exception.localizedMessage!!))
+                            dialogHelper.showUnauthorized(Error("Error",exception.localizedMessage!!)
+                                ,
+                                positiveButtonFunction = {
+
+                                })
                         }
                     } else {
                         tutorBinding.progressBar.visibility = GONE
-                        dialogHelper.showUnauthorized(Error("Error","Something went wrong!"))
+                        dialogHelper.showUnauthorized(Error("Error","Something went wrong!"),
+                            positiveButtonFunction = {
+                            })
                     }
                 }
                 Result.Loading -> {

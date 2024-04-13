@@ -28,6 +28,12 @@ import coding.legaspi.caviteuser.utils.SharedPreferences
 import com.bumptech.glide.Glide
 import java.util.UUID
 import javax.inject.Inject
+import coding.legaspi.caviteuser.Result
+import coding.legaspi.caviteuser.data.model.error.Error
+import coding.legaspi.caviteuser.utils.DialogHelper
+import coding.legaspi.caviteuser.utils.DialogHelperFactory
+import coding.legaspi.caviteuser.utils.DialogHelperImpl
+import java.io.IOException
 
 class AboutActivity : AppCompatActivity() {
 
@@ -37,15 +43,21 @@ class AboutActivity : AppCompatActivity() {
     private lateinit var binding : ActivityAboutBinding
     private lateinit var researchersOutput: ArrayList<ResearchersOutput>
     private lateinit var aboutAdapter: AboutAdapter
+    private lateinit var dialogHelper: DialogHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAboutBinding.inflate(layoutInflater)
         val view = binding.root
+        dialogHelper = DialogHelperFactory.create(this)
         (application as Injector).createEventsSubComponent().inject(this)
         eventViewModel = ViewModelProvider(this, factory).get(EventViewModel::class.java)
         researchersOutput = arrayListOf()
         aboutAdapter = AboutAdapter(researchersOutput,this )
+
+        binding.loggedInTopNav.rrlFirst.visibility = GONE
+        binding.loggedInTopNav.labelTitle.text = "About us"
+
         setContentView(view)
         setBottomButton()
         setProfile()
@@ -70,18 +82,52 @@ class AboutActivity : AppCompatActivity() {
     private fun setRvResearcher() {
         val responseLiveData = eventViewModel.getReserachers()
         responseLiveData.observe(this, Observer{
-            if (it!=null){
-                if (it.isEmpty()){
-                    binding.noData.visibility = VISIBLE
-                    binding.rvResearcher.visibility = GONE
-                }else{
-                    researchersOutput.clear()
-                    researchersOutput.addAll(it)
-                    val llm = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
-                    binding.rvResearcher.layoutManager = llm
-                    binding.rvResearcher.adapter = aboutAdapter
-                    binding.noData.visibility=GONE
-                    aboutAdapter.notifyDataSetChanged()
+            when(it){
+                is Result.Success<*> -> {
+                    val result = it.data as List<ResearchersOutput>
+                    if (result!=null){
+                        if (result.isEmpty()){
+                            binding.noData.visibility = VISIBLE
+                            binding.rvResearcher.visibility = GONE
+                        }else{
+                            researchersOutput.clear()
+                            researchersOutput.addAll(result)
+                            val llm = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
+                            binding.rvResearcher.layoutManager = llm
+                            binding.rvResearcher.adapter = aboutAdapter
+                            binding.noData.visibility=GONE
+                            aboutAdapter.notifyDataSetChanged()
+                        }
+                    }
+                }
+                is Result.Error -> {
+                    val exception = it.exception
+
+                    if (exception is IOException) {
+                        if (exception.localizedMessage!! == "timeout"){
+                            dialogHelper.showUnauthorized(
+                                Error(
+                                    "Server error",
+                                    "Server is down or not reachable ${exception.message}"
+                                ),
+                                positiveButtonFunction = {
+                                    recreate()
+                                }
+                            )
+                        } else{
+                            dialogHelper.showUnauthorized(Error("Error",exception.localizedMessage!!),
+                                positiveButtonFunction = {
+
+                                })
+                        }
+                    } else {
+                        dialogHelper.showUnauthorized(Error("Error","Something went wrong!"),
+                            positiveButtonFunction = {
+
+                            })
+                    }
+                }
+                Result.Loading -> {
                 }
             }
         })

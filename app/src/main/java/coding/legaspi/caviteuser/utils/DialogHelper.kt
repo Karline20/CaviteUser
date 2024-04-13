@@ -1,11 +1,12 @@
 package coding.legaspi.caviteuser.utils
 
+import android.content.Context
 import coding.legaspi.caviteuser.data.model.error.Error
 import coding.legaspi.caviteuser.data.model.error.Unauthorized
 
 interface DialogHelper {
 
-    fun showUnauthorized(error: Error)
+    fun showUnauthorized(error: Error, positiveButtonFunction: () -> Unit)
 
     fun showError(error: Error)
 
@@ -30,6 +31,11 @@ interface DialogHelper {
                  confirm: String,
                  cancel: String,
                  callback: (Boolean) -> Unit)
+
+    fun play(context: Context, title: String, content: String, confirm: String, cancel: String,
+             positiveButtonFunction: () -> Unit,
+             negativeButtonFunction: () -> Unit,
+             leaderBoardsButtonFunction: () -> Unit)
 
     fun wrong(title: String,
               content: String,

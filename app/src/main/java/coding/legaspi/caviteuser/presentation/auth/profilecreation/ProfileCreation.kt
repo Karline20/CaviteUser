@@ -28,7 +28,9 @@ import coding.legaspi.caviteuser.R
 import coding.legaspi.caviteuser.Result
 import coding.legaspi.caviteuser.data.model.error.Error
 import coding.legaspi.caviteuser.data.model.profile.Profile
+import coding.legaspi.caviteuser.data.model.profile.ProfileOutput
 import coding.legaspi.caviteuser.databinding.ActivityProfileCreationBinding
+import coding.legaspi.caviteuser.presentation.auth.LoginActivity
 import coding.legaspi.caviteuser.presentation.di.Injector
 import coding.legaspi.caviteuser.presentation.terms.TermsActivity
 import coding.legaspi.caviteuser.presentation.viewmodel.EventViewModel
@@ -91,6 +93,7 @@ class ProfileCreation : AppCompatActivity(), View.OnClickListener, View.OnFocusC
         binding.etlast.onFocusChangeListener = this
         binding.etaddress.onFocusChangeListener = this
         binding.etAge.onFocusChangeListener = this
+        binding.logout.setOnClickListener(this)
 
 
         listentToSpinner()
@@ -112,6 +115,24 @@ class ProfileCreation : AppCompatActivity(), View.OnClickListener, View.OnFocusC
                 R.id.imgProfile ->{
                     listenToCamera()
                 }
+                R.id.logout -> {
+                    try {
+                        dialogHelper.showLogout("Logout", "Are you sure you want to logout?", "Yes", "Cancel"){
+                            if (it){
+                                binding.progressBar.visibility=VISIBLE
+                                SharedPreferences().deleteToken(this)
+                                val intent = Intent(this, LoginActivity::class.java)
+                                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                                startActivity(intent)
+                                finish()
+                                binding.progressBar.visibility= View.GONE
+                            }
+                        }
+                    } catch (e: Exception) {
+                        Toast.makeText(this, "Can't logout...", Toast.LENGTH_SHORT).show()
+                    }
+
+                }
             }
         }
     }
@@ -127,18 +148,21 @@ class ProfileCreation : AppCompatActivity(), View.OnClickListener, View.OnFocusC
             responseLiveData.observe(this, Observer {
                 when(it){
                     is Result.Success<*> ->{
-                        val result = it.data as ProfileCreation
-                        FirebaseManager().saveImageToFirebase(this, result.userid, selectedImageUri!!){
-                            if (it){
-                                SharedPreferences().saveCreation(this, "true")
-                                val intent = Intent(this, TermsActivity::class.java)
-                                intent.putExtra("userid", userid)
-                                startActivity(intent)
-                                binding.progressBar.visibility = View.GONE
-                                finish()
-                            }else{
-                                binding.progressBar.visibility = View.GONE
-                                Toast.makeText(this, "Check you internet connection!", Toast.LENGTH_SHORT).show()
+                        val result = it.data as ProfileOutput
+                        Log.d("Check Result", "success $result")
+                        if(result != null){
+                            FirebaseManager().saveImageToFirebase(this, result.userid, selectedImageUri!!){
+                                if (it){
+                                    SharedPreferences().saveCreation(this, "true")
+                                    val intent = Intent(this, TermsActivity::class.java)
+                                    intent.putExtra("userid", userid)
+                                    startActivity(intent)
+                                    binding.progressBar.visibility = View.GONE
+                                    finish()
+                                }else{
+                                    binding.progressBar.visibility = View.GONE
+                                    Toast.makeText(this, "Check you internet connection!", Toast.LENGTH_SHORT).show()
+                                }
                             }
                         }
                     }
@@ -155,7 +179,10 @@ class ProfileCreation : AppCompatActivity(), View.OnClickListener, View.OnFocusC
                                     Error(
                                         "Server error",
                                         "Server is down or not reachable ${exception.message}"
-                                    )
+                                    ),
+                                    positiveButtonFunction = {
+                                        recreate()
+                                    }
                                 )
                             } else{
                                 // Handle other exceptions
@@ -163,9 +190,12 @@ class ProfileCreation : AppCompatActivity(), View.OnClickListener, View.OnFocusC
                                     Error(
                                         "Error",
                                         exception.localizedMessage!!
-                                    )
+                                    ),
+                                    positiveButtonFunction = {
+
+                                    }
                                 )
-                                Log.d("Check Result", "Unauthorized")
+                                Log.e("Check Result", "Unauthorized")
                             }
                         } else {
                             // Handle other exceptions
@@ -174,12 +204,16 @@ class ProfileCreation : AppCompatActivity(), View.OnClickListener, View.OnFocusC
                                 Error(
                                     "Error",
                                     "Something went wrong!"
-                                )
+                                ),
+                                positiveButtonFunction = {
+
+                                }
                             )
-                            Log.d("Check Result", "showGenericError")
+                            Log.e("Check Result", "showGenericError")
                         }
                     }
                     Result.Loading ->{
+                        Log.d("Check Result", "Loading")
                         binding.progressBar.visibility = View.VISIBLE
                     }
                 }

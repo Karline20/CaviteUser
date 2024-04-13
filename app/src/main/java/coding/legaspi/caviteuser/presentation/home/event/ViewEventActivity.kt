@@ -1,16 +1,23 @@
 package coding.legaspi.caviteuser.presentation.home.event
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.location.Location
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
+import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import coding.legaspi.caviteuser.R
 import coding.legaspi.caviteuser.Result
 import coding.legaspi.caviteuser.data.model.adaptermodel.Image
@@ -20,12 +27,14 @@ import coding.legaspi.caviteuser.data.model.favorites.Favorites
 import coding.legaspi.caviteuser.data.model.profile.ProfileOutput
 import coding.legaspi.caviteuser.data.model.rating.Existence
 import coding.legaspi.caviteuser.data.model.rating.RatingOutput
+import coding.legaspi.caviteuser.databinding.ActivityMapBinding
 import coding.legaspi.caviteuser.databinding.ActivityViewEventBinding
 import coding.legaspi.caviteuser.presentation.di.Injector
 import coding.legaspi.caviteuser.presentation.home.HomeActivity
 import coding.legaspi.caviteuser.presentation.home.adapter.EventAdapter
 import coding.legaspi.caviteuser.presentation.home.adapter.RatingAdapter
 import coding.legaspi.caviteuser.presentation.home.map.MapActivity
+import coding.legaspi.caviteuser.presentation.home.map.adapter.CustomInfoWindowAdapter
 import coding.legaspi.caviteuser.presentation.home.rating.RatingActivity
 import coding.legaspi.caviteuser.presentation.terms.TermsActivity
 import coding.legaspi.caviteuser.presentation.viewmodel.EventViewModel
@@ -36,6 +45,17 @@ import coding.legaspi.caviteuser.utils.FirebaseManager
 import coding.legaspi.caviteuser.utils.ImageAdapter
 import coding.legaspi.caviteuser.utils.SharedPreferences
 import com.bumptech.glide.Glide
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
+import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.tasks.Task
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -46,7 +66,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import javax.inject.Inject
 
-class ViewEventActivity : AppCompatActivity() {
+class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
 
     @Inject
     lateinit var factory: EventViewModelFactory
@@ -58,6 +78,12 @@ class ViewEventActivity : AppCompatActivity() {
     private lateinit var databaseReference: DatabaseReference
     private lateinit var binding: ActivityViewEventBinding
     private lateinit var dialogHelper: DialogHelper
+
+    private lateinit var myMap: GoogleMap
+    private val FINE_PERMISSION_CODE = 1
+    var currentLocation: Location? = null
+    lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+
     lateinit var id: String
     lateinit var latitude: String
     lateinit var longitude: String
@@ -76,6 +102,9 @@ class ViewEventActivity : AppCompatActivity() {
         (application as Injector).createEventsSubComponent()
             .inject(this)
         eventViewModel= ViewModelProvider(this, factory).get(EventViewModel::class.java)
+
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+
         dialogHelper = DialogHelperFactory.create(this)
         id = intent.getStringExtra("id").toString()
         ratingList = arrayListOf()
@@ -90,6 +119,7 @@ class ViewEventActivity : AppCompatActivity() {
         setRv()
         setImage()
         setFavorite()
+
     }
 
     private fun setFavorite() {
@@ -168,14 +198,23 @@ class ViewEventActivity : AppCompatActivity() {
                                 Error(
                                     "Server error",
                                     "Server is down or not reachable ${exception.message}"
-                                )
+                                ),
+                                positiveButtonFunction = {
+                                    recreate()
+                                }
                             )
                         } else{
-                            dialogHelper.showUnauthorized(Error("Error",exception.localizedMessage!!))
+                            dialogHelper.showUnauthorized(Error("Error",exception.localizedMessage!!),
+                                positiveButtonFunction = {
+
+                                })
                         }
                     } else {
                         binding.progressBar.visibility = GONE
-                        dialogHelper.showUnauthorized(Error("Error","Something went wrong!"))
+                        dialogHelper.showUnauthorized(Error("Error","Something went wrong!"),
+                            positiveButtonFunction = {
+
+                            })
                     }
                 }
                 Result.Loading -> {
@@ -195,7 +234,7 @@ class ViewEventActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        binding.viewMap.setOnClickListener {
+        binding.showRoute.setOnClickListener {
             val intent = Intent(this, MapActivity::class.java)
             intent.putExtra("latitude", latitude)
             intent.putExtra("longitude", longitude)
@@ -243,14 +282,20 @@ class ViewEventActivity : AppCompatActivity() {
                                 Error(
                                     "Server error",
                                     "Server is down or not reachable ${exception.message}"
-                                )
+                                ),
+                                positiveButtonFunction = {
+                                    recreate()
+                                }
                             )
                         } else{
                             dialogHelper.showUnauthorized(
                                 Error(
                                     "Error",
                                     exception.localizedMessage!!
-                                )
+                                ),
+                                positiveButtonFunction = {
+
+                                }
                             )
                             Log.d("Check Result", "Unauthorized")
                         }
@@ -260,7 +305,10 @@ class ViewEventActivity : AppCompatActivity() {
                             Error(
                                 "Error",
                                 "Something went wrong!"
-                            )
+                            ),
+                            positiveButtonFunction = {
+
+                            }
                         )
                         Log.d("Check Result", "showGenericError")
                     }
@@ -296,7 +344,7 @@ class ViewEventActivity : AppCompatActivity() {
                     val result = it.data as AllModelOutput
                     binding.labelEventCategory.text = result.eventcategory
                     binding.labelName.text = result.name
-                    binding.labelAddress.text = result.location
+                    binding.txtAddress.text = result.location
                     binding.labelDescription.text = result.description
                     binding.labelDate.text = result.date
                     if (result.category!= null){
@@ -308,6 +356,18 @@ class ViewEventActivity : AppCompatActivity() {
                     longitude = result.longitude
                     location = result.location
 
+                    binding.loggedInTopNav.labelTitle.text = result.name
+
+                    try {
+                        Log.d("checkMap", "try")
+                        getLastLocation()
+                    }catch (e: Exception){
+                        dialogHelper.connection("Internet Connection", "Check your internet connection!", "Yes", ){yes ->
+                            if (yes){
+                                getLastLocation()
+                            }
+                        }
+                    }
                 }
                 is Result.Error -> {
                     val exception = it.exception
@@ -317,13 +377,22 @@ class ViewEventActivity : AppCompatActivity() {
                                 Error(
                                     "Server error",
                                     "Server is down or not reachable ${exception.message}"
-                                )
+                                ),
+                                positiveButtonFunction = {
+                                    recreate()
+                                }
                             )
                         } else{
-                            dialogHelper.showUnauthorized(Error("Error",exception.localizedMessage!!))
+                            dialogHelper.showUnauthorized(Error("Error",exception.localizedMessage!!),
+                                positiveButtonFunction = {
+
+                                })
                         }
                     } else {
-                        dialogHelper.showUnauthorized(Error("Error","Something went wrong!"))
+                        dialogHelper.showUnauthorized(Error("Error","Something went wrong!"),
+                            positiveButtonFunction = {
+
+                            })
                     }
                 }
                 Result.Loading -> {
@@ -331,5 +400,83 @@ class ViewEventActivity : AppCompatActivity() {
                 }
             }
         })
+    }
+
+    private fun getLastLocation() {
+        Log.d("checkMap", "getLastLocation")
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), FINE_PERMISSION_CODE)
+        }
+
+        val task: Task<Location> = fusedLocationProviderClient.lastLocation
+        task.addOnSuccessListener {
+            if (it != null){
+                Log.d("getLastLocation", "task $it")
+                currentLocation = it
+                val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
+                mapFragment?.getMapAsync(this)
+                if(currentLocation != null){
+                    binding.progressBar.visibility = GONE
+                    setButton()
+                }
+            }
+        }
+
+    }
+
+    override fun onMapReady(googleMap: GoogleMap) {
+        myMap = googleMap
+        Log.d("getLastLocation", "task $myMap")
+        val eventLocation = LatLng(latitude.toDouble(), longitude.toDouble())
+
+        val customLocationBitmap = vectorToBitmap(R.drawable.baseline_place_24)
+
+        val eLMarker = myMap.addMarker(
+            MarkerOptions()
+                .position(eventLocation)
+                .icon(BitmapDescriptorFactory.fromBitmap(customLocationBitmap))
+                .title(location)
+        )
+
+        eLMarker?.showInfoWindow()
+
+        val customInfoWindowAdapter = CustomInfoWindowAdapter(this)
+        myMap.setInfoWindowAdapter(customInfoWindowAdapter)
+
+        val builder = LatLngBounds.Builder()
+        builder.include(eventLocation)
+        val bounds = builder.build()
+        val padding = 20
+
+        val cu = CameraUpdateFactory.newLatLngBounds(bounds, padding)
+
+        myMap.moveCamera(cu)
+
+        myMap.uiSettings.isZoomControlsEnabled = true
+        myMap.uiSettings.isCompassEnabled = true
+        myMap.uiSettings.isZoomGesturesEnabled = true
+        myMap.uiSettings.isScrollGesturesEnabled = true
+    }
+
+    fun vectorToBitmap(vectorDrawable: Int): Bitmap {
+        val vector = VectorDrawableCompat.create(resources, vectorDrawable, null)
+            ?: return Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
+
+        val bitmap = Bitmap.createBitmap(
+            vector.intrinsicWidth,
+            vector.intrinsicHeight,
+            Bitmap.Config.ARGB_8888
+        )
+        val canvas = Canvas(bitmap)
+        vector.setBounds(0, 0, canvas.width, canvas.height)
+        vector.draw(canvas)
+        return bitmap
     }
 }

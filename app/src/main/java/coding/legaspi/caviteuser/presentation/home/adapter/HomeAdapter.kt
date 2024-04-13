@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.app.ActivityCompat.recreate
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
@@ -16,7 +17,12 @@ import coding.legaspi.caviteuser.data.model.addevents.AddEvent
 import coding.legaspi.caviteuser.presentation.home.rvevent.RvEventActivity
 import coding.legaspi.caviteuser.presentation.viewmodel.EventViewModel
 import java.util.Random
-
+import coding.legaspi.caviteuser.Result
+import coding.legaspi.caviteuser.data.model.count.count
+import coding.legaspi.caviteuser.utils.DialogHelper
+import coding.legaspi.caviteuser.utils.DialogHelperFactory
+import java.io.IOException
+import coding.legaspi.caviteuser.data.model.error.Error
 class HomeAdapter internal constructor(
     private val context: Context,
     private val postItems: ArrayList<AddEvent>,
@@ -25,7 +31,7 @@ class HomeAdapter internal constructor(
 ) :
     RecyclerView.Adapter<HomeAdapter.ViewHolder>() {
 
-
+    private var dialogHelper: DialogHelper = DialogHelperFactory.create(context)
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val postImageView: ImageView = itemView.findViewById(R.id.imagePost)
         val txt_number: TextView = itemView.findViewById(R.id.txt_number)
@@ -63,6 +69,8 @@ class HomeAdapter internal constructor(
             "Stores"-> holder.postImageView.setImageResource(R.drawable.storep)
             "Places To visit"-> holder.postImageView.setImageResource(R.drawable.places)
             "Emergency Care & Contacts"-> holder.postImageView.setImageResource(R.drawable.emergencyp)
+            "Church"-> holder.postImageView.setImageResource(R.drawable.churchlogo)
+            "Hospital and Clinic"-> holder.postImageView.setImageResource(R.drawable.hospital)
         }
 
         countEvents(name, holder)
@@ -77,10 +85,44 @@ class HomeAdapter internal constructor(
     private fun countEvents(name: String, holder: ViewHolder) {
         val responseLiveData = eventViewModel.countEventsByCategory(name)
         responseLiveData.observe(lifecycleOwner, Observer {
-            if (it!=null){
-                holder.txt_number.text = it.body()?.count.toString()
-            }else{
-                holder.txt_number.text = "0"
+            when(it){
+                is Result.Success<*> -> {
+                    val result = it.data as count
+                    if (result!=null){
+                        holder.txt_number.text = result.count.toString()
+                    }else{
+                        holder.txt_number.text = "0"
+                    }
+                }
+                is Result.Error -> {
+                    val exception = it.exception
+
+                    if (exception is IOException) {
+                        if (exception.localizedMessage!! == "timeout"){
+                            dialogHelper.showUnauthorized(
+                                Error(
+                                    "Server error",
+                                    "Server is down or not reachable ${exception.message}"
+                                ),
+                                positiveButtonFunction = {
+
+                                }
+                            )
+                        } else{
+                            dialogHelper.showUnauthorized(Error("Error",exception.localizedMessage!!),
+                                positiveButtonFunction = {
+
+                                })
+                        }
+                    } else {
+                        dialogHelper.showUnauthorized(Error("Error","Something went wrong!"),
+                            positiveButtonFunction = {
+
+                            })
+                    }
+                }
+                Result.Loading -> {
+                }
             }
         })
     }

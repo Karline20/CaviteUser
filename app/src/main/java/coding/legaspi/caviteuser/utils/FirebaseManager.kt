@@ -89,6 +89,7 @@ class FirebaseManager {
 
     fun saveImageToFirebase(context: Context, userID: String, imageUri: Uri, callback: (Boolean) -> Unit){
         if (imageUri != null && userID != null) {
+            Log.d("Check Result", "saveImageToFirebase $userID")
             val timestamp = System.currentTimeMillis().toString()
             val imageRef = firebaseStorage.child("images").child(timestamp) // Store in 'images' subdirectory
 
@@ -184,9 +185,11 @@ class FirebaseManager {
     }
 
     fun fetchProfileFromFirebase(userid: String, callback: (ProfileImage) -> Unit){
+        Log.d("HomeActivity", "fetchProfileFromFirebase")
         val profileRef = firebaseRealtime.child(userid)
         profileRef.addValueEventListener(object : ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
+                Log.d("HomeActivity", "onDataChange")
                 if (snapshot.exists()){
                     val id = snapshot.child("id").value
                     val imageUri = snapshot.child("imageUri").value
@@ -200,6 +203,7 @@ class FirebaseManager {
                 }
             }
             override fun onCancelled(error: DatabaseError) {
+                Log.e("HomeActivity", "onCancelled $error")
                 val profile = ProfileImage("", "", "", "")
                 callback(profile)
             }

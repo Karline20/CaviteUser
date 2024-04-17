@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.util.Log
 import android.view.Window
 import android.widget.Button
 import android.widget.TextView
@@ -114,29 +115,34 @@ class DialogHelperImpl(private val context: Context) : DialogHelper {
             .show()
     }
     override fun play(context: Context, title: String, content: String, confirm: String, cancel: String,
-                      positiveButtonFunction: () -> Unit,
+                      positiveButtonFunction: (Boolean) -> Unit,
                       negativeButtonFunction: () -> Unit,
                       leaderBoardsButtonFunction: () -> Unit) {
+
         val dialog = Dialog(context, R.style.alert_dialog_light)
         dialog.window?.requestFeature(Window.FEATURE_NO_TITLE) // if you have blue line on top of your dialog, you need use this code
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         dialog.setCancelable(false)
         dialog.setContentView(R.layout.custom_dialog)
 
-        val dialogTitle = dialog.findViewById(R.id.title_text) as TextView
-        val dialogDescription = dialog.findViewById(R.id.content_text) as TextView
-        val dialogPositiveButton = dialog.findViewById(R.id.confirm_button) as Button
-        val dialogNegativeButton = dialog.findViewById(R.id.cancel_button) as Button
-        val leaderBoardsButton = dialog.findViewById(R.id.leaderboards_button) as Button
+        val dialogTitle: TextView = dialog.findViewById(R.id.title_text)
+        val dialogDescription: TextView = dialog.findViewById(R.id.content_text)
+        val dialogPositiveButton: Button = dialog.findViewById(R.id.confirm_button)
+        val dialogNegativeButton: Button = dialog.findViewById(R.id.cancel_button)
+        val leaderBoardsButton: Button = dialog.findViewById(R.id.leaderboards_button)
 
         dialogTitle.text = title
         dialogDescription.text = content
 
-        confirm.let { dialogPositiveButton.text = it }
-        cancel.let { dialogNegativeButton.text = it }
+        confirm.let {
+            dialogPositiveButton.text = it
+        }
+        cancel.let {
+            dialogNegativeButton.text = it
+        }
 
         dialogPositiveButton.setOnClickListener {
-            positiveButtonFunction.invoke()
+            positiveButtonFunction.invoke(true)
             dialog.dismiss()
         }
         dialogNegativeButton.setOnClickListener {

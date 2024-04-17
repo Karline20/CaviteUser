@@ -22,6 +22,7 @@
                 android:textStyle="bold"
                 android:layout_marginLeft="10dp"
                 android:layout_marginTop="10dp"
+                android:layout_below="@id/epoxy_image"
                 />
 
             <TextView
@@ -67,11 +68,13 @@
                 android:layout_height="wrap_content"
                 android:textSize="15sp"
                 android:text="agdfsgsaf"
+                android:layout_below="@id/epoxy_image"
                 android:textColor="@color/coolGrayColor"
                 android:layout_marginLeft="10dp"
                 android:layout_marginTop="10dp"
                 android:layout_alignParentEnd="true"
                 android:layout_marginRight="20dp"
+                android:visibility="gone"
                 />
 
             <TextView
@@ -98,6 +101,7 @@
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
                 android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
                 android:layout_below="@id/txt_address" />
 
             <androidx.recyclerview.widget.RecyclerView
@@ -105,7 +109,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:layout_below="@+id/label_read"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 android:orientation="horizontal"
                 tools:listitem="@layout/epoxy_image"

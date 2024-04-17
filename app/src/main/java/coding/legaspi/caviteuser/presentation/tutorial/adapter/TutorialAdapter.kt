@@ -92,9 +92,8 @@ class TutorialAdapter(
             }
         })
 
-        holder.count.text = "Tutorial $exactPos"
         holder.textView.text = tutorial
-
+        holder.count.text = "Tutorial $exactPos"
         holder.itemView.setOnClickListener {
             if (isFinished){
                 dialogHelper.showSuccess(tutorial, "Thank you but you are already finish with this tutorial!")

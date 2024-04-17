@@ -80,7 +80,7 @@ class PlayActivity : AppCompatActivity() {
 
         setBottomButton()
         setProfile()
-        setPlay()
+        //setPlay()
         setButton()
         getName()
     }
@@ -155,8 +155,10 @@ class PlayActivity : AppCompatActivity() {
             "Play",
             "Quit",
             positiveButtonFunction = {
-                countSpeechNumber = 0
-                timerToStart()
+                if (it){
+                    //countSpeechNumber = 0
+                    timerToStart()
+                }
             },
             negativeButtonFunction = {
                 dialogHelper.showLogout("Quit", "Are you sure you want to quit?", "Yes", "No" ) {
@@ -200,28 +202,28 @@ class PlayActivity : AppCompatActivity() {
             generatedNumbers.add(random)
 
             when(random){
-                1 -> tutorial = "MAGANDA KA ->"
-                2 -> tutorial = "MAHAL KITA ->"
-                3 -> tutorial = "AYOS LANG -> MUY BIEN"
-                4 -> tutorial = "MAGANDANG HAPON ->"
-                5 -> tutorial = "KAMUSTA KA -> QUETAL MAN USTE"
-                6 -> tutorial = "SALAMAT -> GRACIAS"
-                7 -> tutorial = "PAALAM -> ADIOS"
-                8 -> tutorial = "PASINTABI -> CON PERMISO"
-                9 -> tutorial = "TULOY KAYO -> BIENVENIDOS"
-                10 -> tutorial = "MAGANDANG GABI ->"
-                11 -> tutorial = "PATAWAD ->"
-                12 -> tutorial = "MAGANDANG UMAGA ->"
-                13 -> tutorial = "INGAT KA ->"
+                1 -> tutorial = "MAGANDA KA - BONITA USTE"
+                2 -> tutorial = "MAHAL KITA - TA AMA YO CONTIGO"
+                3 -> tutorial = "AYOS LANG - MUY BIEN"
+                4 -> tutorial = "MAGANDANG HAPON - BUENAS TARDES"
+                5 -> tutorial = "KAMUSTA KA - QUETAL MAN USTE"
+                6 -> tutorial = "SALAMAT - GRACIAS"
+                7 -> tutorial = "PAALAM - ADIOS"
+                8 -> tutorial = "PASINTABI - CON PERMISO"
+                9 -> tutorial = "TULOY KAYO - BIENVENIDOS"
+                10 -> tutorial = "MAGANDANG GABI - BUENAS NOCHES"
+                11 -> tutorial = "PATAWAD - PERDONA CONMIGO"
+                12 -> tutorial = "MAGANDANG UMAGA - BUENAS DIAS"
+                13 -> tutorial = "INGAT KA - QUIDAO"
                 14 -> tutorial = "AMA - PADRE"
                 15 -> tutorial = "ANAK NA BABAE - HIJA"
                 16 -> tutorial = "ANAK NA LALAKI - HIJO"
-                17 -> tutorial = "ANONG PANGALAN MO_ - COSA TU NOMBRE_"
+                17 -> tutorial = "ANONG PANGALAN MO - COSA TU NOMBRE"
                 18 -> tutorial = "APO NA LALAKI - NIETO"
                 19 -> tutorial = "ASAWANG BABAE - MUJER"
                 20 -> tutorial = "ASAWANG LALAKI - MARIDO"
                 21 -> tutorial = "BABAE NA APO - NIETA"
-                22 -> tutorial = "BAYAW - CUÑAO"
+                22 -> tutorial = "BAYAW - CUÑADO"
                 23 -> tutorial = "BYENAN NA BABAE - SUEGRA"
                 24 -> tutorial = "BYENAN NA LALAKE - SUEGRO"
                 25 -> tutorial = "HIPAG - CUÑADA"
@@ -231,7 +233,7 @@ class PlayActivity : AppCompatActivity() {
                 29 -> tutorial = "LOLA - ABUELA"
                 30 -> tutorial = "LOLO - ABUELO"
                 31 -> tutorial = "MGA KAMAGANAK - PARIENTES"
-                32 -> tutorial = "SAAN KA NAGMULA_ - DE DONDE TU_"
+                32 -> tutorial = "SAAN KA NAGMULA - DE DONDE TU"
                 33 -> tutorial = "TITA-TIA"
                 34 -> tutorial = "TITO-TIO"
             }
@@ -254,34 +256,36 @@ class PlayActivity : AppCompatActivity() {
                     "Okay",
                     "Quit",
                     positiveButtonFunction = {
-                        activityPlayBinding.progressBar.visibility = VISIBLE
-                        val currentTimeMillis = System.currentTimeMillis()
-                        val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-                        val date = Date(currentTimeMillis)
-                        val formattedDate = sdf.format(date)
-                        Toast.makeText(this, "Clearing game...", Toast.LENGTH_SHORT).show()
-                        val (token, userId) = SharedPreferences().checkToken(this)
-                        val checkExistence = eventViewModel.checkRanking(userId.toString())
-                        checkExistence.observe(this, Observer {
-                            val doesExist = it.body().toString()
-                            if (doesExist.equals(true)){
-                                val responseLiveData = eventViewModel.patchRank(userId.toString(), PatchRank(formattedDate,correctCount, currentTimeMillis.toString()))
-                                responseLiveData.observe(this, Observer {
-                                    if (it!=null){
-                                        activityPlayBinding.progressBar.visibility = GONE
-                                        setPlay()
-                                    }
-                                })
-                            }else{
-                                val responseLiveData = eventViewModel.postRank(Ranking(formattedDate, "$firstname, $lastname", correctCount, currentTimeMillis.toString(), userId!!))
-                                responseLiveData.observe(this, Observer {
-                                    if (it!=null){
-                                        activityPlayBinding.progressBar.visibility = GONE
-                                        setPlay()
-                                    }
-                                })
-                            }
-                        })
+                        if (it){
+                            activityPlayBinding.progressBar.visibility = VISIBLE
+                            val currentTimeMillis = System.currentTimeMillis()
+                            val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+                            val date = Date(currentTimeMillis)
+                            val formattedDate = sdf.format(date)
+                            Toast.makeText(this, "Clearing game...", Toast.LENGTH_SHORT).show()
+                            val (token, userId) = SharedPreferences().checkToken(this)
+                            val checkExistence = eventViewModel.checkRanking(userId.toString())
+                            checkExistence.observe(this, Observer {
+                                val doesExist = it.body().toString()
+                                if (doesExist.equals(true)){
+                                    val responseLiveData = eventViewModel.patchRank(userId.toString(), PatchRank(formattedDate,correctCount, currentTimeMillis.toString()))
+                                    responseLiveData.observe(this, Observer {
+                                        if (it!=null){
+                                            activityPlayBinding.progressBar.visibility = GONE
+                                            setPlay()
+                                        }
+                                    })
+                                }else{
+                                    val responseLiveData = eventViewModel.postRank(Ranking(formattedDate, "$firstname, $lastname", correctCount, currentTimeMillis.toString(), userId!!))
+                                    responseLiveData.observe(this, Observer {
+                                        if (it!=null){
+                                            activityPlayBinding.progressBar.visibility = GONE
+                                            setPlay()
+                                        }
+                                    })
+                                }
+                            })
+                        }
                     },
                     negativeButtonFunction = {
                         val intent = Intent(this, HomeActivity::class.java)

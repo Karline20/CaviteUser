@@ -132,7 +132,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="15sp"
                 android:text="Name"
-                android:layout_below="@+id/view3"
+                android:layout_below="@+id/view1"
                 android:textColor="@color/Red"
                 android:textStyle="bold"
                 android:layout_marginLeft="10dp"
@@ -206,14 +206,16 @@
                     />
 
             </RelativeLayout>
+
             <TextView
                 android:id="@+id/label_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="15sp"
                 android:text="06/06/10"
+                android:visibility="gone"
                 android:textColor="@color/coolGrayColor"
-                android:layout_below="@id/view3"
+                android:layout_below="@id/view1"
                 android:layout_marginLeft="10dp"
                 android:layout_marginTop="10dp"
                 android:layout_alignParentEnd="true"
@@ -240,7 +242,7 @@
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"
                 android:background="@color/coolGrayColor"
-                android:layout_below="@+id/rrl_map"
+                android:layout_below="@+id/epoxy_image"
                 android:layout_marginRight="10dp"
                 android:layout_marginLeft="10dp"/>
 
@@ -249,7 +251,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:layout_below="@+id/view1"
+                android:layout_below="@+id/view3"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 android:orientation="horizontal"
                 tools:listitem="@layout/epoxy_image"
@@ -262,7 +264,7 @@
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"
                 android:background="@color/coolGrayColor"
-                android:layout_below="@+id/epoxy_image"
+                android:layout_below="@+id/rrl_map"
                 android:layout_marginRight="10dp"
                 android:layout_marginLeft="10dp"/>
 

@@ -33,7 +33,7 @@ interface DialogHelper {
                  callback: (Boolean) -> Unit)
 
     fun play(context: Context, title: String, content: String, confirm: String, cancel: String,
-             positiveButtonFunction: () -> Unit,
+             positiveButtonFunction: (Boolean) -> Unit,
              negativeButtonFunction: () -> Unit,
              leaderBoardsButtonFunction: () -> Unit)
 

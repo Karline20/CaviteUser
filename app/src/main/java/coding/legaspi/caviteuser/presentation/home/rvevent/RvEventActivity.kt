@@ -12,6 +12,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import coding.legaspi.caviteuser.R
 import coding.legaspi.caviteuser.Result
 import coding.legaspi.caviteuser.data.model.error.Error
@@ -490,8 +491,13 @@ class RvEventActivity : AppCompatActivity() {
                             }else{
                                 allModelOutput.clear()
                                 allModelOutput.addAll(result)
-                                val llm = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
-                                binding.epoxyRvAdd.layoutManager = llm
+
+                                val myLinearLayoutManager = object : LinearLayoutManager(this, RecyclerView.VERTICAL, false){
+                                    override fun canScrollVertically(): Boolean {
+                                        return false
+                                    }
+                                }
+                                binding.epoxyRvAdd.layoutManager = myLinearLayoutManager
                                 binding.epoxyRvAdd.adapter = eventAdapter
                                 binding.labelWelcome.text = "Category all"
                                 eventAdapter.notifyDataSetChanged()
@@ -606,12 +612,14 @@ class RvEventActivity : AppCompatActivity() {
                         binding.progressBar.visibility = GONE
                     }
                 }else{
+                    Log.d("search","else")
                     initRv()
                 }
                 return true
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
+                Log.d("search","onQueryTextChange")
                 updateSuggestions(newText)
                 return true
             }
@@ -620,6 +628,7 @@ class RvEventActivity : AppCompatActivity() {
 
     private fun updateSuggestions(newText: String?) {
         if (newText.isNullOrEmpty()) {
+            Log.d("search","if (newText.isNullOrEmpty())")
             initRv()
             return
         }
@@ -630,6 +639,7 @@ class RvEventActivity : AppCompatActivity() {
             responseLiveData.observe(this, Observer {
                 when(it){
                     is Result.Success<*> -> {
+                        Log.d("search","Success")
                         val result = it.data as List<AllModelOutput>
                         if (result!=null){
                             if (result.isEmpty()){

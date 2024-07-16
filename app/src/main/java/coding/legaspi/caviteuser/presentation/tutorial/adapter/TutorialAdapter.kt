@@ -21,6 +21,8 @@ import coding.legaspi.caviteuser.Result
 import coding.legaspi.caviteuser.data.model.tutorial.TutorialStatusOutput
 import java.io.IOException
 import coding.legaspi.caviteuser.data.model.error.Error
+import coding.legaspi.caviteuser.data.model.eventsoutput.AllModelOutput
+
 class TutorialAdapter(
     private var tutorialList: ArrayList<Tutorial>,
     private val context: Context,
@@ -91,8 +93,43 @@ class TutorialAdapter(
                 }
             }
         })
+        when(tutorial) {
+            "MAGANDA KA - BONITA USTE" -> holder.textView.text =  "MAGANDA KA - BO-NI-TA US-TE"
+            "MAHAL KITA - TA AMA YO CONTIGO" -> holder.textView.text = "MAHAL KITA - TA A-MA YO CON-TI-GO"
+            "AYOS LANG - MUY BIEN" -> holder.textView.text = "AYOS LANG - MUY BI-EN"
+            "MAGANDANG HAPON - BUENAS TARDES" -> holder.textView.text = "MAGANDANG HAPON - BUE-NAS TAR-DES"
+            "KAMUSTA KA - QUETAL MAN USTE" -> holder.textView.text = "KAMUSTA KA - QUE-TAL MAN US-TE"
+            "SALAMAT - GRACIAS" -> holder.textView.text = "SALAMAT - GRA-CIAS"
+            "PAALAM - ADIOS" -> holder.textView.text = "PAALAM - AD-IOS"
+            "PASINTABI - CON PERMISO"-> holder.textView.text = "PASINTABI - CON PER-MI-SO"
+            "TULOY KAYO - BIENVENIDOS"-> holder.textView.text = "TULOY KAYO - BI-EN-VE-NI-DOS"
+            "MAGANDANG GABI - BUENAS NOCHES"-> holder.textView.text = "MAGANDANG GABI - BUE-NAS NO-CHES"
+            "PATAWAD - PERDONA CONMIGO"-> holder.textView.text = "PATAWAD - PER-DO-NA CON-MI-GO"
+            "MAGANDANG UMAGA - BUENAS DIAS"-> holder.textView.text = "MAGANDANG UMAGA - BUE-NAS DI-AS"
+            "INGAT KA - QUIDAO"-> holder.textView.text = "INGAT KA - QUI-DAO"
+            "AMA - PADRE"-> holder.textView.text = "AMA - PAD-RE"
+            "ANAK NA BABAE - HIJA"-> holder.textView.text = "ANAK NA BABAE - HI-JA"
+            "ANAK NA LALAKI - HIJO"-> holder.textView.text = "ANAK NA LALAKI - HI-JO"
+            "ANONG PANGALAN MO - COSA TU NOMBRE"-> holder.textView.text = "ANONG PANGALAN MO - CO-SA TU NOM-BRE"
+            "APO NA LALAKI - NIETO"-> holder.textView.text = "APO NA LALAKI - NI-E-TO"
+            "ASAWANG BABAE - MUJER"-> holder.textView.text = "ASAWANG BABAE - MU-JER"
+            "ASAWANG LALAKI - MARIDO"-> holder.textView.text = "ASAWANG LALAKI - MA-RI-DO"
+            "BABAE NA APO - NIETA"-> holder.textView.text = "BABAE NA APO - NI-E-TA"
+            "BAYAW - CUÑADO"-> holder.textView.text = "BAYAW - CU-ÑA-DO"
+            "BYENAN NA BABAE - SUEGRA"-> holder.textView.text =  "BYENAN NA BABAE - SU-E-GRA"
+            "BYENAN NA LALAKE - SUEGRO"-> holder.textView.text = "BYENAN NA LALAKE - SU-E-GRO"
+            "HIPAG - CUÑADA"-> holder.textView.text =  "HIPAG - CU-ÑA-DA"
+            "INA - MADRE"-> holder.textView.text = "INA - MAD-RE"
+            "KAPATID NA BABAE - HERMANA"-> holder.textView.text = "KAPATID NA BABAE - HER-MA-NA"
+            "KAPATID NA LALAKI - HERMANO"-> holder.textView.text = "KAPATID NA LALAKI - HER-MA-NO"
+            "LOLA - ABUELA"-> holder.textView.text = "LOLA - ABU-E-LA"
+            "LOLO - ABUELO" -> holder.textView.text = "LOLO - ABU-E-LO"
+            "MGA KAMAGANAK - PARIENTES"-> holder.textView.text = "MGA KAMAGANAK - PAR-I-EN-TES"
+            "SAAN KA NAGMULA - DE DONDE TU"-> holder.textView.text = "SAAN KA NAGMULA - DE DON-DE TU"
+            "TITA-TIA"-> holder.textView.text =  "TITA-TI-A"
+            "TITO-TIO"-> holder.textView.text = "TITO-TI-O"
+        }
 
-        holder.textView.text = tutorial
         holder.count.text = "Tutorial $exactPos"
         holder.itemView.setOnClickListener {
             if (isFinished){
@@ -107,6 +144,12 @@ class TutorialAdapter(
                 context.startActivity(intent)
             }
         }
+    }
+
+    fun setSuggestions(newSuggestions: List<Tutorial>) {
+        tutorialList.clear()
+        tutorialList.addAll(newSuggestions)
+        notifyDataSetChanged()
     }
 
     override fun getItemCount(): Int {

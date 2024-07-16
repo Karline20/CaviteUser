@@ -124,6 +124,36 @@ class FirebaseManager {
 
     }
 
+    fun updateImage(context: Context, userID: String, imageUri: Uri, callback: (Boolean) -> Unit){
+        if (imageUri != null && userID != null) {
+            val timestamp = System.currentTimeMillis().toString()
+            val imageRef = firebaseStorage.child("images").child(timestamp) // Store in 'images' subdirectory
+            imageRef.putFile(imageUri)
+                .addOnSuccessListener { uploadTask ->
+                    uploadTask.storage.downloadUrl
+                        .addOnSuccessListener { uri ->
+                            firebaseRealtime.child(userID).child("imageUri").setValue(uri.toString())
+                                .addOnCompleteListener {
+                                    if (it.isSuccessful) {
+                                        callback(true)
+                                        Toast.makeText(context, "Update success...", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                                .addOnFailureListener {
+                                    Toast.makeText(context, "Can't save Image", Toast.LENGTH_SHORT).show()
+                                    callback(false)
+                                }
+                        }
+                }
+                .addOnFailureListener {
+                    Toast.makeText(context, "Can't save Image", Toast.LENGTH_SHORT).show()
+                    callback(false)
+                }
+        }
+
+    }
+
+
     fun saveUpdateToFirebase(context: Context, eventID: String, imageUri: Uri, id: String, callback: (Boolean) -> Unit) {
         if (imageUri!=null || eventID!=null){
             val timestamp = System.currentTimeMillis().toString()

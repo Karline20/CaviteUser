@@ -58,6 +58,7 @@ class PlayActivity : AppCompatActivity() {
     lateinit var tutorial: String
     lateinit var countdownTimer: CountDownTimer
     lateinit var counterToStart: CountDownTimer
+    lateinit var gapTimer: CountDownTimer
     private var correctCount = 0
     private var countSpeechNumber = 0
     private val generatedNumbers = mutableListOf<Int>()
@@ -187,13 +188,33 @@ class PlayActivity : AppCompatActivity() {
             override fun onFinish() {
                 activityPlayBinding.txtTimerToStart.text = "Start!"
                 activityPlayBinding.timerToStart.visibility = GONE
-                generateRandomNumber()
+                generateRandomNumber(true)
             }
         }
         counterToStart.start()
     }
 
-    private fun generateRandomNumber() {
+    private fun generateRandomNumber(isFirstTime: Boolean) {
+        if (isFirstTime){
+            generateNumbersSize()
+        }else{
+            gapTimer = object  : CountDownTimer(5000, 1000){
+                override fun onTick(millisUntilFinished: Long) {
+                    val secondsRemaining = millisUntilFinished / 1000
+                    activityPlayBinding.timerToStart.visibility = VISIBLE
+                    activityPlayBinding.txtTimerToStart.text = "$secondsRemaining"
+                    countdownTimer.cancel()
+                }
+                override fun onFinish() {
+                    generateNumbersSize()
+                }
+            }
+            gapTimer.start()
+        }
+    }
+
+    private fun generateNumbersSize(){
+        activityPlayBinding.timerToStart.visibility = GONE
         if (generatedNumbers.size <= 11) {
             var random: Int
             do {
@@ -202,41 +223,42 @@ class PlayActivity : AppCompatActivity() {
             generatedNumbers.add(random)
 
             when(random){
-                1 -> tutorial = "MAGANDA KA - BONITA USTE"
-                2 -> tutorial = "MAHAL KITA - TA AMA YO CONTIGO"
-                3 -> tutorial = "AYOS LANG - MUY BIEN"
-                4 -> tutorial = "MAGANDANG HAPON - BUENAS TARDES"
-                5 -> tutorial = "KAMUSTA KA - QUETAL MAN USTE"
-                6 -> tutorial = "SALAMAT - GRACIAS"
-                7 -> tutorial = "PAALAM - ADIOS"
-                8 -> tutorial = "PASINTABI - CON PERMISO"
-                9 -> tutorial = "TULOY KAYO - BIENVENIDOS"
-                10 -> tutorial = "MAGANDANG GABI - BUENAS NOCHES"
-                11 -> tutorial = "PATAWAD - PERDONA CONMIGO"
-                12 -> tutorial = "MAGANDANG UMAGA - BUENAS DIAS"
-                13 -> tutorial = "INGAT KA - QUIDAO"
-                14 -> tutorial = "AMA - PADRE"
-                15 -> tutorial = "ANAK NA BABAE - HIJA"
-                16 -> tutorial = "ANAK NA LALAKI - HIJO"
-                17 -> tutorial = "ANONG PANGALAN MO - COSA TU NOMBRE"
-                18 -> tutorial = "APO NA LALAKI - NIETO"
-                19 -> tutorial = "ASAWANG BABAE - MUJER"
-                20 -> tutorial = "ASAWANG LALAKI - MARIDO"
-                21 -> tutorial = "BABAE NA APO - NIETA"
-                22 -> tutorial = "BAYAW - CUÑADO"
-                23 -> tutorial = "BYENAN NA BABAE - SUEGRA"
-                24 -> tutorial = "BYENAN NA LALAKE - SUEGRO"
-                25 -> tutorial = "HIPAG - CUÑADA"
-                26 -> tutorial = "INA - MADRE"
-                27 -> tutorial = "KAPATID NA BABAE - HERMANA"
-                28 -> tutorial = "KAPATID NA LALAKI - HERMANO"
-                29 -> tutorial = "LOLA - ABUELA"
-                30 -> tutorial = "LOLO - ABUELO"
-                31 -> tutorial = "MGA KAMAGANAK - PARIENTES"
-                32 -> tutorial = "SAAN KA NAGMULA - DE DONDE TU"
-                33 -> tutorial = "TITA-TIA"
-                34 -> tutorial = "TITO-TIO"
+                1 -> tutorial = "MAGANDA KA - BO-NI-TA US-TE"
+                2 -> tutorial =  "MAHAL KITA - TA A-MA YO CON-TI-GO"
+                3 -> tutorial = "AYOS LANG - MUY BI-EN"
+                4 -> tutorial ="MAGANDANG HAPON - BUE-NAS TAR-DES"
+                5 -> tutorial = "KAMUSTA KA - QUE-TAL MAN US-TE"
+                6 -> tutorial =  "SALAMAT - GRA-CIAS"
+                7 -> tutorial = "PAALAM - AD-IOS"
+                8 -> tutorial = "PASINTABI - CON PER-MI-SO"
+                9 -> tutorial = "TULOY KAYO - BI-EN-VE-NI-DOS"
+                10 -> tutorial = "MAGANDANG GABI - BUE-NAS NO-CHES"
+                11 -> tutorial = "PATAWAD - PER-DO-NA CON-MI-GO"
+                12 -> tutorial = "MAGANDANG UMAGA - BUE-NAS DI-AS"
+                13 -> tutorial = "INGAT KA - QUI-DAO"
+                14 -> tutorial ="AMA - PAD-RE"
+                15 -> tutorial = "ANAK NA BABAE - HI-JA"
+                16 -> tutorial ="ANAK NA LALAKI - HI-JO"
+                17 -> tutorial = "ANONG PANGALAN MO - CO-SA TU NOM-BRE"
+                18 -> tutorial = "APO NA LALAKI - NI-E-TO"
+                19 -> tutorial = "ASAWANG BABAE - MU-JER"
+                20 -> tutorial = "ASAWANG LALAKI - MA-RI-DO"
+                21 -> tutorial = "BABAE NA APO - NI-E-TA"
+                22 -> tutorial = "BAYAW - CU-ÑA-DO"
+                23 -> tutorial = "BYENAN NA BABAE - SU-E-GRA"
+                24 -> tutorial = "BYENAN NA LALAKE - SU-E-GRO"
+                25 -> tutorial =  "HIPAG - CU-ÑA-DA"
+                26 -> tutorial = "INA - MAD-RE"
+                27 -> tutorial =  "KAPATID NA BABAE - HER-MA-NA"
+                28 -> tutorial = "KAPATID NA LALAKI - HER-MA-NO"
+                29 -> tutorial =  "LOLA - ABU-E-LA"
+                30 -> tutorial = "LOLO - ABU-E-LO"
+                31 -> tutorial =  "MGA KAMAGANAK - PAR-I-EN-TES"
+                32 -> tutorial = "SAAN KA NAGMULA - DE DON-DE TU"
+                33 -> tutorial = "TITA-TI-A"
+                34 -> tutorial = "TITO-TI-O"
             }
+
             countSpeechNumber++
             activityPlayBinding.labelSpeech.text = tutorial
             activityPlayBinding.labelQuestion.text = "Speech $countSpeechNumber"
@@ -250,7 +272,7 @@ class PlayActivity : AppCompatActivity() {
             }
             if (generatedNumbers.size > 10) {
                 println("Reached 10 unique numbers. Stopping.")
-                dialogHelper.play(this,
+                dialogHelper.play(this@PlayActivity,
                     "Game set!",
                     "Your total score is $correctCount/10",
                     "Okay",
@@ -262,14 +284,14 @@ class PlayActivity : AppCompatActivity() {
                             val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
                             val date = Date(currentTimeMillis)
                             val formattedDate = sdf.format(date)
-                            Toast.makeText(this, "Clearing game...", Toast.LENGTH_SHORT).show()
-                            val (token, userId) = SharedPreferences().checkToken(this)
+                            Toast.makeText(this@PlayActivity, "Clearing game...", Toast.LENGTH_SHORT).show()
+                            val (token, userId) = SharedPreferences().checkToken(this@PlayActivity)
                             val checkExistence = eventViewModel.checkRanking(userId.toString())
-                            checkExistence.observe(this, Observer {
+                            checkExistence.observe(this@PlayActivity, Observer {
                                 val doesExist = it.body().toString()
                                 if (doesExist.equals(true)){
                                     val responseLiveData = eventViewModel.patchRank(userId.toString(), PatchRank(formattedDate,correctCount, currentTimeMillis.toString()))
-                                    responseLiveData.observe(this, Observer {
+                                    responseLiveData.observe(this@PlayActivity, Observer {
                                         if (it!=null){
                                             activityPlayBinding.progressBar.visibility = GONE
                                             setPlay()
@@ -277,7 +299,7 @@ class PlayActivity : AppCompatActivity() {
                                     })
                                 }else{
                                     val responseLiveData = eventViewModel.postRank(Ranking(formattedDate, "$firstname, $lastname", correctCount, currentTimeMillis.toString(), userId!!))
-                                    responseLiveData.observe(this, Observer {
+                                    responseLiveData.observe(this@PlayActivity, Observer {
                                         if (it!=null){
                                             activityPlayBinding.progressBar.visibility = GONE
                                             setPlay()
@@ -288,12 +310,12 @@ class PlayActivity : AppCompatActivity() {
                         }
                     },
                     negativeButtonFunction = {
-                        val intent = Intent(this, HomeActivity::class.java)
+                        val intent = Intent(this@PlayActivity, HomeActivity::class.java)
                         startActivity(intent)
                         finish()
                     },
                     leaderBoardsButtonFunction = {
-                        val intent = Intent(this, LeaderBoardsActivity::class.java)
+                        val intent = Intent(this@PlayActivity, LeaderBoardsActivity::class.java)
                         startActivity(intent)
                     }
                 )
@@ -377,7 +399,7 @@ class PlayActivity : AppCompatActivity() {
                         dialogHelper.tutorial("Correct!", "Your pronunciation is correct!", "Next", "Quit"){
                             if (it){
                                 output.spokenText = ""
-                                generateRandomNumber()
+                                generateRandomNumber(false)
                             }else{
                                 dialogHelper.showLogout("Quit", "Are you sure you want to quit?", "Yes", "No" ){
                                     if (it){
@@ -386,7 +408,7 @@ class PlayActivity : AppCompatActivity() {
                                         finish()
                                     }else{
                                         output.spokenText = ""
-                                        generateRandomNumber()
+                                        generateRandomNumber(false)
                                     }
                                 }
                             }
@@ -396,7 +418,7 @@ class PlayActivity : AppCompatActivity() {
                         dialogHelper.wrong("Wrong!","Your pronunciation is wrong!", "Next", "Quit"){
                             if (it){
                                 output.spokenText = ""
-                                generateRandomNumber()
+                                generateRandomNumber(false)
                             }else{
                                 dialogHelper.showLogout("Quit", "Are you sure you want to quit?", "Yes", "No" ){
                                     if (it){
@@ -405,7 +427,7 @@ class PlayActivity : AppCompatActivity() {
                                         finish()
                                     }else{
                                         output.spokenText = ""
-                                        generateRandomNumber()
+                                        generateRandomNumber(false)
                                     }
                                 }
 
@@ -439,7 +461,7 @@ class PlayActivity : AppCompatActivity() {
                 activityPlayBinding.timer.text = "Time's up!"
                 dialogHelper.wrong("Time's up!","Sorry!", "Next", "Quit"){
                     if (it){
-                        generateRandomNumber()
+                        generateRandomNumber(false)
                     }else{
                         dialogHelper.showLogout("Quit", "Are you sure you want to quit?", "Yes", "No" ){
                             if (it){
@@ -447,7 +469,7 @@ class PlayActivity : AppCompatActivity() {
                                 startActivity(intent)
                                 finish()
                             }else{
-                                generateRandomNumber()
+                                generateRandomNumber(false)
                             }
                         }
                     }

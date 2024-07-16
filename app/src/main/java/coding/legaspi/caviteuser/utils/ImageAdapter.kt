@@ -23,11 +23,14 @@ class ImageAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        var imageUri = imageList[position].imageUri
-        var id = imageList[position].id
-        val eventId = imageList[position].eventId
-        val userId = imageList[position].userId
-        val timestamp = imageList[position].timestamp
+
+        holder.clearImageView()
+        val images = imageList[position]
+        val imageUri = images.imageUri
+        var id = images.id
+        val eventId = images.eventId
+        val userId = images.userId
+        val timestamp = images.timestamp
         val image = Uri.parse(imageUri)
         try {
             Glide.with(context)
@@ -48,5 +51,10 @@ class ImageAdapter(
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imgcafe: ImageView = itemView.findViewById(R.id.imgcafe)
+        fun clearImageView() {
+            imgcafe.setImageDrawable(null) // Clearing the current image
+        }
     }
+
+
 }

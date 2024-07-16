@@ -54,6 +54,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.tasks.Task
 import com.google.firebase.database.DataSnapshot
@@ -434,31 +435,47 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         myMap = googleMap
         Log.d("getLastLocation", "task $myMap")
-        val eventLocation = LatLng(latitude.toDouble(), longitude.toDouble())
-
         val customLocationBitmap = vectorToBitmap(R.drawable.baseline_place_24)
+        val eLMarker: Marker?
+        if (latitude == "" && longitude == ""){
+            val defLocation = LatLng(14.3214094,120.907304)
+            eLMarker = myMap.addMarker(
+                MarkerOptions()
+                    .position(defLocation)
+                    .icon(BitmapDescriptorFactory.fromBitmap(customLocationBitmap))
+                    .title(location)
+            )
+            val builder = LatLngBounds.Builder()
+            builder.include(defLocation)
+            val bounds = builder.build()
+            val padding = 20
 
-        val eLMarker = myMap.addMarker(
-            MarkerOptions()
-                .position(eventLocation)
-                .icon(BitmapDescriptorFactory.fromBitmap(customLocationBitmap))
-                .title(location)
-        )
+            val cu = CameraUpdateFactory.newLatLngBounds(bounds, padding)
+
+            myMap.moveCamera(cu)
+
+        }else{
+            val eventLocation = LatLng(latitude.toDouble(), longitude.toDouble())
+            eLMarker = myMap.addMarker(
+                MarkerOptions()
+                    .position(eventLocation)
+                    .icon(BitmapDescriptorFactory.fromBitmap(customLocationBitmap))
+                    .title(location)
+            )
+            val builder = LatLngBounds.Builder()
+            builder.include(eventLocation)
+            val bounds = builder.build()
+            val padding = 20
+
+            val cu = CameraUpdateFactory.newLatLngBounds(bounds, padding)
+
+            myMap.moveCamera(cu)
+        }
 
         eLMarker?.showInfoWindow()
 
         val customInfoWindowAdapter = CustomInfoWindowAdapter(this)
         myMap.setInfoWindowAdapter(customInfoWindowAdapter)
-
-        val builder = LatLngBounds.Builder()
-        builder.include(eventLocation)
-        val bounds = builder.build()
-        val padding = 20
-
-        val cu = CameraUpdateFactory.newLatLngBounds(bounds, padding)
-
-        myMap.moveCamera(cu)
-
         myMap.uiSettings.isZoomControlsEnabled = true
         myMap.uiSettings.isCompassEnabled = true
         myMap.uiSettings.isZoomGesturesEnabled = true

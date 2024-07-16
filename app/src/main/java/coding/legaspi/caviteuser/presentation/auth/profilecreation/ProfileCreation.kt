@@ -14,6 +14,7 @@ import android.provider.MediaStore
 import android.util.Log
 import android.view.KeyEvent
 import android.view.View
+import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -32,6 +33,7 @@ import coding.legaspi.caviteuser.data.model.profile.ProfileOutput
 import coding.legaspi.caviteuser.databinding.ActivityProfileCreationBinding
 import coding.legaspi.caviteuser.presentation.auth.LoginActivity
 import coding.legaspi.caviteuser.presentation.di.Injector
+import coding.legaspi.caviteuser.presentation.home.HomeActivity
 import coding.legaspi.caviteuser.presentation.terms.TermsActivity
 import coding.legaspi.caviteuser.presentation.viewmodel.EventViewModel
 import coding.legaspi.caviteuser.presentation.viewmodel.EventViewModelFactory
@@ -40,6 +42,7 @@ import coding.legaspi.caviteuser.utils.DialogHelperFactory
 import coding.legaspi.caviteuser.utils.FirebaseManager
 import coding.legaspi.caviteuser.utils.SharedPreferences
 import coding.legaspi.caviteuser.utils.VibrateView
+import com.bumptech.glide.Glide
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -67,6 +70,9 @@ class ProfileCreation : AppCompatActivity(), View.OnClickListener, View.OnFocusC
     private var selectedImageUri: Uri? = null
     lateinit var uriForCamera: Uri
 
+    private lateinit var one: String
+    var gender: String = ""
+    var id: String = ""
     val data = listOf("Female", "Male")
     private lateinit var firstname: String
     private lateinit var lastname: String
@@ -85,7 +91,7 @@ class ProfileCreation : AppCompatActivity(), View.OnClickListener, View.OnFocusC
         loginViewModel = ViewModelProvider(this, factory).get(EventViewModel::class.java)
         dialogHelper = DialogHelperFactory.create(this)
         userid = intent.getStringExtra("userid").toString()
-
+        one = intent.getStringExtra("one").toString()
         binding.progressBar.visibility = View.GONE
         binding.saveBtn.setOnClickListener(this)
         binding.imgProfile.setOnClickListener(this)
@@ -95,8 +101,100 @@ class ProfileCreation : AppCompatActivity(), View.OnClickListener, View.OnFocusC
         binding.etAge.onFocusChangeListener = this
         binding.logout.setOnClickListener(this)
 
-
+        if (one!=null){
+            binding.progressBar.visibility = VISIBLE
+            getProfile(userid)
+        }
         listentToSpinner()
+    }
+
+    private fun getProfile(userId: String) {
+        val responseLiveData = loginViewModel.getByUserId(userId)
+        responseLiveData.observe(this, Observer {
+            when(it){
+                is Result.Success<*> -> {
+                    val profile = it.data as ProfileOutput
+                    if (profile!=null){
+                        val firstname = profile.firstname
+                        val lastname = profile.lastname
+                        val address = profile.address
+                        val age = profile.age
+                        val userid = profile.userid
+                        gender = profile.gender
+                        id = profile.id
+                        binding.etFirst.setText(firstname)
+                        binding.etlast.setText(lastname)
+                        binding.etaddress.setText(address)
+                        binding.etAge.setText(age)
+
+                        FirebaseManager().fetchProfileFromFirebase(userid){
+                            if (it!=null){
+                                Glide.with(this)
+                                    .load(it.imageUri)
+                                    .placeholder(R.drawable.baseline_broken_image_24)
+                                    .error(R.drawable.baseline_broken_image_24)
+                                    .into(binding.imgProfile)
+                                binding.progressBar.visibility = GONE
+                            }
+                        }
+                    }
+
+                }
+                is Result.Error -> {
+                    // Handle error
+                    val exception = it.exception
+                    // Show error message or handle error state
+                    if (exception is IOException) {
+                        // Handle network failure
+                        Log.e("Check Result", "showNetworkError")
+                        binding.progressBar.visibility = GONE
+                        if (exception.equals("java.net.SocketTimeoutException")){
+                            dialogHelper.showUnauthorized(
+                                Error(
+                                    "Server error",
+                                    "Server is down or not reachable ${exception.localizedMessage}"
+                                ),
+                                positiveButtonFunction = {
+                                    recreate()
+                                }
+                            )
+                        } else{
+                            // Handle other exceptions
+                            binding.progressBar.visibility = GONE
+                            dialogHelper.showUnauthorized(
+                                Error(
+                                    "Error",
+                                    exception.localizedMessage!!
+                                ),
+                                positiveButtonFunction = {
+                                }
+                            )
+                            Log.d("Check Result", "Unauthorized")
+                        }
+
+                    } else {
+                        // Handle other exceptions
+                        binding.progressBar.visibility = GONE
+                        dialogHelper.showUnauthorized(
+                            Error(
+                                "Error",
+                                "$exception"
+                            ),
+                            positiveButtonFunction = {
+
+                            }
+                        )
+                        Log.d("Check Result", "showGenericError")
+                    }
+                }
+                Result.Loading -> {
+                    // Handle loading state
+                    Log.d("Check Result", "Loading")
+                    binding.progressBar.visibility = VISIBLE
+                }
+
+            }
+        })
     }
 
     override fun onStart() {
@@ -144,81 +242,168 @@ class ProfileCreation : AppCompatActivity(), View.OnClickListener, View.OnFocusC
         val date = Date(timestamp)
         val formattedDate = sdf.format(date)
         if (validate()){
-            val responseLiveData = loginViewModel.postProfile(Profile(address, age, formattedDate, firstname,selectedOption, lastname,  timestamp.toString(), userid))
-            responseLiveData.observe(this, Observer {
-                when(it){
-                    is Result.Success<*> ->{
-                        val result = it.data as ProfileOutput
-                        Log.d("Check Result", "success $result")
-                        if(result != null){
-                            FirebaseManager().saveImageToFirebase(this, result.userid, selectedImageUri!!){
-                                if (it){
-                                    SharedPreferences().saveCreation(this, "true")
-                                    val intent = Intent(this, TermsActivity::class.java)
-                                    intent.putExtra("userid", userid)
-                                    startActivity(intent)
-                                    binding.progressBar.visibility = View.GONE
-                                    finish()
-                                }else{
-                                    binding.progressBar.visibility = View.GONE
-                                    Toast.makeText(this, "Check you internet connection!", Toast.LENGTH_SHORT).show()
+            if (one!=null){
+                updateProfile(id, formattedDate)
+            }else{
+                val responseLiveData = loginViewModel.postProfile(Profile(address, age, formattedDate, firstname,selectedOption, lastname,  timestamp.toString(), userid))
+                responseLiveData.observe(this, Observer {
+                    when(it){
+                        is Result.Success<*> ->{
+                            val result = it.data as ProfileOutput
+                            Log.d("Check Result", "success $result")
+                            if(result != null){
+                                FirebaseManager().saveImageToFirebase(this, result.userid, selectedImageUri!!){
+                                    if (it){
+                                        SharedPreferences().saveCreation(this, "true")
+                                        val intent = Intent(this, TermsActivity::class.java)
+                                        intent.putExtra("userid", userid)
+                                        startActivity(intent)
+                                        binding.progressBar.visibility = View.GONE
+                                        finish()
+                                    }else{
+                                        binding.progressBar.visibility = View.GONE
+                                        Toast.makeText(this, "Check you internet connection!", Toast.LENGTH_SHORT).show()
+                                    }
                                 }
                             }
                         }
-                    }
-                    is Result.Error ->{
-                        // Handle error
-                        val exception = it.exception
-                        // Show error message or handle error state
-                        if (exception is IOException) {
-                            // Handle network failure
-                            Log.e("Check Result", "${exception.localizedMessage}")
-                            binding.progressBar.visibility = View.GONE
-                            if (exception.localizedMessage!! == "timeout"){
-                                dialogHelper.showUnauthorized(
-                                    Error(
-                                        "Server error",
-                                        "Server is down or not reachable ${exception.message}"
-                                    ),
-                                    positiveButtonFunction = {
-                                        recreate()
-                                    }
-                                )
-                            } else{
+                        is Result.Error ->{
+                            // Handle error
+                            val exception = it.exception
+                            // Show error message or handle error state
+                            if (exception is IOException) {
+                                // Handle network failure
+                                Log.e("Check Result", "${exception.localizedMessage}")
+                                binding.progressBar.visibility = View.GONE
+                                if (exception.localizedMessage!! == "timeout"){
+                                    dialogHelper.showUnauthorized(
+                                        Error(
+                                            "Server error",
+                                            "Server is down or not reachable ${exception.message}"
+                                        ),
+                                        positiveButtonFunction = {
+                                            recreate()
+                                        }
+                                    )
+                                } else{
+                                    // Handle other exceptions
+                                    dialogHelper.showUnauthorized(
+                                        Error(
+                                            "Error",
+                                            exception.localizedMessage!!
+                                        ),
+                                        positiveButtonFunction = {
+
+                                        }
+                                    )
+                                    Log.e("Check Result", "Unauthorized")
+                                }
+                            } else {
                                 // Handle other exceptions
+                                binding.progressBar.visibility = View.GONE
                                 dialogHelper.showUnauthorized(
                                     Error(
                                         "Error",
-                                        exception.localizedMessage!!
+                                        "Something went wrong!"
                                     ),
                                     positiveButtonFunction = {
 
                                     }
                                 )
-                                Log.e("Check Result", "Unauthorized")
+                                Log.e("Check Result", "showGenericError")
                             }
-                        } else {
+                        }
+                        Result.Loading ->{
+                            Log.d("Check Result", "Loading")
+                            binding.progressBar.visibility = View.VISIBLE
+                        }
+                    }
+                })
+            }
+        }
+    }
+
+    fun updateProfile(id: String, formattedDate: String){
+        val patchLiveData = loginViewModel.patchProfile(id, Profile(address, age, formattedDate, firstname,selectedOption, lastname,  timestamp.toString(), userid))
+        patchLiveData.observe(this, Observer {
+            when(it){
+                is Result.Success<*> ->{
+                    if (selectedImageUri!=null){
+                        Log.i("CHECK IMAGE", "$selectedImageUri")
+                        FirebaseManager().updateImage(this, userid, selectedImageUri!!){
+                            if (it){
+                                Toast.makeText(this, "Update successfully!", Toast.LENGTH_SHORT).show()
+                                binding.progressBar.visibility = GONE
+                                val intent = Intent(this, HomeActivity::class.java)
+                                startActivity(intent)
+                                finish()
+                            }else{
+                                binding.progressBar.visibility = GONE
+                                Toast.makeText(this, "Check you internet connection!", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }else{
+                        Log.i("CHECK IMAGE", "no image")
+                        Toast.makeText(this, "Update successfully!", Toast.LENGTH_SHORT).show()
+                        binding.progressBar.visibility = GONE
+                        val intent = Intent(this, HomeActivity::class.java)
+                        startActivity(intent)
+                        finish()
+                    }
+
+                }
+                is Result.Error ->{
+                    // Handle error
+                    val exception = it.exception
+                    // Show error message or handle error state
+                    if (exception is IOException) {
+                        // Handle network failure
+                        Log.e("Check Result", "${exception.localizedMessage}")
+                        binding.progressBar.visibility = View.GONE
+                        if (exception.localizedMessage!! == "timeout"){
+                            dialogHelper.showUnauthorized(
+                                Error(
+                                    "Server error",
+                                    "Server is down or not reachable ${exception.message}"
+                                ),
+                                positiveButtonFunction = {
+                                    recreate()
+                                }
+                            )
+                        } else{
                             // Handle other exceptions
-                            binding.progressBar.visibility = View.GONE
                             dialogHelper.showUnauthorized(
                                 Error(
                                     "Error",
-                                    "Something went wrong!"
+                                    exception.localizedMessage!!
                                 ),
                                 positiveButtonFunction = {
 
                                 }
                             )
-                            Log.e("Check Result", "showGenericError")
+                            Log.e("Check Result", "Unauthorized")
                         }
-                    }
-                    Result.Loading ->{
-                        Log.d("Check Result", "Loading")
-                        binding.progressBar.visibility = View.VISIBLE
+                    } else {
+                        // Handle other exceptions
+                        binding.progressBar.visibility = View.GONE
+                        dialogHelper.showUnauthorized(
+                            Error(
+                                "Error",
+                                "Something went wrong!"
+                            ),
+                            positiveButtonFunction = {
+
+                            }
+                        )
+                        Log.e("Check Result", "showGenericError")
                     }
                 }
-            })
-        }
+                Result.Loading ->{
+                    Log.d("Check Result", "Loading")
+                    binding.progressBar.visibility = View.VISIBLE
+                }
+            }
+        })
     }
 
     override fun onFocusChange(view: View?, hasFocus: Boolean) {
@@ -296,7 +481,11 @@ class ProfileCreation : AppCompatActivity(), View.OnClickListener, View.OnFocusC
                 position: Int,
                 id: Long
             ) {
-                selectedOption = data[position]
+                if (one!=null){
+                    selectedOption = if (gender == data[0]) data[0] else data[1]
+                }else{
+                    selectedOption = data[position]
+                }
                 Log.d("AddEventView", "$selectedOption")
             }
 

@@ -212,7 +212,44 @@ class TutorActivity : AppCompatActivity() {
     }
 
     private fun dialogFun() {
-        dialogHelper.tutorial(tutorialExactPos, tutorial, "Play", "Cancel"){
+        lateinit var value: String
+        when(tutorial) {
+            "MAGANDA KA - BONITA USTE" -> value = "MAGANDA KA - BO-NI-TA US-TE"
+            "MAHAL KITA - TA AMA YO CONTIGO" -> value = "MAHAL KITA - TA A-MA YO CON-TI-GO"
+            "AYOS LANG - MUY BIEN" -> value = "AYOS LANG - MUY BI-EN"
+            "MAGANDANG HAPON - BUENAS TARDES" -> value = "MAGANDANG HAPON - BUE-NAS TAR-DES"
+            "KAMUSTA KA - QUETAL MAN USTE" -> value = "KAMUSTA KA - QUE-TAL MAN US-TE"
+            "SALAMAT - GRACIAS" -> value = "SALAMAT - GRA-CIAS"
+            "PAALAM - ADIOS" -> value = "PAALAM - AD-IOS"
+            "PASINTABI - CON PERMISO"-> value = "PASINTABI - CON PER-MI-SO"
+            "TULOY KAYO - BIENVENIDOS"-> value = "TULOY KAYO - BI-EN-VE-NI-DOS"
+            "MAGANDANG GABI - BUENAS NOCHES"-> value = "MAGANDANG GABI - BUE-NAS NO-CHES"
+            "PATAWAD - PERDONA CONMIGO"-> value = "PATAWAD - PER-DO-NA CON-MI-GO"
+            "MAGANDANG UMAGA - BUENAS DIAS"-> value = "MAGANDANG UMAGA - BUE-NAS DI-AS"
+            "INGAT KA - QUIDAO"-> value = "INGAT KA - QUI-DAO"
+            "AMA - PADRE"-> value = "AMA - PAD-RE"
+            "ANAK NA BABAE - HIJA"-> value = "ANAK NA BABAE - HI-JA"
+            "ANAK NA LALAKI - HIJO"-> value = "ANAK NA LALAKI - HI-JO"
+            "ANONG PANGALAN MO - COSA TU NOMBRE"-> value = "ANONG PANGALAN MO - CO-SA TU NOM-BRE"
+            "APO NA LALAKI - NIETO"-> value = "APO NA LALAKI - NI-E-TO"
+            "ASAWANG BABAE - MUJER"-> value = "ASAWANG BABAE - MU-JER"
+            "ASAWANG LALAKI - MARIDO"-> value = "ASAWANG LALAKI - MA-RI-DO"
+            "BABAE NA APO - NIETA"-> value = "BABAE NA APO - NI-E-TA"
+            "BAYAW - CUÑADO"-> value = "BAYAW - CU-ÑA-DO"
+            "BYENAN NA BABAE - SUEGRA"-> value =  "BYENAN NA BABAE - SU-E-GRA"
+            "BYENAN NA LALAKE - SUEGRO"-> value = "BYENAN NA LALAKE - SU-E-GRO"
+            "HIPAG - CUÑADA"-> value =  "HIPAG - CU-ÑA-DA"
+            "INA - MADRE"-> value = "INA - MAD-RE"
+            "KAPATID NA BABAE - HERMANA"-> value = "KAPATID NA BABAE - HER-MA-NA"
+            "KAPATID NA LALAKI - HERMANO"-> value = "KAPATID NA LALAKI - HER-MA-NO"
+            "LOLA - ABUELA"-> value = "LOLA - ABU-E-LA"
+            "LOLO - ABUELO" -> value = "LOLO - ABU-E-LO"
+            "MGA KAMAGANAK - PARIENTES"-> value = "MGA KAMAGANAK - PAR-I-EN-TES"
+            "SAAN KA NAGMULA - DE DONDE TU"-> value = "SAAN KA NAGMULA - DE DON-DE TU"
+            "TITA-TIA"-> value =  "TITA-TI-A"
+            "TITO-TIO"-> value = "TITO-TI-O"
+        }
+        dialogHelper.tutorial(tutorialExactPos, value, "Play", "Cancel"){
             if (it){
                 mediaPlayerHelper.playMusic(tutorialExactPos){
                     tutorBinding.progressMusic.visibility = GONE

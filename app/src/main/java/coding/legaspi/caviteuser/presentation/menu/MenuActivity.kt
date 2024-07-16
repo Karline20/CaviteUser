@@ -16,6 +16,7 @@ import coding.legaspi.caviteuser.data.model.profile.ProfileOutput
 import coding.legaspi.caviteuser.databinding.ActivityMenuBinding
 import coding.legaspi.caviteuser.presentation.about.AboutActivity
 import coding.legaspi.caviteuser.presentation.auth.LoginActivity
+import coding.legaspi.caviteuser.presentation.auth.profilecreation.ProfileCreation
 import coding.legaspi.caviteuser.presentation.di.Injector
 import coding.legaspi.caviteuser.presentation.favorites.FavoritesActivity
 import coding.legaspi.caviteuser.presentation.home.HomeActivity
@@ -30,6 +31,7 @@ import coding.legaspi.caviteuser.utils.SharedPreferences
 import com.bumptech.glide.Glide
 import com.google.firebase.ktx.Firebase
 import java.io.IOException
+import java.io.Serializable
 import javax.inject.Inject
 
 class MenuActivity : AppCompatActivity() {
@@ -39,6 +41,8 @@ class MenuActivity : AppCompatActivity() {
     private lateinit var loginViewModel: EventViewModel
     private lateinit var binding: ActivityMenuBinding
     private lateinit var dialogHelper: DialogHelper
+
+    lateinit var profileObject: ProfileOutput
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,10 +75,11 @@ class MenuActivity : AppCompatActivity() {
                 when(it){
                     is Result.Success<*> -> {
                         val profile = it.data as ProfileOutput
-
                         if (profile!=null){
                             val firstname = profile.firstname
                             val lastname = profile.lastname
+
+                            profileObject = profile
                             binding.txtName.text = "$firstname $lastname"
                         }
 
@@ -134,11 +139,17 @@ class MenuActivity : AppCompatActivity() {
 
                 }
             })
-
         }
     }
 
     private fun setMenuButton() {
+        val (token, userid) = SharedPreferences().checkToken(this)
+        binding.updateProfile.setOnClickListener{
+            val intent = Intent(this, ProfileCreation::class.java)
+            intent.putExtra("userid", userid)
+            intent.putExtra("one", "one")
+            startActivity(intent)
+        }
         binding.back.setOnClickListener {
             onBackPressed()
             finish()

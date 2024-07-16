@@ -38,8 +38,10 @@
         android:layout_height="match_parent"
         android:fillViewport="true">
         <RelativeLayout
+            android:id="@+id/rv_events_background"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/hymn_background"
             android:layout_marginBottom="5dp">
             <include
                 android:id="@+id/logged_in_top_nav"
@@ -62,6 +64,7 @@
                 android:id="@+id/rrl_first"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 android:layout_below="@+id/logged_in_top_nav"
                 android:layout_marginStart="2dp"
                 android:layout_marginTop="2dp"
@@ -86,6 +89,7 @@
 
             <RelativeLayout
                 android:id="@+id/rr_mid"
+                tools:visibility="gone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/rrl_first"
@@ -101,6 +105,7 @@
                     android:id="@+id/ll_history"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:visibility="gone"
                     android:orientation="horizontal">
 
                     <LinearLayout
@@ -108,6 +113,7 @@
                         android:gravity="center_horizontal"
                         android:layout_width="100dp"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:orientation="vertical"
                         android:background="@color/white">
 
@@ -132,6 +138,8 @@
                         android:id="@+id/events"
                         android:gravity="center_horizontal"
                         android:layout_width="100dp"
+                        android:layout_weight="1"
+
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
                         android:background="@color/white">
@@ -139,7 +147,7 @@
                         <de.hdodenhof.circleimageview.CircleImageView
                             android:layout_width="45dp"
                             android:layout_height="45dp"
-                            android:src="@drawable/festival"
+                            android:src="@drawable/event_v2"
                             app:civ_border_overlay="true"
                             app:civ_border_width="0dp" />
 
@@ -155,6 +163,7 @@
                         android:id="@+id/heroes"
                         android:gravity="center_horizontal"
                         android:layout_width="100dp"
+                        android:layout_weight="1"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
                         android:background="@color/white">
@@ -170,7 +179,7 @@
                             android:id="@+id/txt_hero"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Heroes"
+                            android:text="Notable Person"
                             />
                     </LinearLayout>
 
@@ -180,21 +189,22 @@
                     android:id="@+id/ll_foods"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:visibility="visible"
                     android:orientation="horizontal">
 
                     <LinearLayout
-                        android:layout_weight="1"
                         android:id="@+id/restaurant"
                         android:gravity="center_horizontal"
                         android:layout_width="100dp"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:orientation="vertical"
                         android:background="@color/white">
 
                         <de.hdodenhof.circleimageview.CircleImageView
                             android:layout_width="45dp"
                             android:layout_height="45dp"
-                            android:src="@drawable/restau"
+                            android:src="@drawable/restaurant_v2"
                             app:civ_border_overlay="true"
                             app:civ_border_width="0dp" />
 
@@ -220,7 +230,7 @@
                         <de.hdodenhof.circleimageview.CircleImageView
                             android:layout_width="45dp"
                             android:layout_height="45dp"
-                            android:src="@drawable/food"
+                            android:src="@drawable/delicacies_v2"
                             app:civ_border_overlay="true"
                             app:civ_border_width="0dp" />
 
@@ -246,7 +256,7 @@
                         <de.hdodenhof.circleimageview.CircleImageView
                             android:layout_width="45dp"
                             android:layout_height="45dp"
-                            android:src="@drawable/cafep"
+                            android:src="@drawable/cafe_v2"
                             app:civ_border_overlay="true"
                             app:civ_border_width="0dp" />
 
@@ -262,31 +272,6 @@
 
                     <LinearLayout
                         android:layout_weight="1"
-                        android:id="@+id/stores"
-                        android:gravity="center_horizontal"
-                        android:layout_width="100dp"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:background="@color/white">
-
-                        <de.hdodenhof.circleimageview.CircleImageView
-                            android:layout_width="45dp"
-                            android:layout_height="45dp"
-                            android:src="@drawable/store"
-                            app:civ_border_overlay="true"
-                            app:civ_border_width="0dp" />
-
-                        <TextView
-                            android:id="@+id/txt_store"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Convenience Stores"
-                            android:textAlignment="center"
-                            />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_weight="1"
                         android:id="@+id/fastfood"
                         android:gravity="center_horizontal"
                         android:layout_width="100dp"
@@ -297,7 +282,7 @@
                         <de.hdodenhof.circleimageview.CircleImageView
                             android:layout_width="45dp"
                             android:layout_height="45dp"
-                            android:src="@drawable/fast"
+                            android:src="@drawable/fast_food_v2"
                             app:civ_border_overlay="true"
                             app:civ_border_width="0dp" />
 
@@ -341,6 +326,7 @@
                     android:id="@+id/ll_hotres"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:visibility="gone"
                     android:orientation="horizontal">
 
                     <LinearLayout
@@ -400,6 +386,7 @@
                     android:id="@+id/ll_contacts"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:visibility="gone"
                     android:orientation="horizontal">
 
                     <LinearLayout
@@ -424,6 +411,32 @@
                             android:layout_height="wrap_content"
                             android:textAlignment="center"
                             android:text="Hospital"
+                            />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_weight="1"
+                        android:id="@+id/healthCenter"
+                        android:gravity="center_horizontal"
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="@color/white">
+
+                        <de.hdodenhof.circleimageview.CircleImageView
+                            android:layout_width="45dp"
+                            android:layout_height="45dp"
+                            android:src="@drawable/health_center"
+                            app:civ_border_overlay="true"
+                            app:civ_border_width="0dp" />
+
+                        <TextView
+                            android:id="@+id/txt_health_center"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAlignment="center"
+                            android:text="Health Center"
                             />
 
                     </LinearLayout>
@@ -509,6 +522,7 @@
                     android:id="@+id/ll_school"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:visibility="gone"
                     android:orientation="horizontal">
 
                     <LinearLayout
@@ -646,6 +660,7 @@
                 android:id="@+id/rrl_second"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                tools:visibility="gone"
                 android:background="@color/white"
                 android:layout_margin="2dp"
                 android:layout_below="@+id/rr_mid"
@@ -686,6 +701,14 @@
                     />
 
             </RelativeLayout>
+
+            <include
+                android:id="@+id/hymn_bar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                layout="@layout/layout_cavite_hymn"
+                android:layout_below="@id/logged_in_top_nav"
+                />
 
         </RelativeLayout>
     </ScrollView>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout_hymn"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:id="@+id/first_layer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp">
+            <ImageView
+                android:id="@+id/play_sound"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/sound"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="20dp"/>
+
+            <TextView
+                android:id="@+id/hymn_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="@string/hymn_tagalog_title"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:layout_centerInParent="true"
+                android:textAlignment="center" />
+        </RelativeLayout>
+
+
+        <TextView
+            android:id="@+id/lyrics_category"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="(TAGALOG LYRICS)"
+            android:textSize="18sp"
+            android:textStyle="normal"
+            android:layout_below="@+id/first_layer"
+            android:layout_centerInParent="true"
+            android:textAlignment="center" />
+
+        <TextView
+            android:id="@+id/hymn_lyrics"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/lyrics_category"
+            tools:text="@string/hymn_chabacano_lyrics"
+            android:layout_marginTop="10dp"
+            android:lineHeight="30dp"
+            android:textSize="18sp"
+            android:textStyle="normal"
+            android:layout_centerInParent="true"
+            android:textAlignment="center" />
+
+
+    </RelativeLayout>
+
+</RelativeLayout>

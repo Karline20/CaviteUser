@@ -79,6 +79,8 @@ interface AllEventsRemoteDataSource {
 
     suspend fun getTutorial(): Response<List<Tutorial>>
 
+    suspend fun searchTutorial(searchQuery: String): Response<List<Tutorial>>
+
     suspend fun postTutorialStatus(tutorialStatus: TutorialStatus): Response<TutorialStatusOutput>
 
     suspend fun getTutorialByUserId(tutorialid: String, userid: String): Response<TutorialStatusOutput>

@@ -116,6 +116,10 @@ class AllEventsRemoteDataSourceImpl(
         return tmdbService.getTutorial()
     }
 
+    override suspend fun searchTutorial(searchQuery: String): Response<List<Tutorial>> {
+        return tmdbService.searchTutorial(searchQuery)
+    }
+
     override suspend fun postTutorialStatus(tutorialStatus: TutorialStatus): Response<TutorialStatusOutput> {
         return tmdbService.postTutorialStatus(tutorialStatus)
     }

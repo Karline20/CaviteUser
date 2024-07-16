@@ -35,6 +35,18 @@ class SpeechModel {
     val tutorial32 = "SAAN KA NAGMULA - DE DONDE TU"
     val tutorial33 = "TITA-TIA"
     val tutorial34 = "TITO-TIO"
+    val tutorial35 = "PAG BISITA - DI BISITA"
+    val tutorial36 = "PAMAMASYAL - DI PASYA"
+    val tutorial37 = "SAAN PUPUNTA - DONDI DINDA"
+
+    val tutor35 = "bonita oski"
+    val tutor35a = "bonita st"
+    val tutor35s = "benita st"
+    val tutor35d = "bonita usa"
+    val tutor35f = "bonita ustet"
+    val tutor35g = "bonita hosting"
+    val tutor35h = "juanita austin"
+    val tutor35j = "bonita"
 
     val tutor1 = "bonita oski"
     val tutor11 = "bonita st"

@@ -58,6 +58,16 @@
                 android:orientation="vertical"
                 android:layout_marginTop="5dp"
                 android:layout_below="@+id/logged_in_top_nav">
+
+                <SearchView
+                    android:id="@+id/sv_tutorial"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:queryHint="Search here"
+                    android:background="@drawable/shape_rec_02"
+                    android:textSize="16sp"
+                    />
+
                 <TextView
                     android:id="@+id/no_data"
                     android:layout_width="match_parent"

@@ -208,6 +208,20 @@ class AllEventsRepositoryImpl(
         return tutorialList
     }
 
+    override suspend fun searchTutorial(searchQuery: String): List<Tutorial>{
+        var tutorialList: List<Tutorial> = emptyList()
+        try {
+            val response = allEventsRemoteDataSource.searchTutorial(searchQuery)
+            val body = response.body()
+            if (body!=null){
+                tutorialList = body
+            }
+        }catch (e: Exception){
+            Log.e("MyTag", e.message.toString())
+        }
+        return tutorialList
+    }
+
     override suspend fun postTutorialStatus(tutorialStatus: TutorialStatus): Response<TutorialStatusOutput> {
         return allEventsRemoteDataSource.postTutorialStatus(tutorialStatus)
     }

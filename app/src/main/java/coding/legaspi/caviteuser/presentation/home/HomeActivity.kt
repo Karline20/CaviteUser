@@ -76,8 +76,8 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun setSlideShow() {
-        imageList.add(SlideModel(R.drawable.fast, "Fast food"))
-        imageList.add(SlideModel(R.drawable.festival, "Festivals"))
+        imageList.add(SlideModel(R.drawable.jobee, "Fast food"))
+        imageList.add(SlideModel(R.drawable.fest, "Festivals"))
         imageList.add(SlideModel(R.drawable.fire, "Fire Stations"))
         imageList.add(SlideModel(R.drawable.gas, "Gas stations"))
         imageList.add(SlideModel(R.drawable.govoffices, "Government offices"))

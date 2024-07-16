@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/background"
+    android:background="@drawable/new_background"
     tools:context=".presentation.auth.RegistrationActivity">
 
     <RelativeLayout
@@ -32,38 +32,6 @@
         android:layout_marginTop="20dp"
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="20dp">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="80dp"
-            android:layout_marginStart="30dp"
-            android:orientation="vertical">
-
-            <TextView
-                android:text="WELCOME!"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textStyle="bold"
-                android:textSize="30sp"
-                android:textColor="@color/colorPrimaryDark"/>
-
-            <TextView
-                android:text="EXPLORE"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textStyle="bold"
-                android:textSize="30sp"
-                android:textColor="@color/colorPrimaryDark"/>
-
-            <TextView
-                android:text="Cavite City"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textStyle="bold"
-                android:textSize="40sp"
-                android:textColor="@color/Red"/>
-        </LinearLayout>
 
         <RelativeLayout
             android:id="@+id/rrlLogin"

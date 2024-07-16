@@ -129,6 +129,9 @@ interface TMDBService {
     @GET("/tutorial")
     suspend fun getTutorial(): Response<List<Tutorial>>
 
+    @GET("/tutorial/search")
+    suspend fun searchTutorial(@Query("q") searchQuery: String): Response<List<Tutorial>>
+
     @POST("/tutorialStatus")
     suspend fun postTutorialStatus(@Body tutorialStatus: TutorialStatus): Response<TutorialStatusOutput>
 

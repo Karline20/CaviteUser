@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
+import android.widget.FrameLayout
+import android.widget.SearchView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -64,7 +66,162 @@ class TutorialActivity : AppCompatActivity() {
         setProfile()
         setRv()
         setMenu()
+        listenToSearch()
 
+    }
+
+    private fun listenToSearch() {
+        binding.svTutorial.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                if (!query.isNullOrBlank()){
+                    binding.progressBar.visibility = VISIBLE
+                    try {
+                        val searchResponse = eventViewModel.searchTutorial(query)
+                        searchResponse.observe(this@TutorialActivity, Observer{
+                            when(it){
+                                is Result.Success<*> ->{
+                                    val result = it.data as List<Tutorial>
+                                    if(result!=null){
+                                        if(result.isEmpty()){
+                                            binding.noData.visibility= VISIBLE
+                                            binding.rvTutorial.visibility= GONE
+                                            binding.progressBar.visibility = GONE
+                                        }else{
+                                            tutorialList.clear()
+                                            tutorialList.addAll(result)
+                                            val llm = LinearLayoutManager(this@TutorialActivity, RecyclerView.VERTICAL, false)
+                                            binding.rvTutorial.layoutManager = llm
+                                            binding.rvTutorial.adapter = tutorialAdapter
+                                            binding.progressBar.visibility = GONE
+                                            binding.noData.visibility= GONE
+                                            tutorialAdapter.setSuggestions(result)
+                                        }
+                                    }else{
+                                        binding.noData.visibility= VISIBLE
+                                        binding.rvTutorial.visibility= GONE
+                                        binding.progressBar.visibility = GONE
+                                    }
+                                }
+                                is Result.Error -> {
+                                    val exception = it.exception
+
+                                    if (exception is IOException) {
+                                        binding.progressBar.visibility = GONE
+                                        if (exception.localizedMessage!! == "timeout"){
+                                            dialogHelper.showUnauthorized(
+                                                Error(
+                                                    "Server error",
+                                                    "Server is down or not reachable ${exception.message}"
+                                                ),
+                                                positiveButtonFunction = {
+                                                    recreate()
+                                                }
+                                            )
+                                        } else{
+                                            dialogHelper.showUnauthorized(Error("Error",exception.localizedMessage!!),
+                                                positiveButtonFunction = {
+                                                })
+                                        }
+                                    } else {
+                                        binding.progressBar.visibility = GONE
+                                        dialogHelper.showUnauthorized(Error("Error","Something went wrong!"),
+                                            positiveButtonFunction = {
+                                            })
+                                    }
+                                }
+                                Result.Loading -> {
+                                    binding.progressBar.visibility = VISIBLE
+                                }
+                            }
+                        })
+                    } catch (e: IOException) {
+                        e.printStackTrace()
+                        binding.noData.visibility= VISIBLE
+                        binding.progressBar.visibility = GONE
+                    }
+                }else{
+                    setRv()
+                }
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String): Boolean {
+                updateBySuggestions(newText)
+                return true
+            }
+        })
+    }
+
+    private fun updateBySuggestions(newText: String) {
+        if (newText.isNullOrEmpty()){
+            setRv()
+            return
+        }
+        binding.rvTutorial.visibility = FrameLayout.VISIBLE
+        try {
+            val searchResponse = eventViewModel.searchTutorial(newText)
+            searchResponse.observe(this@TutorialActivity, Observer{
+                when(it){
+                    is Result.Success<*> ->{
+                        val result = it.data as List<Tutorial>
+                        if(result!=null){
+                            if(result.isEmpty()){
+                                binding.noData.visibility= VISIBLE
+                                binding.rvTutorial.visibility= GONE
+                                binding.progressBar.visibility = GONE
+                            }else{
+                                tutorialList.clear()
+                                tutorialList.addAll(result)
+                                val llm = LinearLayoutManager(this@TutorialActivity, RecyclerView.VERTICAL, false)
+                                binding.rvTutorial.layoutManager = llm
+                                binding.rvTutorial.adapter = tutorialAdapter
+                                binding.progressBar.visibility = GONE
+                                binding.noData.visibility= GONE
+                                tutorialAdapter.setSuggestions(result)
+                            }
+                        }else{
+                            binding.noData.visibility= VISIBLE
+                            binding.rvTutorial.visibility= GONE
+                            binding.progressBar.visibility = GONE
+                        }
+                    }
+                    is Result.Error -> {
+                        val exception = it.exception
+
+                        if (exception is IOException) {
+                            binding.progressBar.visibility = GONE
+                            if (exception.localizedMessage!! == "timeout"){
+                                dialogHelper.showUnauthorized(
+                                    Error(
+                                        "Server error",
+                                        "Server is down or not reachable ${exception.message}"
+                                    ),
+                                    positiveButtonFunction = {
+                                        recreate()
+                                    }
+                                )
+                            } else{
+                                dialogHelper.showUnauthorized(Error("Error",exception.localizedMessage!!),
+                                    positiveButtonFunction = {
+                                    })
+                            }
+                        } else {
+                            binding.progressBar.visibility = GONE
+                            dialogHelper.showUnauthorized(Error("Error","Something went wrong!"),
+                                positiveButtonFunction = {
+                                })
+                        }
+                    }
+                    Result.Loading -> {
+                        binding.progressBar.visibility = VISIBLE
+                    }
+                }
+            })
+        } catch (e: IOException) {
+            e.printStackTrace()
+            binding.noData.visibility= VISIBLE
+            binding.progressBar.visibility = GONE
+        }
     }
 
     override fun onResume() {
@@ -88,7 +245,7 @@ class TutorialActivity : AppCompatActivity() {
                 is Result.Success<*> -> {
                     val result = it.data as List<Tutorial>
                     if (result!=null){
-                        if (result.isNullOrEmpty()){
+                        if (result.isEmpty()){
                             binding.noData.visibility= VISIBLE
                             binding.rvTutorial.visibility= GONE
                             binding.progressBar.visibility = GONE
@@ -102,7 +259,8 @@ class TutorialActivity : AppCompatActivity() {
                             tutorialAdapter.notifyDataSetChanged()
                         }
                     }else{
-
+                        binding.noData.visibility=VISIBLE
+                        binding.rvTutorial.visibility= GONE
                     }
                 }
                 is Result.Error -> {

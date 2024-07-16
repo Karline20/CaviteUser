@@ -194,6 +194,17 @@ class EventViewModel(
         }
     }
 
+    fun searchTutorial(searchQuery: String) = liveData {
+        try {
+            val getTutorial = getEventsUseCase.searchTutorial(searchQuery)
+            emit(Result.Success(getTutorial))
+        } catch (ioException: IOException) {
+            emit(Result.Error(ioException))
+        } catch (exception: Exception) {
+            emit(Result.Error(exception))
+        }
+    }
+
     fun postTutorialStatus(tutorialStatus: TutorialStatus) = liveData(Dispatchers.IO) {
         try {
             val postTutorialStatus = getEventsUseCase.postTutorialStatus(tutorialStatus)
@@ -334,6 +345,17 @@ class EventViewModel(
         }
     }
 
+    fun patchProfile(id: String, profile: Profile) = liveData {
+        try {
+            val patchProfile = getEventsUseCase.patchProfile(id, profile)
+            emit(Result.Success(patchProfile))
+        } catch (ioException: IOException) {
+            emit(Result.Error(ioException))
+        } catch (exception: Exception) {
+            emit(Result.Error(exception))
+        }
+
+    }
     fun postProfile(profile: Profile) = liveData(Dispatchers.IO) {
         try {
             val profile = getEventsUseCase.postProfile(profile)

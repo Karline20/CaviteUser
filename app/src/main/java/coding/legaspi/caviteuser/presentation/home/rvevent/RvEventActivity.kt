@@ -1,18 +1,20 @@
 package coding.legaspi.caviteuser.presentation.home.rvevent
 
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.FrameLayout
 import android.widget.SearchView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import coding.legaspi.caviteuser.R
 import coding.legaspi.caviteuser.Result
 import coding.legaspi.caviteuser.data.model.error.Error
@@ -26,10 +28,13 @@ import coding.legaspi.caviteuser.presentation.viewmodel.EventViewModelFactory
 import coding.legaspi.caviteuser.utils.DialogHelper
 import coding.legaspi.caviteuser.utils.DialogHelperFactory
 import coding.legaspi.caviteuser.utils.FirebaseManager
+import coding.legaspi.caviteuser.utils.MediaPlayerFactory
+import coding.legaspi.caviteuser.utils.MediaPlayerHelper
 import coding.legaspi.caviteuser.utils.SharedPreferences
 import com.bumptech.glide.Glide
 import java.io.IOException
 import javax.inject.Inject
+
 
 class RvEventActivity : AppCompatActivity() {
 
@@ -43,6 +48,7 @@ class RvEventActivity : AppCompatActivity() {
     private lateinit var allModelOutput: ArrayList<AllModelOutput>
 
     private lateinit var dialogHelper: DialogHelper
+    private lateinit var mediaPlayerHelper: MediaPlayerHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,6 +59,7 @@ class RvEventActivity : AppCompatActivity() {
         (application as Injector).createEventsSubComponent()
             .inject(this)
         eventViewModel= ViewModelProvider(this, factory).get(EventViewModel::class.java)
+        mediaPlayerHelper = MediaPlayerFactory.create(this)
         allModelOutput = arrayListOf()
         eventAdapter = EventAdapter(allModelOutput, this)
         dialogHelper = DialogHelperFactory.create(this)
@@ -61,7 +68,6 @@ class RvEventActivity : AppCompatActivity() {
 
         setProfile()
         setMenu()
-        initRv()
         listenToSearch()
     }
 
@@ -90,6 +96,7 @@ class RvEventActivity : AppCompatActivity() {
         binding.llHotres.visibility = GONE
         binding.llFoods.visibility = GONE
         binding.llSchool.visibility = GONE
+        binding.hymnBar.layoutHymn.visibility = GONE
         when(name){
             "History" -> {
                 binding.llHistory.visibility = VISIBLE
@@ -111,7 +118,44 @@ class RvEventActivity : AppCompatActivity() {
                 binding.llSchool.visibility = VISIBLE
                 setBindingSchool()
             }
+            "Cavite City Hymn" -> {
+                binding.noData.visibility = GONE
+                binding.rrMid.visibility = GONE
+                binding.rrlFirst.visibility = GONE
+                binding.rrlSecond.visibility = GONE
+                binding.hymnBar.layoutHymn.visibility = VISIBLE
+                binding.hymnBar.lyricsCategory.visibility = VISIBLE
+                binding.hymnBar.hymnTitle.text = getString(R.string.hymn_tagalog_title)
+                binding.hymnBar.hymnLyrics.text = getString(R.string.hymn_tagalog_lyrics)
+                binding.hymnBar.lyricsCategory.setOnClickListener {
+                    setLyricsOptions()
+                }
+                binding.hymnBar.playSound.setOnClickListener {
+                    mediaPlayerHelper.playMusic("Tagalog Hymn"){
+                        if (it) mediaPlayerHelper.stopMusic()
+                    }
+                }
+            }
         }
+    }
+
+    private fun setLyricsOptions() {
+        val fonts = arrayOf(
+            "TAGALOG LYRICS", "CHABACANO LYRICS"
+        )
+
+        val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+        builder.setTitle("Select translation")
+        builder.setItems(fonts, DialogInterface.OnClickListener { dialog, which ->
+            if ("TAGALOG LYRICS" == fonts[which]) {
+                binding.hymnBar.hymnTitle.text = getString(R.string.hymn_tagalog_title)
+                binding.hymnBar.hymnLyrics.text = getString(R.string.hymn_tagalog_lyrics)
+            } else if ("CHABACANO LYRICS" == fonts[which]) {
+                binding.hymnBar.hymnTitle.text = getString(R.string.hymn_chabacano_title)
+                binding.hymnBar.hymnLyrics.text = getString(R.string.hymn_chabacano_lyrics)
+            }
+        })
+        builder.show()
     }
 
     private fun setBindingSchool() {
@@ -188,10 +232,10 @@ class RvEventActivity : AppCompatActivity() {
             setRvCate("Cafes")
             listenToByCatSearch("Cafes")
         }
-        binding.stores.setOnClickListener {
-            setRvCate("Convenience Stores")
-            listenToByCatSearch("Convenience Stores")
-        }
+//        binding.stores.setOnClickListener {
+//            setRvCate("Convenience Stores")
+//            listenToByCatSearch("Convenience Stores")
+//        }
         binding.fastfood.setOnClickListener {
             setRvCate("Fast Food")
             listenToByCatSearch("Fast Food")
@@ -451,10 +495,11 @@ class RvEventActivity : AppCompatActivity() {
         super.onResume()
         binding.noData.visibility= GONE
         Log.d("RvEvent", name)
+        Log.d("eventID", "onResume")
         initRv()
         binding.rrMid.visibility = GONE
         when(name){
-            "History", "Foods","Hotel & Resorts","Emergency Care & Contacts"  -> {
+            "History", "Foods","Hotel & Resorts","Emergency Care & Contacts", "Schools" -> {
                 binding.rrMid.visibility = VISIBLE
                 setCategory(name)
             }
@@ -470,6 +515,7 @@ class RvEventActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
+        Log.d("eventID", "onStart")
         binding.noData.visibility= GONE
         Log.d("RvEvent", name)
         initRv()
@@ -491,13 +537,8 @@ class RvEventActivity : AppCompatActivity() {
                             }else{
                                 allModelOutput.clear()
                                 allModelOutput.addAll(result)
-
-                                val myLinearLayoutManager = object : LinearLayoutManager(this, RecyclerView.VERTICAL, false){
-                                    override fun canScrollVertically(): Boolean {
-                                        return false
-                                    }
-                                }
-                                binding.epoxyRvAdd.layoutManager = myLinearLayoutManager
+                                val llm = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
+                                binding.epoxyRvAdd.layoutManager = llm
                                 binding.epoxyRvAdd.adapter = eventAdapter
                                 binding.labelWelcome.text = "Category all"
                                 eventAdapter.notifyDataSetChanged()

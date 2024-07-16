@@ -76,6 +76,7 @@ class GetEventsUseCase(private val allEventsRepository: AllEventsRepository) {
     suspend fun getByUserId(userid: String): Response<ProfileOutput> = allEventsRepository.getByUserId(userid)
 
     suspend fun getTutorial(): List<Tutorial> = allEventsRepository.getTutorial()
+    suspend fun searchTutorial(searchQuery: String): List<Tutorial> = allEventsRepository.searchTutorial(searchQuery)
 
     suspend fun postTutorialStatus(tutorialStatus: TutorialStatus): Response<TutorialStatusOutput> = allEventsRepository.postTutorialStatus(tutorialStatus)
 

@@ -73,6 +73,8 @@ interface AllEventsRepository {
 
     suspend fun getTutorial(): List<Tutorial>
 
+    suspend fun searchTutorial(searchQuery: String): List<Tutorial>
+
     suspend fun postTutorialStatus(tutorialStatus: TutorialStatus): Response<TutorialStatusOutput>
 
     suspend fun getTutorialByUserId(tutorialid: String, userid: String): Response<TutorialStatusOutput>

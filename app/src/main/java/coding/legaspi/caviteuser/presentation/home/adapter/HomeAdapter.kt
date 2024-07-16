@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
@@ -54,23 +55,27 @@ class HomeAdapter internal constructor(
 
         holder.label_registered.text = name
         when(name){
-            "Cafe"-> holder.postImageView.setImageResource(R.drawable.cafep)
-            "Events"-> holder.postImageView.setImageResource(R.drawable.events)
+            "Cafe"-> holder.postImageView.setImageResource(R.drawable.cafe_v2)
+            "Events"-> holder.postImageView.setImageResource(R.drawable.event_v2)
             "Fast-food"-> holder.postImageView.setImageResource(R.drawable.fastp)
             "Festival"-> holder.postImageView.setImageResource(R.drawable.festiva)
-            "Foods"-> holder.postImageView.setImageResource(R.drawable.food)
+            "Foods"-> holder.postImageView.setImageResource(R.drawable.food_v2)
             "Gas Station"-> holder.postImageView.setImageResource(R.drawable.gasstation)
             "Government offices"-> holder.postImageView.setImageResource(R.drawable.gov)
-            "History"-> holder.postImageView.setImageResource(R.drawable.historyhis)
+            "History"-> holder.postImageView.setImageResource(R.drawable.history_v2)
             "Home made food"-> holder.postImageView.setImageResource(R.drawable.homej)
-            "Restaurants"-> holder.postImageView.setImageResource(R.drawable.restaurant)
+            "Restaurants"-> holder.postImageView.setImageResource(R.drawable.restaurant_v2)
             "Hotel & Resorts" -> holder.postImageView.setImageResource(R.drawable.hotelresort)
-            "Schools"-> holder.postImageView.setImageResource(R.drawable.schoolp)
+            "Schools"-> holder.postImageView.setImageResource(R.drawable.school_v2)
             "Stores"-> holder.postImageView.setImageResource(R.drawable.storep)
-            "Places To visit"-> holder.postImageView.setImageResource(R.drawable.places)
+            "Places To visit"-> holder.postImageView.setImageResource(R.drawable.places_to_visit_v2)
             "Emergency Care & Contacts"-> holder.postImageView.setImageResource(R.drawable.emergencyp)
             "Church"-> holder.postImageView.setImageResource(R.drawable.churchlogo)
             "Hospital and Clinic"-> holder.postImageView.setImageResource(R.drawable.hospital)
+            "Cavite City Hymn" -> {
+                holder.postImageView.setImageResource(R.drawable.cavite_hymn)
+                holder.txt_number.visibility = GONE
+            }
         }
 
         countEvents(name, holder)

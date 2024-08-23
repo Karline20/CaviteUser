@@ -79,6 +79,8 @@
                         android:layout_width="25dp"
                         android:layout_height="25dp"
                         android:src="@drawable/baseline_favorite_border_24"
+                        android:layout_toEndOf="@+id/itinerary"
+                        android:layout_marginEnd="10dp"
                         android:layout_marginRight="10dp"/>
 
                     <ImageView
@@ -87,6 +89,13 @@
                         android:layout_height="25dp"
                         android:src="@drawable/outline_star_rate_24"
                         android:layout_toEndOf="@+id/favorites"/>
+
+                    <ImageView
+                        android:id="@+id/itinerary"
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:layout_marginEnd="10dp"
+                        android:src="@drawable/outline_itenerary_outline" />
 
                 </RelativeLayout>
 
@@ -126,13 +135,26 @@
                 android:background="@color/coolGrayColor"
                 android:layout_marginRight="10dp"
                 android:layout_marginLeft="10dp"/>
+
+            <Button
+                android:id="@+id/itineraryButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/view1"
+                android:text="YOU HAVE AN ONGOING TRIP!"
+                android:textAllCaps="true"
+                android:fontFamily="@font/barlow_bold"
+                android:backgroundTint="@color/colorFirst"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                />
             <TextView
                 android:id="@+id/label_name"
                 android:layout_width="250dp"
                 android:layout_height="wrap_content"
                 android:textSize="15sp"
                 android:text="Name"
-                android:layout_below="@+id/view1"
+                android:layout_below="@+id/itineraryButton"
                 android:textColor="@color/Red"
                 android:textStyle="bold"
                 android:layout_marginLeft="10dp"

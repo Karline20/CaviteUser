@@ -103,7 +103,6 @@ class MapActivity : AppCompatActivity(){
         location = intent.getStringExtra("location").toString()
 
         setProfile()
-
     }
 
 
@@ -172,7 +171,6 @@ class MapActivity : AppCompatActivity(){
                 }
             }
         }
-
     }
     fun vectorToBitmap(vectorDrawable: Int): Bitmap {
         val vector = VectorDrawableCompat.create(resources, vectorDrawable, null)
@@ -254,6 +252,7 @@ class MapActivity : AppCompatActivity(){
     }
 
     private fun onDirectionFailure(t: Throwable) {
+        Log.e("MAPROUTER", "message ${t.message}")
         showSnackbar(t.message)
     }
 
@@ -266,6 +265,20 @@ class MapActivity : AppCompatActivity(){
     }
 
     private fun showSnackbar(message: String?) {
+        if(message == "REQUEST_DENIED") {
+            dialogHelper.wrong(
+                "Routing error!",
+                "Theres an error occur while routing your destination!",
+                "Google Maps",
+                "Cancel"
+            ) {
+                if (it){
+                    val intent = Intent(Intent.ACTION_VIEW)
+                    intent.data = (Uri.parse("http://maps.google.com/maps?daddr=${latitude.toDouble()},${longitude.toDouble()}"))
+                    startActivity(intent)
+                }
+            }
+        }
         message?.let {
             Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_SHORT).show()
         }

@@ -128,6 +128,7 @@ class TutorialAdapter(
             "SAAN KA NAGMULA - DE DONDE TU"-> holder.textView.text = "SAAN KA NAGMULA - DE DON-DE TU"
             "TITA-TIA"-> holder.textView.text =  "TITA-TI-A"
             "TITO-TIO"-> holder.textView.text = "TITO-TI-O"
+            else -> holder.textView.text = tutorial
         }
 
         holder.count.text = "Tutorial $exactPos"

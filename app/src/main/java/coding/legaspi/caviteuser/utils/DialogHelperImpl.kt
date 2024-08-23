@@ -168,6 +168,7 @@ class DialogHelperImpl(private val context: Context) : DialogHelper {
             .setTitleText(title)
             .setContentText(content)
             .setConfirmText(confirm)
+            .setCancelText(cancel)
             .setConfirmClickListener {
                 callback(true)
                 it.dismiss()

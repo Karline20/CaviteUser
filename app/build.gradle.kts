@@ -10,12 +10,12 @@ plugins {
 
 android {
     namespace = "coding.legaspi.caviteuser"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "coding.legaspi.caviteuser"
         minSdk = 26
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -66,6 +66,7 @@ dependencies {
     implementation ("com.github.prabhat1707:EasyWayLocation:2.4")
     implementation("com.android.volley:volley:1.2.1")
     implementation ("com.akexorcist:google-direction-library:1.2.1")
+    implementation("androidx.activity:activity:1.8.0")
 
 
     val lifecycle_version = "2.6.1"
@@ -85,6 +86,7 @@ dependencies {
     val ratingVersion = "1.0.0"
     val lottieVersion = "3.4.0"
     val imageSlideVersion = "0.1.2"
+    val datePickerVersion = "2.0.7"
 
 
     // ViewModel
@@ -128,6 +130,10 @@ dependencies {
     implementation ("com.squareup.picasso:picasso:$picassoVersion")
     implementation ("com.github.MarsadMaqsood:StylishDialogs:$stylishDialogsVersion")
     implementation ("com.github.denzcoskun:ImageSlideshow:$imageSlideVersion")
+    implementation ("com.github.swnishan:materialdatetimepicker:1.0.0")
+
+    implementation ("com.github.ozcanalasalvar.picker:datepicker:$datePickerVersion")
+    implementation ("com.github.ozcanalasalvar.picker:wheelview:$datePickerVersion")
 
     implementation ("com.github.KaelLi1989:NiceRatingBar:$ratingVersion")
 

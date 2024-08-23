@@ -3,6 +3,9 @@
 
     <color name="transparent">#7F000000</color>
     <color name="Red">#2b616f</color>
+    <color name="G200">#EEEBF4</color>
+
+    <color name="G600">#A19CAC</color>
 
     <color name="colorPrimary">#2b616f</color>
     <color name="colorPrimaryDark">#469CB3</color>
@@ -22,6 +25,7 @@
 
     <!-- Whites -->
     <color name="white">#ffffff</color>
+    <color name="white100">#F8F8F8</color>
 
     <!-- Grays -->
     <color name="black25PercentColor">#404040</color>
@@ -35,6 +39,7 @@
     <!-- Greens -->
     <color name="pastelGreenColor">#7ef27c</color>
     <color name="moneyGreenColor">#86c67c</color>
+    <color name="successGreen">#22FF00</color>
 
     <!-- Reds -->
     <color name="brickRedColor">#2b616f</color>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="150dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardElevation="16dp"
+    app:cardCornerRadius="20dp"
+    android:layout_margin="20dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="20dp"
+            android:layout_toStartOf="@+id/img_schedule"
+            >
+            <TextView
+                android:id="@+id/tv_event_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="7 eleven"
+                android:textSize="20sp"
+                android:textColor="@color/owtoRed"
+                android:maxLines="2"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/tv_address"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tv_event_name"
+                android:layout_above="@+id/tv_schedule"
+                android:gravity="center_vertical"
+                android:layout_marginTop="5dp"
+                android:textColor="@color/coolGrayColor"
+                android:maxHeight="50dp"
+                android:text="Adresss"
+                android:maxLines="2"
+                />
+
+            <TextView
+                android:id="@+id/tv_schedule"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_alignParentBottom="true"
+                android:layout_toStartOf="@+id/img_del_itinerary"
+                android:textColor="@color/colorPrimary"
+                android:maxHeight="50dp"
+                android:text="June 21 2024, 10:00 AM"
+                />
+
+            <ImageView
+                android:id="@+id/img_del_itinerary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/outline_delete_forever_24"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginStart="5dp"/>
+        </RelativeLayout>
+
+        <ImageView
+            android:id="@+id/img_schedule"
+            android:layout_width="150dp"
+            android:layout_height="match_parent"
+            android:src="@drawable/baseline_broken_image_24"
+            android:scaleType="fitXY"
+            android:layout_alignParentEnd="true"/>
+
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>

@@ -1,16 +1,13 @@
 package coding.legaspi.caviteuser.utils
 
-import android.app.Notification.Action
 import android.content.Context
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
-import coding.legaspi.caviteuser.data.model.profile.Profile
+import coding.legaspi.caviteuser.data.model.itenerary.Itinerary
 import coding.legaspi.caviteuser.data.model.profile.ProfileImage
-import com.google.firebase.auth.ActionCodeSettings
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.ktx.actionCodeSettings
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -22,9 +19,128 @@ class FirebaseManager {
 
     val firebaseStorage = FirebaseStorage.getInstance().reference
     val firebaseRealtime = FirebaseDatabase.getInstance().getReference("Profile")
+    val realtimeItenerary = FirebaseDatabase.getInstance().getReference("Itinerary")
+    val historyItinerary = FirebaseDatabase.getInstance().getReference("ItineraryHistory")
     val firebaseAuth = FirebaseAuth.getInstance()
 
     val TAG = "FirebaseManager"
+
+    fun addToItinerary(itinerary: Itinerary, callback: (Boolean) -> Unit){
+        var hashMap : HashMap<String, Any> = HashMap<String, Any> ()
+        hashMap.put("id", itinerary.id)
+        hashMap.put("timestamp", itinerary.timestamp)
+        hashMap.put("eventID", itinerary.eventID)
+        hashMap.put("itineraryID", itinerary.itineraryID)
+        hashMap.put("userId", itinerary.userID)
+        hashMap.put("scheduleDateTimestamp", itinerary.scheduleDateTimestamp)
+        hashMap.put("tripStatus", itinerary.tripStatus)
+        hashMap.put("isTripCompleted", itinerary.isTripCompleted)
+        hashMap.put("dateCompleted", itinerary.dateCompleted)
+        hashMap.put("itineraryImg", itinerary.itineraryImg)
+        hashMap.put("itineraryPlace", itinerary.itineraryPlace)
+        hashMap.put("itineraryFrom", itinerary.itineraryFrom)
+        hashMap.put("itineraryName", itinerary.itineraryName)
+
+        realtimeItenerary.child(itinerary.userID).child(itinerary.eventID).child(itinerary.itineraryID).updateChildren(hashMap)
+            .addOnCompleteListener {
+                if (it.isSuccessful){
+                    callback(true)
+                }
+            }.addOnFailureListener {
+                Log.e(TAG, "Add to Itinerary Exception: $it")
+                callback(false)
+            }
+    }
+    fun udpateItinerary(userId: String, eventId : String, itinerarId: String, tripStatus: String, isTripCompleted: Boolean, itineraryFrom: String,
+                        callback: (Boolean) -> Unit){
+        var hashMap : HashMap<String, Any> = HashMap<String, Any> ()
+        hashMap.put("tripStatus", tripStatus)
+        hashMap.put("isTripCompleted", isTripCompleted)
+        hashMap.put("itineraryFrom", itineraryFrom)
+
+        realtimeItenerary.child(userId).child(eventId).child(itinerarId).updateChildren(hashMap)
+            .addOnCompleteListener {
+                if (it.isSuccessful){
+                    callback(true)
+                }
+            }.addOnFailureListener {
+                Log.e(TAG, "Add to Itinerary Exception: $it")
+                callback(false)
+            }
+    }
+    fun delItinerary(userId: String, eventId : String, itinerarId: String,
+                        callback: (Boolean) -> Unit){
+        realtimeItenerary.child(userId).child(eventId).child(itinerarId).removeValue()
+            .addOnCompleteListener {
+                if (it.isSuccessful){
+                    callback(true)
+                }else{
+                    callback(false)
+                }
+            }.addOnFailureListener {
+                Log.e(TAG, "Delete Itinerary Exception: $it")
+                callback(false)
+            }
+    }
+    fun endItinerary(userId: String, eventId : String, itinerarId: String, tripStatus: String, isTripCompleted: Boolean, dateCompleted: String,
+                        callback: (Boolean) -> Unit){
+        var hashMap : HashMap<String, Any> = HashMap<String, Any> ()
+        hashMap.put("tripStatus", tripStatus)
+        hashMap.put("isTripCompleted", isTripCompleted)
+        hashMap.put("dateCompleted", dateCompleted)
+
+        realtimeItenerary.child(userId).child(eventId).child(itinerarId).updateChildren(hashMap)
+            .addOnCompleteListener {
+                if (it.isSuccessful){
+                    callback(true)
+                }
+            }.addOnFailureListener {
+                Log.e(TAG, "Add to Itinerary Exception: $it")
+                callback(false)
+            }
+    }
+    fun historyItinerary(itinerary: Itinerary, callback: (Boolean) -> Unit){
+        var hashMap : HashMap<String, Any> = HashMap<String, Any> ()
+        hashMap.put("id", itinerary.id)
+        hashMap.put("timestamp", itinerary.timestamp)
+        hashMap.put("eventID", itinerary.eventID)
+        hashMap.put("itineraryID", itinerary.itineraryID)
+        hashMap.put("userId", itinerary.userID)
+        hashMap.put("scheduleDateTimestamp", itinerary.scheduleDateTimestamp)
+        hashMap.put("tripStatus", itinerary.tripStatus)
+        hashMap.put("isTripCompleted", itinerary.isTripCompleted)
+        hashMap.put("dateCompleted", itinerary.dateCompleted)
+        hashMap.put("itineraryImg", itinerary.itineraryImg)
+        hashMap.put("itineraryPlace", itinerary.itineraryPlace)
+        hashMap.put("itineraryFrom", itinerary.itineraryFrom)
+        hashMap.put("itineraryName", itinerary.itineraryName)
+
+        historyItinerary.child(itinerary.userID).child(itinerary.itineraryID).updateChildren(hashMap)
+            .addOnCompleteListener {
+                if (it.isSuccessful){
+                    callback(true)
+                }
+            }.addOnFailureListener {
+                Log.e(TAG, "Add to Itinerary Exception: $it")
+                callback(false)
+            }
+    }
+    fun udpateItineraryAlaram(userId: String, eventId : String, itinerarId: String, tripStatus: String, isTripCompleted: Boolean,
+                        callback: (Boolean) -> Unit){
+        var hashMap : HashMap<String, Any> = HashMap<String, Any> ()
+        hashMap.put("tripStatus", tripStatus)
+        hashMap.put("isTripCompleted", isTripCompleted)
+
+        realtimeItenerary.child(userId).child(eventId).child(itinerarId).updateChildren(hashMap)
+            .addOnCompleteListener {
+                if (it.isSuccessful){
+                    callback(true)
+                }
+            }.addOnFailureListener {
+                Log.e(TAG, "Add to Itinerary Exception: $it")
+                callback(false)
+            }
+    }
 
     fun checkUser(context: Context, callback: (Boolean) -> Unit){
         val user: FirebaseUser? = firebaseAuth.currentUser
@@ -121,9 +237,7 @@ class FirebaseManager {
                     callback(false)
                 }
         }
-
     }
-
     fun updateImage(context: Context, userID: String, imageUri: Uri, callback: (Boolean) -> Unit){
         if (imageUri != null && userID != null) {
             val timestamp = System.currentTimeMillis().toString()
@@ -184,8 +298,8 @@ class FirebaseManager {
                 callback(false)
             }
         }
-
     }
+
 
     fun deleteToFirebase(context: Context, eventID: String, callback: (Boolean) -> Unit) {
         firebaseRealtime.child(eventID).removeValue()

@@ -43,6 +43,7 @@ class FavoritesActivity : AppCompatActivity() {
         (application as Injector).createEventsSubComponent().inject(this)
         eventViewModel = ViewModelProvider(this, factory).get(EventViewModel::class.java)
         dialogHelper = DialogHelperFactory.create(this)
+        favoritesBinding.loggedInTopNav.labelTitle.text = "FAVORITES"
         val (token, userId) = SharedPreferences().checkToken(this)
         favoritesBinding.progressBar.visibility = VISIBLE
         favoritesList = arrayListOf()

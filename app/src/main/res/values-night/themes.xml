@@ -8,6 +8,7 @@
 
         <item name="android:textViewStyle">@style/OWTOTextViewStyle</item>
         <item name="android:buttonStyle">@style/OWTOButtonStyle</item>
+
     </style>
 
     <style name="Theme.ExploreCaviteAdmin" parent="Base.Theme.ExploreCaviteAdmin" />
@@ -51,4 +52,13 @@
         <item name="android:layout_width">48dp</item> <!-- Set the desired width -->
         <item name="android:layout_height">48dp</item> <!-- Set the desired height -->
     </style>
+
+    <style name="Base.Theme.ExploreCaviteAdmin.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.MaterialDateTimePicker.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="Theme.MaterialDateTimePicker.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>

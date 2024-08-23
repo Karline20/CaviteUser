@@ -248,6 +248,16 @@ class TutorActivity : AppCompatActivity() {
             "SAAN KA NAGMULA - DE DONDE TU"-> value = "SAAN KA NAGMULA - DE DON-DE TU"
             "TITA-TIA"-> value =  "TITA-TI-A"
             "TITO-TIO"-> value = "TITO-TI-O"
+            "PAG BISITA - DI-BI-SI-TA" -> value = "PAG BISITA - DI-BI-SI-TA"
+            "PAMAMASYAL - DI-PAS-YA" -> value = "PAMAMASYAL - DI-PAS-YA"
+            "SAAN PUPUNTA - DON-DI DIN-DA" -> value = "SAAN PUPUNTA - DON-DI DIN-DA"
+            "BYAHE - BYA-HI" -> value = "BYAHE - BYA-HI"
+            "DITO - A-QUI" -> value = "DITO - A-QUI"
+            "DOON - ALL-YA" -> value = "DOON - ALL-YA"
+            "MAGKANO - KWAN-TU" -> value = "MAGKANO - KWAN-TU"
+            "MALAPIT - SEL-CA" -> value = "MALAPIT - SEL-CA"
+            "MALAYO - LE-JOS" -> value = "MALAYO - LE-JOS"
+            "SAAN - ON-DI" -> value = "SAAN - ON-DI"
         }
         dialogHelper.tutorial(tutorialExactPos, value, "Play", "Cancel"){
             if (it){

@@ -11,6 +11,7 @@ import coding.legaspi.caviteuser.presentation.home.HomeActivity
 import coding.legaspi.caviteuser.presentation.home.event.ViewEventActivity
 import coding.legaspi.caviteuser.presentation.home.rating.RatingActivity
 import coding.legaspi.caviteuser.presentation.home.rvevent.RvEventActivity
+import coding.legaspi.caviteuser.presentation.itinerary.ItineraryActivity
 import coding.legaspi.caviteuser.presentation.menu.MenuActivity
 import coding.legaspi.caviteuser.presentation.play.PlayActivity
 import coding.legaspi.caviteuser.presentation.play.ranking.LeaderBoardsActivity
@@ -42,6 +43,7 @@ interface EventSubComponent {
     fun inject(favoritesActivity: FavoritesActivity)
     fun inject(termsActivity: TermsActivity)
     fun inject(rvEventActivity: RvEventActivity)
+    fun inject(itineraryActivity: ItineraryActivity)
     @Subcomponent.Factory
     interface Factory{
         fun create():EventSubComponent

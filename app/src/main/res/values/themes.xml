@@ -7,6 +7,7 @@
 
         <item name="android:textViewStyle">@style/OWTOTextViewStyle</item>
         <item name="android:buttonStyle">@style/OWTOButtonStyle</item>
+
     </style>
 
     <style name="Theme.ExploreCaviteAdmin" parent="Base.Theme.ExploreCaviteAdmin" />
@@ -64,6 +65,49 @@
         <item name="stylish_alert_bg_drawable">@drawable/dialog_bg</item>
         <item name="stylish_alert_title_text_color">@color/title_color</item>
         <item name="stylish_alert_content_text_color">@color/message_color</item>
+    </style>
+
+    <style name="TimePickerStyle" parent="Base.Theme.ExploreCaviteAdmin">
+        <item name="android:textAppearance">@style/TextAppearance.TimePicker</item>
+        <item name="android:background">@color/colorDefaultBackground</item>
+        <item name="highlighterColor">?attr/colorPrimary</item>
+        <item name="highlighterHeight">60dp</item>
+        <item name="isShowHighlighter">true</item>
+        <item name="timeConvention">HOURS_12</item>
+        <item name="fadeInAlpha">.3</item>
+        <item name="fadeOutAlpha">.7</item>
+        <item name="fadeInDuration">300</item>
+        <item name="fadeOutDuration">1000</item>
+        <item name="defaultHour">10</item>
+        <item name="defaultMinute">30</item>
+    </style>
+
+    <style name="DatePickerStyle" parent="Base.Theme.ExploreCaviteAdmin">
+        <item name="android:textAppearance">@style/TextAppearance.DatePicker</item>
+        <item name="android:background">@color/colorDefaultBackground</item>
+        <item name="highlighterColor">?attr/colorPrimary</item>
+        <item name="isShowHighlighter">true</item>
+        <item name="highlighterHeight">55dp</item>
+        <item name="fadeInAlpha">.3</item>
+        <item name="fadeOutAlpha">.7</item>
+        <item name="fadeInDuration">300</item>
+        <item name="fadeOutDuration">1000</item>
+        <item name="minYear">1995</item>
+        <item name="maxYear">2050</item>
+        <item name="defaultYear">2021</item>
+        <item name="defaultMonth">1</item>
+        <item name="defaultDay">1</item>
+        <item name="dateFormat">DD_MMM_YYYY</item>
+    </style>
+
+    <style name="TextAppearance.TimePicker" parent="Base.Theme.ExploreCaviteAdmin">
+        <item name="android:textSize">22sp</item>
+        <item name="android:textColor">@color/colorPrimary</item>
+    </style>
+
+    <style name="TextAppearance.DatePicker" parent="Base.Theme.ExploreCaviteAdmin">
+        <item name="android:textSize">19sp</item>
+        <item name="android:textColor">@color/colorPrimary</item>
     </style>
 
 </resources>

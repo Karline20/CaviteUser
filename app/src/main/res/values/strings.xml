@@ -12,10 +12,20 @@
     <string name="success_with_empty">Success with empty result</string>
     <string name="direction_requesting">Direction Requesting...</string>
 
+    <string name="time_picker">Time picker</string>
+    <string name="date_picker">Date picker</string>
+
+    <string name="set_start_time">Set start time</string>
+    <string name="set_start_date">Set start date</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+
     <string name="hymn_tagalog_title">Himno ng Lungsod ng Cavite</string>
     <string name="hymn_tagalog_lyrics">Ang lungsod kong pinagmulan \n Ay dakila sa Silangan \n Ito ay pugad ng mga bayaning kay rangal \n Nangasawi sa gitna ng karimlan.
     \n\n Lungsod Cavite, Kami ay narito \n Magtatanggol sa dakilang ngalan Mo \n Sa gitna ng lungkot at madlang saya \n Kaming lahat ay sama-sama. \n\n Lungsod Cavite aming mahal \n
     Ikaw ay ligaya nitong buhay \n Lungsod Cavite na aming sinta \n Ikaw ay mabuhay sa twi-twina.</string>
     <string name="hymn_chabacano_title">Himno del Ciudad de Cavite</string>
     <string name="hymn_chabacano_lyrics">El ciudad donde yo ya naci \n Muchos hijos qui ya muri \n No mas ya pudi ilos sufri que ta haci \n Masque el vida no bale mas pirdi. \n\n Ciudad Cavite, taqui todos nisos \n Para el otro ta pudi sabi \n Na todol tiempo, na todol occasion \n Siempre junto nisos de aqui. \n\n Ciudad Cavite, el inspiracion \n Di niso vida y corazon \n Ciudad Cavite, hasta qui muri \n Ta dali gracias nisos aqui. \n</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

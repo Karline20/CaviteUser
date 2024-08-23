@@ -20,6 +20,7 @@ import coding.legaspi.caviteuser.presentation.auth.profilecreation.ProfileCreati
 import coding.legaspi.caviteuser.presentation.di.Injector
 import coding.legaspi.caviteuser.presentation.favorites.FavoritesActivity
 import coding.legaspi.caviteuser.presentation.home.HomeActivity
+import coding.legaspi.caviteuser.presentation.itinerary.ItineraryActivity
 import coding.legaspi.caviteuser.presentation.play.PlayActivity
 import coding.legaspi.caviteuser.presentation.tutorial.TutorialActivity
 import coding.legaspi.caviteuser.presentation.viewmodel.EventViewModel
@@ -149,6 +150,11 @@ class MenuActivity : AppCompatActivity() {
             intent.putExtra("userid", userid)
             intent.putExtra("one", "one")
             startActivity(intent)
+        }
+        binding.itinerary.setOnClickListener {
+            val intent = Intent(this, ItineraryActivity::class.java)
+            startActivity(intent)
+            finish()
         }
         binding.back.setOnClickListener {
             onBackPressed()

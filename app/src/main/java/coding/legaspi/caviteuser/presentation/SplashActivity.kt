@@ -1,8 +1,14 @@
 package coding.legaspi.caviteuser.presentation
 
+import android.app.AlarmManager
+import android.content.Context
 import android.content.Intent
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
+import android.os.PowerManager
+import android.provider.Settings
 import android.util.Log
 import android.view.View.GONE
 import android.view.View.VISIBLE
@@ -47,6 +53,8 @@ class SplashActivity : AppCompatActivity() {
         dialogHelper = DialogHelperFactory.create(this)
 
         val checkTerms = SharedPreferences().checkTerms(this)
+        checkBatteryOptimization()
+        checkExactAlarmPermission()
         Log.i("Check Result", "Checking $checkTerms")
         Handler().postDelayed({
             if (checkTerms.isEmpty()){
@@ -154,4 +162,31 @@ class SplashActivity : AppCompatActivity() {
     private fun restart(){
         recreate()
     }
+
+    private fun checkBatteryOptimization() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val packageName = packageName
+            val pm = getSystemService(Context.POWER_SERVICE) as PowerManager
+            if (!pm.isIgnoringBatteryOptimizations(packageName)) {
+                val intent = Intent().apply {
+                    action = Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
+                    data = Uri.parse("package:$packageName")
+                }
+                startActivity(intent)
+            }
+        }
+    }
+
+    private fun checkExactAlarmPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            if (!alarmManager.canScheduleExactAlarms()) {
+                val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply {
+                    data = Uri.parse("package:$packageName")
+                }
+                startActivity(intent)
+            }
+        }
+    }
+
 }

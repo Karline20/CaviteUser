@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardElevation="20dp"
+    app:cardCornerRadius="25dp"
+    android:layout_gravity="bottom"
+    tools:context=".presentation.fragments.bottom.HistoryItineraryFragment">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:id="@+id/llNameInfo"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:padding="20dp"
+            android:orientation="vertical"
+            android:gravity="center_vertical"
+            android:elevation="20dp">
+
+            <TextView
+                android:id="@+id/tripLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Trip Info"
+                android:fontFamily="@font/barlow_bold"
+                android:textSize="45sp" />
+
+            <TextView
+                android:id="@+id/tripName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Cavite Municipal hall"
+                android:layout_marginTop="5dp"
+                android:fontFamily="@font/barlow_medium"
+                android:textSize="20sp" />
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/rrlDateImg"
+            android:layout_width="match_parent"
+            android:layout_height="180dp"
+            android:layout_below="@+id/llNameInfo"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:elevation="20dp"
+            android:background="@drawable/shape_rec_09">
+
+            <TextView
+                android:id="@+id/dateSched"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toStartOf="@id/tripImage"
+                android:layout_marginTop="20dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:textAlignment="textStart"
+                android:text="JAN 17 2024"
+                android:textSize="30sp"
+                android:fontFamily="@font/barlow_medium"/>
+            <TextView
+                android:id="@+id/timeSched"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toStartOf="@id/tripImage"
+                android:layout_below="@+id/dateSched"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="20dp"
+                android:textAlignment="textStart"
+                android:text="11:00 AM"
+                android:textSize="20sp"
+                android:fontFamily="@font/barlow_medium"/>
+
+            <ImageView
+                android:id="@+id/tripImage"
+                android:layout_width="250dp"
+                android:layout_height="match_parent"
+                android:src="@drawable/jobee"
+                android:scaleType="fitXY"
+                android:layout_alignParentEnd="true" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rrlLocation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/rrlDateImg"
+            android:padding="20dp"
+            android:layout_margin="20dp"
+            android:elevation="20dp"
+            android:background="@drawable/shape_rec_09">
+
+            <TableLayout
+                android:id="@+id/firstTable"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TableRow
+                    android:id="@+id/rowCurrent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:src="@drawable/baseline_my_location_24"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginStart="10dp"
+                        android:layout_gravity="center_vertical"
+                        />
+                    <TextView
+                        android:id="@+id/currentAddress"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/barlow_bold"
+                        android:text="Address cavity city, Events address barangay 09"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:maxLines="2"
+                        />
+                </TableRow>
+                <TableRow
+                    android:id="@+id/rowDotFirst">
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_marginTop="5dp"
+                        android:src="@drawable/baseline_circle_24" />
+                </TableRow>
+                <TableRow
+                    android:id="@+id/rowDotSecond">
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_marginTop="5dp"
+                        android:src="@drawable/baseline_circle_24" />
+                </TableRow>
+
+                <TableRow
+                    android:id="@+id/rowDest"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:src="@drawable/baseline_location_pin_24"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginTop="5dp"
+                        android:layout_gravity="center_vertical"
+                        />
+                    <TextView
+                        android:id="@+id/destinationAddress"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/barlow_bold"
+                        android:text="Address cavity city, Events address barangay 09"
+                        android:maxLines="2"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        />
+                </TableRow>
+
+            </TableLayout>
+            <TableLayout
+                android:id="@+id/secondTable"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/firstTable"
+                android:layout_marginTop="10dp">
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/barlow_medium"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginStart="10dp"
+                        android:text="ID:"
+                        android:layout_gravity="center_vertical" />
+
+                    <TextView
+                        android:id="@+id/id"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/barlow_bold"
+                        android:text="1724395159795"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:maxLines="2"
+                        />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/barlow_medium"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginStart="10dp"
+                        android:text="STATUS:"
+                        android:layout_gravity="center_vertical" />
+
+                    <TextView
+                        android:id="@+id/isTripCompleted"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/barlow_bold"
+                        android:text="COMPLETED"
+                        android:textColor="@color/successGreen"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/barlow_medium"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginStart="10dp"
+                        android:text="DATE COMPLETED:"
+                        android:layout_gravity="center_vertical" />
+
+                    <TextView
+                        android:id="@+id/dateCompleted"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/barlow_bold"
+                        android:text="JAN 17 2024 01:00PM"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="1"
+                        android:maxLines="2"
+                        />
+                </TableRow>
+
+
+
+            </TableLayout>
+
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>

@@ -12,6 +12,7 @@ import android.util.Log
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -20,23 +21,23 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import coding.legaspi.caviteuser.R
 import coding.legaspi.caviteuser.Result
+import coding.legaspi.caviteuser.data.local.ItineraryViewModel
 import coding.legaspi.caviteuser.data.model.adaptermodel.Image
 import coding.legaspi.caviteuser.data.model.error.Error
 import coding.legaspi.caviteuser.data.model.eventsoutput.AllModelOutput
 import coding.legaspi.caviteuser.data.model.favorites.Favorites
-import coding.legaspi.caviteuser.data.model.profile.ProfileOutput
+import coding.legaspi.caviteuser.data.model.itenerary.Itinerary
 import coding.legaspi.caviteuser.data.model.rating.Existence
 import coding.legaspi.caviteuser.data.model.rating.RatingOutput
-import coding.legaspi.caviteuser.databinding.ActivityMapBinding
 import coding.legaspi.caviteuser.databinding.ActivityViewEventBinding
 import coding.legaspi.caviteuser.presentation.di.Injector
+import coding.legaspi.caviteuser.presentation.fragments.bottom.EventItinerary
 import coding.legaspi.caviteuser.presentation.home.HomeActivity
-import coding.legaspi.caviteuser.presentation.home.adapter.EventAdapter
 import coding.legaspi.caviteuser.presentation.home.adapter.RatingAdapter
 import coding.legaspi.caviteuser.presentation.home.map.MapActivity
 import coding.legaspi.caviteuser.presentation.home.map.adapter.CustomInfoWindowAdapter
 import coding.legaspi.caviteuser.presentation.home.rating.RatingActivity
-import coding.legaspi.caviteuser.presentation.terms.TermsActivity
+import coding.legaspi.caviteuser.presentation.itinerary.CUItineraryActivity
 import coding.legaspi.caviteuser.presentation.viewmodel.EventViewModel
 import coding.legaspi.caviteuser.presentation.viewmodel.EventViewModelFactory
 import coding.legaspi.caviteuser.utils.DialogHelper
@@ -71,6 +72,7 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
 
     @Inject
     lateinit var factory: EventViewModelFactory
+    private lateinit var itineraryViewModel: ItineraryViewModel
     private lateinit var eventViewModel: EventViewModel
     private lateinit var ratingList: ArrayList<RatingOutput>
     private lateinit var ratingAdapter: RatingAdapter
@@ -86,10 +88,13 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
     lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
     lateinit var id: String
+    lateinit var notification: String
     lateinit var latitude: String
     lateinit var longitude: String
     lateinit var userid: String
     lateinit var location: String
+    lateinit var eventName: String
+    lateinit var firstImage: String
     var isFavExist = false
     companion object{
         val ViewEventActivity = 100
@@ -103,11 +108,13 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
         (application as Injector).createEventsSubComponent()
             .inject(this)
         eventViewModel= ViewModelProvider(this, factory).get(EventViewModel::class.java)
+        itineraryViewModel = ViewModelProvider(this).get(ItineraryViewModel::class.java)
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
 
         dialogHelper = DialogHelperFactory.create(this)
         id = intent.getStringExtra("id").toString()
+        notification = intent.getStringExtra("notification").toString()
         ratingList = arrayListOf()
         ratingAdapter = RatingAdapter(ratingList, this)
         imageList = arrayListOf()
@@ -120,7 +127,60 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
         setRv()
         setImage()
         setFavorite()
+        checkOngoingTrip()
+    }
 
+    private fun checkOngoingTrip() {
+        val (token, userId) = SharedPreferences().checkToken(this)
+        lateinit var itinerary: Itinerary
+        itineraryViewModel.getItineraryByEventId(id).observe(this, Observer {existingItinerary ->
+            if (existingItinerary!=null){
+                //Toast.makeText(this, "You have an existing upcoming trip for the event!", Toast.LENGTH_SHORT).show()
+                val reference = FirebaseDatabase.getInstance().getReference("Itinerary")
+                reference.child(userId!!).child(id).child(existingItinerary.id.toString())
+                    .addValueEventListener(object : ValueEventListener {
+                        override fun onDataChange(snapshot: DataSnapshot) {
+                        if(snapshot.exists() && snapshot.child("tripStatus").value == "ONGOING"
+                            || snapshot.child("tripStatus").value == "TRIP_STARTED"){
+                                binding.itineraryButton.visibility = VISIBLE
+                                binding.itineraryButton.isEnabled = true
+                                val id = snapshot.child("id").value.toString()
+                                val eventID = snapshot.child("eventID").value.toString()
+                                val userID = snapshot.child("userId").value.toString()
+                                val itineraryID = snapshot.child("itineraryID").value.toString()
+                                val scheduleDateTimestamp = snapshot.child("scheduleDateTimestamp").value.toString()
+                                val timestamp = snapshot.child("timestamp").value.toString()
+                                val tripStatus = snapshot.child("tripStatus").value.toString()
+                                val isTripCompleted = snapshot.child("isTripCompleted").value
+                                val dateCompleted = snapshot.child("dateCompleted").value.toString()
+                                val itineraryImg = snapshot.child("itineraryImg").value.toString()
+                                val itineraryPlace = snapshot.child("itineraryPlace").value.toString()
+                                val itineraryFrom = snapshot.child("itineraryFrom").value.toString()
+                                val itineraryName = snapshot.child("itineraryName").value.toString()
+
+                                itinerary = Itinerary(id, eventID, userID, itineraryID, scheduleDateTimestamp, timestamp, tripStatus,
+                                    isTripCompleted as Boolean, dateCompleted, itineraryImg, itineraryPlace, itineraryName, itineraryFrom)
+                            }else{
+                                setItineraryGone()
+                            }
+                        }
+                        override fun onCancelled(error: DatabaseError) {
+                            setItineraryGone()
+                        }
+                    })
+            }else{
+                setItineraryGone()
+            }
+        })
+
+        binding.itineraryButton.setOnClickListener {
+            val bottomEventItinerary = EventItinerary(itinerary, eventName, latitude, longitude, currentLocation, dialogHelper, itineraryViewModel)
+            bottomEventItinerary.show(supportFragmentManager, bottomEventItinerary.tag)
+        }
+    }
+    private fun setItineraryGone(){
+        binding.itineraryButton.visibility = GONE
+        binding.itineraryButton.isEnabled = false
     }
 
     private fun setFavorite() {
@@ -154,6 +214,7 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
                                 imageList.add(image)
                             }
                         }
+                        firstImage = imageList[0].imageUri.toString()
                         imageAdapter = ImageAdapter(imageList, this@ViewEventActivity)
                         binding.epoxyImage.adapter = imageAdapter
                     }
@@ -224,9 +285,24 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         })
     }
-
     private fun setButton() {
         val (token, userId) = SharedPreferences().checkToken(this)
+
+        binding.itinerary.setOnClickListener {
+            itineraryViewModel.getItineraryByEventId(id).observe(this, Observer {existingItinerary ->
+                if (existingItinerary!=null){
+                    Toast.makeText(this, "You have an existing upcoming trip for the event!", Toast.LENGTH_SHORT).show()
+                }else{
+                    Log.i("CUItineraryActivity", "found clicked $firstImage")
+                    val intent = Intent(this, CUItineraryActivity::class.java)
+                    intent.putExtra("eventid", id)
+                    intent.putExtra("eventName", eventName)
+                    intent.putExtra("location", location)
+                    intent.putExtra("firstImage", firstImage)
+                    startActivity(intent)
+                }
+            })
+        }
 
         binding.rate.setOnClickListener {
             val intent = Intent(this, RatingActivity::class.java)
@@ -244,8 +320,15 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
         binding.loggedInTopNav.back.setOnClickListener {
-            onBackPressed()
-            finish()
+            Log.i("CUItineraryActivity", "found clicked $notification")
+            if (notification=="notification"){
+                val intent = Intent(this, HomeActivity::class.java)
+                startActivity(intent)
+                finish()
+            }else{
+                onBackPressed()
+                finish()
+            }
         }
 
         binding.favorites.setOnClickListener {
@@ -356,6 +439,7 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
                     latitude = result.latitude
                     longitude = result.longitude
                     location = result.location
+                    eventName = result.name
 
                     binding.loggedInTopNav.labelTitle.text = result.name
 
@@ -495,5 +579,17 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
         vector.setBounds(0, 0, canvas.width, canvas.height)
         vector.draw(canvas)
         return bitmap
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        if (notification != null || notification=="notification"){
+            val intent = Intent(this, HomeActivity::class.java)
+            startActivity(intent)
+            finish()
+        }else{
+            onBackPressed()
+            finish()
+        }
     }
 }

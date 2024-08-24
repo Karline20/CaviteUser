@@ -268,7 +268,7 @@ class MapActivity : AppCompatActivity(){
         if(message == "REQUEST_DENIED") {
             dialogHelper.wrong(
                 "Routing error!",
-                "Theres an error occur while routing your destination!",
+                "Please select your route provider!",
                 "Google Maps",
                 "Cancel"
             ) {

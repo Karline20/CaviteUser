@@ -139,6 +139,21 @@ class RvEventActivity : AppCompatActivity() {
         }
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+        mediaPlayerHelper.stopMusic()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mediaPlayerHelper.stopMusic()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        mediaPlayerHelper.stopMusic()
+    }
+
     private fun setLyricsOptions() {
         val fonts = arrayOf(
             "TAGALOG LYRICS", "CHABACANO LYRICS"
@@ -212,6 +227,10 @@ class RvEventActivity : AppCompatActivity() {
         binding.hospital.setOnClickListener {
             setRvCate("Hospital")
             listenToByCatSearch("Hospital")
+        }
+        binding.healthCenter.setOnClickListener {
+            setRvCate("Health Center")
+            listenToByCatSearch("Health Center")
         }
         binding.pharmacy.setOnClickListener {
             setRvCate("Pharmacy")
@@ -309,6 +328,8 @@ class RvEventActivity : AppCompatActivity() {
                                 Result.Loading -> {
                                     binding.progressBar.visibility = VISIBLE
                                 }
+
+                                else -> {}
                             }
                         })
                     } catch (e: IOException) {
@@ -397,6 +418,8 @@ class RvEventActivity : AppCompatActivity() {
                     Result.Loading -> {
                         binding.progressBar.visibility = VISIBLE
                     }
+
+                    else -> {}
                 }
             })
         } catch (e: IOException) {
@@ -581,6 +604,8 @@ class RvEventActivity : AppCompatActivity() {
                     Result.Loading -> {
                         binding.progressBar.visibility = VISIBLE
                     }
+
+                    else -> {}
                 }
             })
         }catch (e: Exception){
@@ -644,6 +669,8 @@ class RvEventActivity : AppCompatActivity() {
                                 Result.Loading -> {
                                     binding.progressBar.visibility = VISIBLE
                                 }
+
+                                else -> {}
                             }
                         })
                     } catch (e: IOException) {
@@ -736,6 +763,8 @@ class RvEventActivity : AppCompatActivity() {
                     Result.Loading -> {
                         binding.progressBar.visibility = VISIBLE
                     }
+
+                    else -> {}
                 }
             })
         } catch (e: IOException) {

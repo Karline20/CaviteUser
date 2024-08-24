@@ -1,40 +1,41 @@
 package coding.legaspi.caviteuser.speechrecognition
 
 class SpeechModel {
-    val tutorial1 = "MAGANDA KA - BONITA USTE"
-    val tutorial2 = "MAHAL KITA - TA AMA YO CONTIGO"
-    val tutorial3 = "AYOS LANG - MUY BIEN"
-    val tutorial4 = "MAGANDANG HAPON - BUENAS TARDES"
-    val tutorial5 = "KAMUSTA KA - QUETAL MAN USTE"
-    val tutorial6 = "SALAMAT - GRACIAS"
-    val tutorial7 = "PAALAM - ADIOS"
-    val tutorial8 = "PASINTABI - CON PERMISO"
-    val tutorial9 = "TULOY KAYO - BIENVENIDOS"
-    val tutorial10 = "MAGANDANG GABI - BUENAS NOCHES"
-    val tutorial11 = "PATAWAD - PERDONA CONMIGO"
-    val tutorial12 = "MAGANDANG UMAGA - BUENAS DIAS"
-    val tutorial13 = "INGAT KA - QUIDAO"
-    val tutorial14 = "AMA - PADRE"
-    val tutorial15 = "ANAK NA BABAE - HIJA"
-    val tutorial16 = "ANAK NA LALAKI - HIJO"
-    val tutorial17 = "ANONG PANGALAN MO - COSA TU NOMBRE"
-    val tutorial18 = "APO NA LALAKI - NIETO"
-    val tutorial19 = "ASAWANG BABAE - MUJER"
-    val tutorial20 = "ASAWANG LALAKI - MARIDO"
-    val tutorial21 = "BABAE NA APO - NIETA"
-    val tutorial22 = "BAYAW - CUÑADO"
-    val tutorial23 = "BYENAN NA BABAE - SUEGRA"
-    val tutorial24 = "BYENAN NA LALAKE - SUEGRO"
-    val tutorial25 = "HIPAG - CUÑADA"
-    val tutorial26 = "INA - MADRE"
-    val tutorial27 = "KAPATID NA BABAE - HERMANA"
-    val tutorial28 = "KAPATID NA LALAKI - HERMANO"
-    val tutorial29 = "LOLA - ABUELA"
-    val tutorial30 = "LOLO - ABUELO"
-    val tutorial31 = "MGA KAMAGANAK - PARIENTES"
-    val tutorial32 = "SAAN KA NAGMULA - DE DONDE TU"
-    val tutorial33 = "TITA-TIA"
-    val tutorial34 = "TITO-TIO"
+
+    val tutorial1 = "MAGANDA KA - BO-NI-TA US-TE"
+    val tutorial2 = "MAHAL KITA - TA A-MA YO CON-TI-GO"
+    val tutorial3 = "AYOS LANG - MUY BI-EN"
+    val tutorial4 = "MAGANDANG HAPON - BUE-NAS TAR-DES"
+    val tutorial5 = "KAMUSTA KA - QUE-TAL MAN US-TE"
+    val tutorial6 = "SALAMAT - GRA-CIAS"
+    val tutorial7 = "PAALAM - AD-IOS"
+    val tutorial8 = "PASINTABI - CON PER-MI-SO"
+    val tutorial9 = "TULOY KAYO - BI-EN-VE-NI-DOS"
+    val tutorial10 = "MAGANDANG GABI - BUE-NAS NO-CHES"
+    val tutorial11 = "PATAWAD - PER-DO-NA CON-MI-GO"
+    val tutorial12 = "MAGANDANG UMAGA - BUE-NAS DI-AS"
+    val tutorial13 = "INGAT KA - QUI-DAO"
+    val tutorial14 = "AMA - PAD-RE"
+    val tutorial15 = "ANAK NA BABAE - HI-JA"
+    val tutorial16 = "ANAK NA LALAKI - HI-JO"
+    val tutorial17 = "ANONG PANGALAN MO - CO-SA TU NOM-BRE"
+    val tutorial18 = "APO NA LALAKI - NI-E-TO"
+    val tutorial19 = "ASAWANG BABAE - MU-JER"
+    val tutorial20 = "ASAWANG LALAKI - MA-RI-DO"
+    val tutorial21 = "BABAE NA APO - NI-E-TA"
+    val tutorial22 = "BAYAW - CU-ÑA-DO"
+    val tutorial23 = "BYENAN NA BABAE - SU-E-GRA"
+    val tutorial24 = "BYENAN NA LALAKE - SU-E-GRO"
+    val tutorial25 = "HIPAG - CU-ÑA-DA"
+    val tutorial26 = "INA - MAD-RE"
+    val tutorial27 = "KAPATID NA BABAE - HER-MA-NA"
+    val tutorial28 = "KAPATID NA LALAKI - HER-MA-NO"
+    val tutorial29 = "LOLA - ABU-E-LA"
+    val tutorial30 = "LOLO - ABU-E-LO"
+    val tutorial31 = "MGA KAMAGANAK - PAR-I-EN-TES"
+    val tutorial32 = "SAAN KA NAGMULA - DE DON-DE TU"
+    val tutorial33 = "TITA-TI-A"
+    val tutorial34 = "TITO-TI-O"
     val tutorial35 = "PAG BISITA - DI-BI-SI-TA"
     val tutorial36 = "PAMAMASYAL - DI-PAS-YA"
     val tutorial37 = "SAAN PUPUNTA - DON-DI DIN-DA"
@@ -112,6 +113,7 @@ class SpeechModel {
     val tutor11q21 = "per do na con mico"
 
     val tutor12w = "buenas dias"
+    val tutor12e = "buenos dias"
 
     val tutor13e = "kidaw"
     val tutor13q = "key daw"
@@ -184,6 +186,7 @@ class SpeechModel {
     val tutor20j = "burrito"
 
     val tutor21a = "nieta"
+    val tutor21t = "nyeta"
     val tutor21s = "meta"
     val tutor21d = "mica"
     val tutor21f = "nita"
@@ -413,11 +416,11 @@ class SpeechModel {
         tutorial5 to listOf(tutor5, tutor55, tutor555, tutor5555, tutor55555, tutor555555, tutor5555555, tutor55555555, tutor555555555, tutor5555555555, tutor5q, tutor5w, tutor5e, tutor5r, tutor5t, tutor5y ,tutor5u ,tutor5i ,tutor5o),
         tutorial6 to listOf(tutor6),
         tutorial7 to listOf(tutor7),
-        tutorial8 to listOf(tutor8, tutor88, tutor888, tutor8888,tutor8888,tutor8888),
+        tutorial8 to listOf(tutor8, tutor88, tutor888, tutor8888,tutor88888,tutor888888),
         tutorial9 to listOf(tutor9, tutor99, "buenvenidos", "bienvenidos"),
         tutorial10 to listOf(tutor10, tutor10w, "bwenas noches", "buenas no ches"),
         tutorial11 to listOf(tutor11q, tutor11q2, tutor11q21, "perdona conmigo"),
-        tutorial12 to listOf(tutor12w, "bwenas diaz", "buenas dyas"),
+        tutorial12 to listOf(tutor12w, "bwenas diaz", "buenas dyas", tutor12e),
         tutorial13 to listOf(tutor13e, tutor13q),
         tutorial14 to listOf(tutor14a, tutor14s),
         tutorial15 to listOf(tutor15a, tutor15s, tutor15d, tutor15f),
@@ -426,7 +429,7 @@ class SpeechModel {
         tutorial18 to listOf(tutor18a, tutor18s, tutor18d, tutor18f, tutor18g, tutor18h, tutor18j, tutor18k, tutor18l, tutor18q, tutor18w, tutor18e, tutor18r, tutor18t,tutor18y, tutor18u, tutor18i, tutor18o, tutor18p),
         tutorial19 to listOf("mujer",tutor19a,tutor19s,tutor19d,tutor19f,tutor19g,tutor19h,tutor19j,tutor19k,tutor19l,tutor19q,tutor19w,tutor19e,tutor19r,tutor19t,tutor19y,tutor19u,tutor19i,tutor19o,tutor19p),
         tutorial20 to listOf(tutor20a,tutor20s,tutor20d,tutor20f,tutor20g,tutor20h,tutor20j),
-        tutorial21 to listOf(tutor21a,tutor21s,tutor21d,tutor21f,tutor21g,tutor21h,tutor21j,tutor21k,tutor21l,tutor21q,tutor21w,tutor21e ),
+        tutorial21 to listOf(tutor21a, tutor21t, tutor21s,tutor21d,tutor21f,tutor21g,tutor21h,tutor21j,tutor21k,tutor21l,tutor21q,tutor21w,tutor21e ),
         tutorial22 to listOf("cunyado", tutor22a,tutor22s,tutor22d,tutor22f,tutor22g,tutor22h,tutor22j,tutor22k,tutor22l,tutor22q,tutor22w,tutor22e,tutor22r,tutor22t,tutor22y,tutor22u),
         tutorial23 to listOf("suegra",tutor23a,tutor23s,tutor23d,tutor23f,tutor23g,tutor23h,tutor23j,tutor23k,tutor23l,tutor23q,tutor23w,tutor23e,tutor23r,tutor23t,tutor23y),
         tutorial24 to listOf("suegro", tutor24a,tutor24s,tutor24s,tutor24d,tutor24f,tutor24g,tutor24h,tutor24j,tutor24k,tutor24l,tutor24q,tutor24w,tutor24e,tutor24r,tutor24t,tutor24y,tutor24u,tutor24i),

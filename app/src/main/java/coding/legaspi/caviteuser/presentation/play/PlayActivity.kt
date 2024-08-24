@@ -257,6 +257,17 @@ class PlayActivity : AppCompatActivity() {
                 32 -> tutorial = "SAAN KA NAGMULA - DE DON-DE TU"
                 33 -> tutorial = "TITA-TI-A"
                 34 -> tutorial = "TITO-TI-O"
+                35 -> tutorial = "PAG BISITA - DI-BI-SI-TA"
+                36 -> tutorial = "PAMAMASYAL - DI-PAS-YA"
+                37 -> tutorial = "SAAN PUPUNTA - DON-DI DIN-DA"
+                38 -> tutorial = "BYAHE - BYA-HI"
+                39 -> tutorial = "DITO - A-QUI"
+                40 -> tutorial = "DOON - ALL-YA"
+                41 -> tutorial = "MAGKANO - KWAN-TU"
+                42 -> tutorial = "MALAPIT - SEL-CA"
+                43 -> tutorial = "MALAYO - LE-JOS"
+                44 -> tutorial = "SAAN - ON-DI"
+
             }
 
             countSpeechNumber++
@@ -392,7 +403,9 @@ class PlayActivity : AppCompatActivity() {
                 Log.e(TAG, output.spokenText)
             }else{
                 SpeechModel().checkModel(output.spokenText, tutorial){
+                    Log.d(TAG, "RESULT: "+output.spokenText)
                     if (it){
+                        Log.d(TAG, "CORRECT RESULT: "+output.spokenText)
                         output.spokenText = ""
                         correctCount++
                         Log.d(TAG, correctCount.toString())
@@ -414,6 +427,7 @@ class PlayActivity : AppCompatActivity() {
                             }
                         }
                     }else{
+                        Log.d(TAG, "WRONG RESULT: "+output.spokenText)
                         output.spokenText = ""
                         dialogHelper.wrong("Wrong!","Your pronunciation is wrong!", "Next", "Quit"){
                             if (it){

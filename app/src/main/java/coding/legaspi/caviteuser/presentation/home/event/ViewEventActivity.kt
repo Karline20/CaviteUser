@@ -312,11 +312,18 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
         binding.showRoute.setOnClickListener {
-            val intent = Intent(this, MapActivity::class.java)
-            intent.putExtra("latitude", latitude)
-            intent.putExtra("longitude", longitude)
-            intent.putExtra("location", location)
-            startActivity(intent)
+            Log.i("ViewEvent", "found clicked latitude $latitude")
+            Log.i("ViewEvent", "found clicked longitude $longitude")
+            Log.i("ViewEvent", "found clicked location $location")
+            if (latitude.isNotEmpty() && longitude.isNotEmpty() && location.isNotEmpty()){
+                val intent = Intent(this, MapActivity::class.java)
+                intent.putExtra("latitude", latitude)
+                intent.putExtra("longitude", longitude)
+                intent.putExtra("location", location)
+                startActivity(intent)
+            }else{
+              Toast.makeText(this, "You can't view route if the event don't have address!", Toast.LENGTH_SHORT).show()
+            }
         }
 
         binding.loggedInTopNav.back.setOnClickListener {

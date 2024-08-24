@@ -64,7 +64,7 @@
                 android:id="@+id/rrl_first"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
+                android:visibility="visible"
                 android:layout_below="@+id/logged_in_top_nav"
                 android:layout_marginStart="2dp"
                 android:layout_marginTop="2dp"
@@ -89,7 +89,7 @@
 
             <RelativeLayout
                 android:id="@+id/rr_mid"
-                tools:visibility="gone"
+                tools:visibility="visible"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/rrl_first"
@@ -105,7 +105,7 @@
                     android:id="@+id/ll_history"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:visibility="gone"
+                    android:visibility="visible"
                     android:orientation="horizontal">
 
                     <LinearLayout
@@ -708,6 +708,7 @@
                 android:layout_height="wrap_content"
                 layout="@layout/layout_cavite_hymn"
                 android:layout_below="@id/logged_in_top_nav"
+                android:visibility="gone"
                 />
 
         </RelativeLayout>

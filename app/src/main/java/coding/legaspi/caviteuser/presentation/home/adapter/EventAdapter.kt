@@ -51,7 +51,11 @@ class EventAdapter(
         holder.label_description.text = description
         holder.label_date.text = date
         if (category!=null){
-            holder.label_category.text = category
+            if (category=="Heroes") {
+                holder.label_category.text = "Notable Person"
+            }else{
+                holder.label_category.text = category
+            }
         }else{
             holder.label_category.visibility = GONE
         }

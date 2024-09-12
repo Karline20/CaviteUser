@@ -1,5 +1,6 @@
 package coding.legaspi.caviteuser.utils
 
+import android.app.Activity
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
@@ -164,21 +165,30 @@ class DialogHelperImpl(private val context: Context) : DialogHelper {
         cancel: String,
         callback: (Boolean) -> Unit
     ) {
-        StylishAlertDialog(context, StylishAlertDialog.ERROR)
-            .setTitleText(title)
-            .setContentText(content)
-            .setConfirmText(confirm)
-            .setCancelText(cancel)
-            .setConfirmClickListener {
-                callback(true)
-                it.dismiss()
+        if (context is Activity) {
+            val activity = context as Activity
+            if (!activity.isFinishing && !activity.isDestroyed) {
+                StylishAlertDialog(context, StylishAlertDialog.ERROR)
+                    .setTitleText(title)
+                    .setContentText(content)
+                    .setConfirmText(confirm)
+                    .setCancelText(cancel)
+                    .setConfirmClickListener {
+                        callback(true)
+                        it.dismiss()
+                    }
+                    .setCancelClickListener {
+                        callback(false)
+                        it.dismiss()
+                    }
+                    .setCancellable(false)
+                    .show()
+            } else {
+                Log.e("DialogHelper", "Activity is not valid. Dialog cannot be shown.")
             }
-            .setCancelClickListener {
-                callback(false)
-                it.setCancelButton(cancel, StylishAlertDialog::dismissWithAnimation)
-            }
-            .setCancellable(false)
-            .show()
+        } else {
+            Log.e("DialogHelper", "Context is not an instance of Activity.")
+        }
     }
 
     override fun delete(title: String, content: String, confirm: String, cancel: String, callback: (Boolean) -> Unit){

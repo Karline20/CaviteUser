@@ -9,10 +9,28 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/lyrics_category"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="(TAGALOG LYRICS)"/>
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="(CHABACANO LYRICS)"/>
+
+        </com.google.android.material.tabs.TabLayout>
+
         <RelativeLayout
             android:id="@+id/first_layer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/lyrics_category"
             android:layout_marginTop="20dp">
             <ImageView
                 android:id="@+id/play_sound"
@@ -33,23 +51,11 @@
                 android:textAlignment="center" />
         </RelativeLayout>
 
-
-        <TextView
-            android:id="@+id/lyrics_category"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="(TAGALOG LYRICS)"
-            android:textSize="18sp"
-            android:textStyle="normal"
-            android:layout_below="@+id/first_layer"
-            android:layout_centerInParent="true"
-            android:textAlignment="center" />
-
         <TextView
             android:id="@+id/hymn_lyrics"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/lyrics_category"
+            android:layout_below="@id/first_layer"
             tools:text="@string/hymn_chabacano_lyrics"
             android:layout_marginTop="10dp"
             android:lineHeight="30dp"
@@ -57,7 +63,6 @@
             android:textStyle="normal"
             android:layout_centerInParent="true"
             android:textAlignment="center" />
-
 
     </RelativeLayout>
 

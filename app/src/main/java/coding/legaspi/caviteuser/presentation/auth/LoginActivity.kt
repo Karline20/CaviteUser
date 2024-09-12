@@ -112,6 +112,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener, View.OnFocusCha
                         if (exception is IOException) {
                             // Handle network failure
                             Log.e("Check Result", "showNetworkError")
+                            Log.e("Check Result", "exception: $exception")
                             loginBinding.progressBar.visibility = GONE
                             if (exception.equals("java.net.SocketTimeoutException")){
                                 dialogHelper.showUnauthorized(

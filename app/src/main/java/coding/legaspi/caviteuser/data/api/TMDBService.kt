@@ -144,7 +144,7 @@ interface TMDBService {
     @POST("/ranking")
     suspend fun postRank(@Body ranking: Ranking): Response<RankingOutput>
 
-    @POST("/check-existence/ranking/{userid}")
+    @GET("/check-existence/ranking/{userid}")
     suspend fun checkRanking(@Path("userid") userid: String): Response<Unit>
 
     @GET("/ranking/by-userid/{userid}")

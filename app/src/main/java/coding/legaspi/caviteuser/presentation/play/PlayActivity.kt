@@ -183,6 +183,7 @@ class PlayActivity : AppCompatActivity() {
         counterToStart = object : CountDownTimer(4000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 val secondsRemaining = millisUntilFinished / 1000
+                activityPlayBinding.timerToStart.visibility = VISIBLE
                 activityPlayBinding.txtTimerToStart.text = "$secondsRemaining"
             }
             override fun onFinish() {
@@ -218,7 +219,7 @@ class PlayActivity : AppCompatActivity() {
         if (generatedNumbers.size <= 11) {
             var random: Int
             do {
-                random = Random.nextInt(1, 35)
+                random = Random.nextInt(1, 44)
             } while (random in generatedNumbers)
             generatedNumbers.add(random)
 
@@ -267,11 +268,12 @@ class PlayActivity : AppCompatActivity() {
                 42 -> tutorial = "MALAPIT - SEL-CA"
                 43 -> tutorial = "MALAYO - LE-JOS"
                 44 -> tutorial = "SAAN - ON-DI"
-
             }
 
             countSpeechNumber++
-            activityPlayBinding.labelSpeech.text = tutorial
+            runOnUiThread {
+                activityPlayBinding.labelSpeech.text = tutorial
+            }
             activityPlayBinding.labelQuestion.text = "Speech $countSpeechNumber"
             activityPlayBinding.totalScore.text = "$correctCount/10"
             setupSpeechViewModel()
@@ -304,6 +306,15 @@ class PlayActivity : AppCompatActivity() {
                                     val responseLiveData = eventViewModel.patchRank(userId.toString(), PatchRank(formattedDate,correctCount, currentTimeMillis.toString()))
                                     responseLiveData.observe(this@PlayActivity, Observer {
                                         if (it!=null){
+                                            // Clear game state variables
+                                            countSpeechNumber = 0
+                                            tutorial = ""
+                                            correctCount = 0
+                                            generatedNumbers.clear()
+                                            // Clear the UI elements
+                                            activityPlayBinding.labelSpeech.text = tutorial
+                                            activityPlayBinding.labelQuestion.text = "Speech $countSpeechNumber"
+                                            activityPlayBinding.totalScore.text = "$correctCount/10"
                                             activityPlayBinding.progressBar.visibility = GONE
                                             setPlay()
                                         }
@@ -312,6 +323,15 @@ class PlayActivity : AppCompatActivity() {
                                     val responseLiveData = eventViewModel.postRank(Ranking(formattedDate, "$firstname, $lastname", correctCount, currentTimeMillis.toString(), userId!!))
                                     responseLiveData.observe(this@PlayActivity, Observer {
                                         if (it!=null){
+                                            // Clear game state variables
+                                            countSpeechNumber = 0
+                                            tutorial = ""
+                                            correctCount = 0
+                                            generatedNumbers.clear()
+                                            // Clear the UI elements
+                                            activityPlayBinding.labelSpeech.text = tutorial
+                                            activityPlayBinding.labelQuestion.text = "Speech $countSpeechNumber"
+                                            activityPlayBinding.totalScore.text = "$correctCount/10"
                                             activityPlayBinding.progressBar.visibility = GONE
                                             setPlay()
                                         }
@@ -426,26 +446,41 @@ class PlayActivity : AppCompatActivity() {
                                 }
                             }
                         }
-                    }else{
-                        Log.d(TAG, "WRONG RESULT: "+output.spokenText)
+                    }else {
+                        Log.d(TAG, "WRONG RESULT: " + output.spokenText)
                         output.spokenText = ""
-                        dialogHelper.wrong("Wrong!","Your pronunciation is wrong!", "Next", "Quit"){
-                            if (it){
-                                output.spokenText = ""
-                                generateRandomNumber(false)
-                            }else{
-                                dialogHelper.showLogout("Quit", "Are you sure you want to quit?", "Yes", "No" ){
-                                    if (it){
-                                        val intent = Intent(this, HomeActivity::class.java)
-                                        startActivity(intent)
-                                        finish()
-                                    }else{
-                                        output.spokenText = ""
-                                        generateRandomNumber(false)
+                        if (!isFinishing && !isDestroyed) {
+                            dialogHelper.wrong(
+                                "Wrong!",
+                                "Your pronunciation is wrong!",
+                                "Next",
+                                "Quit"
+                            ) {
+                                if (it) {
+                                    output.spokenText = ""
+                                    generateRandomNumber(false)
+                                } else {
+                                    dialogHelper.showLogout(
+                                        "Quit",
+                                        "Are you sure you want to quit?",
+                                        "Yes",
+                                        "No"
+                                    ) {
+                                        if (it) {
+                                            val intent = Intent(this, HomeActivity::class.java)
+                                            startActivity(intent)
+                                            finish()
+                                        } else {
+                                            output.spokenText = ""
+                                            generateRandomNumber(false)
+                                        }
                                     }
-                                }
 
+                                }
                             }
+                        }else{
+                            Log.e("PlayActivity", "Activity is not valid. Dialog cannot be shown.")
+
                         }
                     }
                 }
@@ -473,21 +508,33 @@ class PlayActivity : AppCompatActivity() {
 
             override fun onFinish() {
                 activityPlayBinding.timer.text = "Time's up!"
-                dialogHelper.wrong("Time's up!","Sorry!", "Next", "Quit"){
-                    if (it){
+                if (!isFinishing && !isDestroyed) {
+                dialogHelper.wrong("Time's up!","Sorry!", "Next", "Quit") {
+                    if (it) {
+                        countdownTimer.cancel()
                         generateRandomNumber(false)
-                    }else{
-                        dialogHelper.showLogout("Quit", "Are you sure you want to quit?", "Yes", "No" ){
-                            if (it){
+                    } else {
+                        dialogHelper.showLogout(
+                            "Quit",
+                            "Are you sure you want to quit?",
+                            "Yes",
+                            "No"
+                        ) {
+                            if (it) {
+                                countdownTimer.cancel()
                                 val intent = Intent(this@PlayActivity, HomeActivity::class.java)
                                 startActivity(intent)
                                 finish()
-                            }else{
+                            } else {
+                                countdownTimer.cancel()
                                 generateRandomNumber(false)
                             }
                         }
                     }
                 }
+                }else {
+                        Log.e("PlayActivity", "Activity is not valid. Dialog cannot be shown.")
+                    }
             }
         }
         isCountdownRunning = true

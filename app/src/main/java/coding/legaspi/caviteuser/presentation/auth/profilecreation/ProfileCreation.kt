@@ -64,7 +64,7 @@ class ProfileCreation : AppCompatActivity(), View.OnClickListener, View.OnFocusC
     var isStorageImagePermitted = false
     var isCameraAccessPermitted = false
 
-    val TAG = "Permission"
+    val TAG = "PROFILE CREATION LOG TAG"
 
     //lateinit var selectedImageUri: Uri
     private var selectedImageUri: Uri? = null
@@ -101,7 +101,8 @@ class ProfileCreation : AppCompatActivity(), View.OnClickListener, View.OnFocusC
         binding.etAge.onFocusChangeListener = this
         binding.logout.setOnClickListener(this)
 
-        if (one!=null){
+        Log.d(TAG, "ONE VALUE $one")
+        if (one!="null"){
             binding.progressBar.visibility = VISIBLE
             getProfile(userid)
         }
@@ -114,6 +115,9 @@ class ProfileCreation : AppCompatActivity(), View.OnClickListener, View.OnFocusC
             when(it){
                 is Result.Success<*> -> {
                     val profile = it.data as ProfileOutput
+
+                    Log.d(TAG, "ProfileOutput GET PROFILE $profile")
+
                     if (profile!=null){
                         val firstname = profile.firstname
                         val lastname = profile.lastname
@@ -146,7 +150,7 @@ class ProfileCreation : AppCompatActivity(), View.OnClickListener, View.OnFocusC
                     // Show error message or handle error state
                     if (exception is IOException) {
                         // Handle network failure
-                        Log.e("Check Result", "showNetworkError")
+                        Log.e(TAG, "showNetworkError")
                         binding.progressBar.visibility = GONE
                         if (exception.equals("java.net.SocketTimeoutException")){
                             dialogHelper.showUnauthorized(
@@ -169,7 +173,7 @@ class ProfileCreation : AppCompatActivity(), View.OnClickListener, View.OnFocusC
                                 positiveButtonFunction = {
                                 }
                             )
-                            Log.d("Check Result", "Unauthorized")
+                            Log.d(TAG, "Unauthorized")
                         }
 
                     } else {
@@ -184,12 +188,12 @@ class ProfileCreation : AppCompatActivity(), View.OnClickListener, View.OnFocusC
 
                             }
                         )
-                        Log.d("Check Result", "showGenericError")
+                        Log.d(TAG, "showGenericError")
                     }
                 }
                 Result.Loading -> {
                     // Handle loading state
-                    Log.d("Check Result", "Loading")
+                    Log.d(TAG, "Loading")
                     binding.progressBar.visibility = VISIBLE
                 }
 
@@ -242,15 +246,17 @@ class ProfileCreation : AppCompatActivity(), View.OnClickListener, View.OnFocusC
         val date = Date(timestamp)
         val formattedDate = sdf.format(date)
         if (validate()){
-            if (one!=null){
+            if (one!="null"){
                 updateProfile(id, formattedDate)
             }else{
+                Log.i(TAG, "INPUT SAVE:: \n Address: $address, AGE: $age, Date: $formattedDate, FirstName: $firstname, \n " +
+                        "LastName: $lastname, SelectedOption: $selectedOption, Timestamp: ${timestamp.toString()}, USERID: $userid")
                 val responseLiveData = loginViewModel.postProfile(Profile(address, age, formattedDate, firstname,selectedOption, lastname,  timestamp.toString(), userid))
                 responseLiveData.observe(this, Observer {
                     when(it){
                         is Result.Success<*> ->{
                             val result = it.data as ProfileOutput
-                            Log.d("Check Result", "success $result")
+                            Log.d(TAG, "ProfileOutput SAVE: $result")
                             if(result != null){
                                 FirebaseManager().saveImageToFirebase(this, result.userid, selectedImageUri!!){
                                     if (it){
@@ -273,7 +279,7 @@ class ProfileCreation : AppCompatActivity(), View.OnClickListener, View.OnFocusC
                             // Show error message or handle error state
                             if (exception is IOException) {
                                 // Handle network failure
-                                Log.e("Check Result", "${exception.localizedMessage}")
+                                Log.e(TAG, "${exception.localizedMessage}")
                                 binding.progressBar.visibility = View.GONE
                                 if (exception.localizedMessage!! == "timeout"){
                                     dialogHelper.showUnauthorized(
@@ -296,7 +302,7 @@ class ProfileCreation : AppCompatActivity(), View.OnClickListener, View.OnFocusC
 
                                         }
                                     )
-                                    Log.e("Check Result", "Unauthorized")
+                                    Log.e(TAG, "Unauthorized")
                                 }
                             } else {
                                 // Handle other exceptions
@@ -310,11 +316,11 @@ class ProfileCreation : AppCompatActivity(), View.OnClickListener, View.OnFocusC
 
                                     }
                                 )
-                                Log.e("Check Result", "showGenericError")
+                                Log.e(TAG, "showGenericError")
                             }
                         }
                         Result.Loading ->{
-                            Log.d("Check Result", "Loading")
+                            Log.d(TAG, "Loading")
                             binding.progressBar.visibility = View.VISIBLE
                         }
                     }
@@ -324,12 +330,16 @@ class ProfileCreation : AppCompatActivity(), View.OnClickListener, View.OnFocusC
     }
 
     fun updateProfile(id: String, formattedDate: String){
+        Log.i(TAG, "INPUT UPDATE:: \n Address: $address, AGE: $age, Date: $formattedDate, FirstName: $firstname, \n " +
+                "LastName: $lastname, SelectedOption: $selectedOption, Timestamp: ${timestamp.toString()}, USERID: $userid")
         val patchLiveData = loginViewModel.patchProfile(id, Profile(address, age, formattedDate, firstname,selectedOption, lastname,  timestamp.toString(), userid))
         patchLiveData.observe(this, Observer {
             when(it){
                 is Result.Success<*> ->{
+                    val result = it.data as ProfileOutput
+                    Log.d(TAG, "ProfileOutput Update $result")
                     if (selectedImageUri!=null){
-                        Log.i("CHECK IMAGE", "$selectedImageUri")
+                        Log.i(TAG, "$selectedImageUri")
                         FirebaseManager().updateImage(this, userid, selectedImageUri!!){
                             if (it){
                                 Toast.makeText(this, "Update successfully!", Toast.LENGTH_SHORT).show()
@@ -343,7 +353,7 @@ class ProfileCreation : AppCompatActivity(), View.OnClickListener, View.OnFocusC
                             }
                         }
                     }else{
-                        Log.i("CHECK IMAGE", "no image")
+                        Log.i(TAG, "no image")
                         Toast.makeText(this, "Update successfully!", Toast.LENGTH_SHORT).show()
                         binding.progressBar.visibility = GONE
                         val intent = Intent(this, HomeActivity::class.java)
@@ -358,7 +368,7 @@ class ProfileCreation : AppCompatActivity(), View.OnClickListener, View.OnFocusC
                     // Show error message or handle error state
                     if (exception is IOException) {
                         // Handle network failure
-                        Log.e("Check Result", "${exception.localizedMessage}")
+                        Log.e(TAG, "${exception.localizedMessage}")
                         binding.progressBar.visibility = View.GONE
                         if (exception.localizedMessage!! == "timeout"){
                             dialogHelper.showUnauthorized(
@@ -381,7 +391,7 @@ class ProfileCreation : AppCompatActivity(), View.OnClickListener, View.OnFocusC
 
                                 }
                             )
-                            Log.e("Check Result", "Unauthorized")
+                            Log.e(TAG, "Unauthorized")
                         }
                     } else {
                         // Handle other exceptions
@@ -395,11 +405,11 @@ class ProfileCreation : AppCompatActivity(), View.OnClickListener, View.OnFocusC
 
                             }
                         )
-                        Log.e("Check Result", "showGenericError")
+                        Log.e(TAG, "showGenericError")
                     }
                 }
                 Result.Loading ->{
-                    Log.d("Check Result", "Loading")
+                    Log.d(TAG, "Loading")
                     binding.progressBar.visibility = View.VISIBLE
                 }
             }

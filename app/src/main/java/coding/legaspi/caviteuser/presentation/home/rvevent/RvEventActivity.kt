@@ -9,6 +9,7 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.FrameLayout
 import android.widget.SearchView
+import android.widget.TableLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
@@ -32,6 +33,7 @@ import coding.legaspi.caviteuser.utils.MediaPlayerFactory
 import coding.legaspi.caviteuser.utils.MediaPlayerHelper
 import coding.legaspi.caviteuser.utils.SharedPreferences
 import com.bumptech.glide.Glide
+import com.google.android.material.tabs.TabLayout
 import java.io.IOException
 import javax.inject.Inject
 
@@ -120,18 +122,45 @@ class RvEventActivity : AppCompatActivity() {
             }
             "Cavite City Hymn" -> {
                 binding.noData.visibility = GONE
-                binding.rrMid.visibility = GONE
                 binding.rrlFirst.visibility = GONE
+                binding.rrMid.visibility = GONE
                 binding.rrlSecond.visibility = GONE
                 binding.hymnBar.layoutHymn.visibility = VISIBLE
                 binding.hymnBar.lyricsCategory.visibility = VISIBLE
                 binding.hymnBar.hymnTitle.text = getString(R.string.hymn_tagalog_title)
                 binding.hymnBar.hymnLyrics.text = getString(R.string.hymn_tagalog_lyrics)
-                binding.hymnBar.lyricsCategory.setOnClickListener {
-                    setLyricsOptions()
-                }
+//                binding.hymnBar.lyricsCategory.setOnClickListener {
+//                    setLyricsOptions()
+//                }
+                var lyrics: String? = null
+                binding.hymnBar.lyricsCategory.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+                    override fun onTabSelected(tab: TabLayout.Tab) {
+                        when (tab.position) {
+                            0 -> {
+                                lyrics = "Tagalog Hymn"
+                                binding.hymnBar.hymnTitle.text = getString(R.string.hymn_tagalog_title)
+                                binding.hymnBar.hymnLyrics.text = getString(R.string.hymn_tagalog_lyrics)
+                            }
+                            1 -> {
+                                lyrics = "Chabacano Hymn"
+                                binding.hymnBar.hymnTitle.text = getString(R.string.hymn_chabacano_title)
+                                binding.hymnBar.hymnLyrics.text = getString(R.string.hymn_chabacano_lyrics)
+                            }
+                            else -> {
+
+                            }
+                        }
+                    }
+
+                    override fun onTabUnselected(tab: TabLayout.Tab) {
+                        mediaPlayerHelper.stopMusic()
+                    }
+                    override fun onTabReselected(tab: TabLayout.Tab) {
+                        mediaPlayerHelper.stopMusic()
+                    }
+                })
                 binding.hymnBar.playSound.setOnClickListener {
-                    mediaPlayerHelper.playMusic("Tagalog Hymn"){
+                    mediaPlayerHelper.playMusic(lyrics!!){
                         if (it) mediaPlayerHelper.stopMusic()
                     }
                 }
@@ -154,24 +183,23 @@ class RvEventActivity : AppCompatActivity() {
         mediaPlayerHelper.stopMusic()
     }
 
-    private fun setLyricsOptions() {
-        val fonts = arrayOf(
-            "TAGALOG LYRICS", "CHABACANO LYRICS"
-        )
-
-        val builder: AlertDialog.Builder = AlertDialog.Builder(this)
-        builder.setTitle("Select translation")
-        builder.setItems(fonts, DialogInterface.OnClickListener { dialog, which ->
-            if ("TAGALOG LYRICS" == fonts[which]) {
-                binding.hymnBar.hymnTitle.text = getString(R.string.hymn_tagalog_title)
-                binding.hymnBar.hymnLyrics.text = getString(R.string.hymn_tagalog_lyrics)
-            } else if ("CHABACANO LYRICS" == fonts[which]) {
-                binding.hymnBar.hymnTitle.text = getString(R.string.hymn_chabacano_title)
-                binding.hymnBar.hymnLyrics.text = getString(R.string.hymn_chabacano_lyrics)
-            }
-        })
-        builder.show()
-    }
+    val fonts = arrayOf(
+        "TAGALOG LYRICS", "CHABACANO LYRICS"
+    )
+//    private fun setLyricsOptions() {
+//        val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+//        builder.setTitle("Select translation")
+//        builder.setItems(fonts, DialogInterface.OnClickListener { dialog, which ->
+//            if ("TAGALOG LYRICS" == fonts[which]) {
+//                binding.hymnBar.hymnTitle.text = getString(R.string.hymn_tagalog_title)
+//                binding.hymnBar.hymnLyrics.text = getString(R.string.hymn_tagalog_lyrics)
+//            } else if ("CHABACANO LYRICS" == fonts[which]) {
+//                binding.hymnBar.hymnTitle.text = getString(R.string.hymn_chabacano_title)
+//                binding.hymnBar.hymnLyrics.text = getString(R.string.hymn_chabacano_lyrics)
+//            }
+//        })
+//        builder.show()
+//    }
 
     private fun setBindingSchool() {
         binding.elementary.setOnClickListener {

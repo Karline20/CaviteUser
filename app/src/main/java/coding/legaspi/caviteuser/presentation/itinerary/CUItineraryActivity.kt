@@ -59,8 +59,6 @@ class CUItineraryActivity : AppCompatActivity() {
         if (scheduleDateTimestampString != null) {
             scheduleDateTimestamp = scheduleDateTimestampString
             Log.i("CUItineraryActivity", "$scheduleDateTimestamp")
-//            binding.txtDate.text = DateUtils.formatTimestampToDate(scheduleDateTimestamp)
-//            binding.txtTime.text = DateUtils.formatTimestampToTime(scheduleDateTimestamp)
         } else {
             Log.i("CUItineraryActivity", "No found $scheduleDateTimestamp")
             Log.e("CUItineraryActivity", "No ID found in the Intent")
@@ -142,7 +140,7 @@ class CUItineraryActivity : AppCompatActivity() {
                                             val (token, userId) = SharedPreferences().checkToken(this@CUItineraryActivity)
                                             val itinerary = Itinerary(
                                                 timestamp, eventid, userId!!, updatedItinerary.id.toString(),
-                                                scheduled.toString(), timestamp, "UPCOMING", false, "", updatedItinerary.itineraryImg, updatedItinerary.itineraryPlace, updatedItinerary.itineraryName, "")
+                                                updatedItinerary.scheduleDateTimestamp.toString(), timestamp, "UPCOMING", false, "", updatedItinerary.itineraryImg, updatedItinerary.itineraryPlace, updatedItinerary.itineraryName, "")
                                             FirebaseManager().addToItinerary(itinerary){
                                                 if (it){
                                                     binding.progressBar.visibility = GONE

@@ -73,6 +73,7 @@ class EventItinerary(
         binding.destinationAddress.text = itinerary.itineraryPlace
         binding.currentAddress.text = getAddressName(requireContext(), currentLocation)
 
+        Log.i("CHECK ITINERARY", "Image ${itinerary.itineraryImg}")
         val reference = FirebaseDatabase.getInstance().getReference("Itinerary")
         reference.child(itinerary.userID).child(itinerary.eventID).child(itinerary.itineraryID)
             .addValueEventListener(object : ValueEventListener {
@@ -101,7 +102,7 @@ class EventItinerary(
                 .error(R.drawable.baseline_broken_image_24)
                 .into(binding.tripImage)
         }catch (e: Exception){
-            Log.e("Fragment", "Image $e")
+            Log.i("Fragment", "Image $e")
         }
 
         binding.showRoute.setOnClickListener {
@@ -150,6 +151,7 @@ class EventItinerary(
                                     binding.progressBar.visibility = GONE
                                     _itineraryViewModel.delete(itinerary.itineraryID.toLong())
                                     Toast.makeText(requireContext(), "Trip ended!", Toast.LENGTH_SHORT).show()
+                                    parentFragmentManager.beginTransaction().remove(this).commit()
                                 }else{
                                     binding.progressBar.visibility = GONE
                                     Toast.makeText(context, "Trip ended failed!", Toast.LENGTH_SHORT).show()

@@ -348,7 +348,13 @@ class EventViewModel(
     fun patchProfile(id: String, profile: Profile) = liveData {
         try {
             val patchProfile = getEventsUseCase.patchProfile(id, profile)
-            emit(Result.Success(patchProfile))
+            if (patchProfile.isSuccessful) {
+                patchProfile.body()?.let {
+                    emit(Result.Success(it))
+                }
+            } else {
+                emit(Result.Error(IOException("Error: ${patchProfile.code()} ${patchProfile.message()}")))
+            }
         } catch (ioException: IOException) {
             emit(Result.Error(ioException))
         } catch (exception: Exception) {

@@ -61,7 +61,8 @@ class MediaPlayerHelperImpl(private val context: Context): MediaPlayerHelper {
                 "Tutorial 42"-> Uri.parse("android.resource://${context.packageName}/${R.raw.tia}")
                 "Tutorial 43"-> Uri.parse("android.resource://${context.packageName}/${R.raw.tio}")
                 "Tutorial 44"-> Uri.parse("android.resource://${context.packageName}/${R.raw.tuloykayo}")
-                "Tagalog Hymn"-> Uri.parse("android.resource://${context.packageName}/${R.raw.chabacano_hymn}")
+                "Tagalog Hymn"-> Uri.parse("android.resource://${context.packageName}/${R.raw.tagalog_hymn}")
+                "Chabacano Hymn"-> Uri.parse("android.resource://${context.packageName}/${R.raw.chabacano_hymn}")
                 else -> throw IllegalArgumentException("Invalid tutorialExactPos: $tutorialExactPos")
             }
             mediaPlayer?.setDataSource(context, resourceUri)

@@ -2,6 +2,7 @@ package coding.legaspi.caviteuser.presentation.favorites
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import androidx.lifecycle.Observer
@@ -47,7 +48,7 @@ class FavoritesActivity : AppCompatActivity() {
         val (token, userId) = SharedPreferences().checkToken(this)
         favoritesBinding.progressBar.visibility = VISIBLE
         favoritesList = arrayListOf()
-        favoritesAdapter = FavoritesAdapter(favoritesList, this, eventViewModel, this)
+        favoritesAdapter = FavoritesAdapter(favoritesList, this, eventViewModel, this, this)
         setMenu()
         setRv(userId)
         setProfile(userId)
@@ -67,7 +68,7 @@ class FavoritesActivity : AppCompatActivity() {
         }
     }
 
-    private fun setRv(userId: String?) {
+    fun setRv(userId: String?) {
         val responseLiveData = eventViewModel.getFavorites(userId.toString())
         responseLiveData.observe(this, Observer {
             when(it){
@@ -127,6 +128,10 @@ class FavoritesActivity : AppCompatActivity() {
             }
         })
     }
+    fun refreshFavorites(userId: String?) {
+        setRv(userId) // Assuming setRv is your method to refresh the list
+        Log.d("FAVORITES", "Favorites list refreshed")
+    }
 
     private fun setMenu() {
         favoritesBinding.loggedInTopNav.back.setOnClickListener {
@@ -134,4 +139,6 @@ class FavoritesActivity : AppCompatActivity() {
             finish()
         }
     }
+
+
 }

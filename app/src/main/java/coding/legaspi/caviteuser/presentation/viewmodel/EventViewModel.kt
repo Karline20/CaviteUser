@@ -398,20 +398,9 @@ class EventViewModel(
     }
 
     fun delFavorites(id: String) = liveData(Dispatchers.IO) {
-        try {
-            val delFavorites = getEventsUseCase.delFavorites(id)
-            if (delFavorites.isSuccessful) {
-                delFavorites.body()?.let {
-                    emit(Result.Success(it))
-                }
-            } else {
-                emit(Result.Error(IOException("Error: ${delFavorites.code()} ${delFavorites.message()}")))
-            }
-        } catch (ioException: IOException) {
-            emit(Result.Error(ioException))
-        } catch (exception: Exception) {
-            emit(Result.Error(exception))
-        }
+        val delFavorites = getEventsUseCase.delFavorites(id)
+        Log.i("FAVORITES", "${delFavorites.code()}")
+        emit("${delFavorites.code()}")
     }
 
     fun getFavorites(userid: String) = liveData {

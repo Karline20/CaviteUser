@@ -439,10 +439,15 @@ class ViewEventActivity : AppCompatActivity(), OnMapReadyCallback {
                     binding.labelDescription.text = result.description
                     binding.labelDate.text = result.date
                     if (result.category!= null){
-                        binding.labelCategory.text = result.category
+                        if (result.category=="Heroes") {
+                            binding.labelCategory.text = "Notable Person"
+                        }else{
+                            binding.labelCategory.text = result.category
+                        }
                     }else{
                         binding.labelCategory.visibility = GONE
                     }
+
                     latitude = result.latitude
                     longitude = result.longitude
                     location = result.location

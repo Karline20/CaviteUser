@@ -9,20 +9,28 @@
     android:layout_marginRight="5dp"
     android:layout_marginTop="10dp">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/epoxy_image"
-        android:layout_width="75dp"
-        android:layout_height="75dp"
-        android:orientation="horizontal"
-        tools:listitem="@layout/epoxy_image"
+    <RelativeLayout
+        android:id="@+id/rrl_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
         android:layout_centerVertical="true"
-        />
+        android:background="@drawable/shape_rec_10">
+        <ImageView
+            android:id="@+id/epoxy_image"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:layout_centerInParent="true"
+            android:src="@drawable/baseline_broken_image_24"
+            android:scaleType="fitXY"
+            />
+    </RelativeLayout>
 
     <TextView
         android:id="@+id/tv_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_toEndOf="@+id/epoxy_image"
+        android:layout_toEndOf="@+id/rrl_image"
         android:layout_marginTop="10dp"
         android:layout_marginStart="10dp"
         android:text="CAFE"
@@ -33,7 +41,7 @@
         android:id="@+id/tv_desc"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_toEndOf="@+id/epoxy_image"
+        android:layout_toEndOf="@+id/rrl_image"
         android:layout_below="@+id/tv_title"
         android:layout_toStartOf="@+id/img_unfave"
         android:layout_marginTop="5dp"

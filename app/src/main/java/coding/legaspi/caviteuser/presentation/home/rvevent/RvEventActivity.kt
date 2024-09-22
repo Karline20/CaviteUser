@@ -132,7 +132,7 @@ class RvEventActivity : AppCompatActivity() {
 //                binding.hymnBar.lyricsCategory.setOnClickListener {
 //                    setLyricsOptions()
 //                }
-                var lyrics: String? = null
+                var lyrics: String? = "Tagalog Hymn"
                 binding.hymnBar.lyricsCategory.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
                     override fun onTabSelected(tab: TabLayout.Tab) {
                         when (tab.position) {
@@ -166,6 +166,10 @@ class RvEventActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+        mediaPlayerHelper.stopMusic()
     }
 
     override fun onBackPressed() {
